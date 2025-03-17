@@ -41,7 +41,7 @@ def create_new_block(block_number, target, previous_block_hash, email):
 def mine_block(new_block, target):
     nonce = 0
     while True:
-        new_timestamp = int(time.time())
+        new_timestamp = int(time.time())    
         new_block[8:16] = new_timestamp.to_bytes(8, "big")
 
         new_block[24:32] = nonce.to_bytes(8, "big")

@@ -21,7 +21,7 @@ def find_collision(email, n=48):
 
     hash_dict = {}
     while True:
-        random_suffix = os.urandom(8).hex()  # sufijo de 16 caracteres (unico)
+        random_suffix = os.urandom(8).hex()  # sufijo de 16 caracteres (unico por el largo).
         message = f"{email}{random_suffix}".encode("utf-8")
         hash_value = sha256_n(message, n)
 
