@@ -14,13 +14,19 @@ Ejemplo de uso:
 
 """
 
+# notas: 
+# no es una buena idea pasar las password por la linea de comandos, una 
+# Isolucion seria pasar el archvio que tiene la pass.add()
+# o simplemente pedir un input que pida el password al momento de desbloquear el nodo
+
+
 import argparse
 import sys
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
 # Configuración por defecto
-DEFAULT_IPC_PATH = "/home/simonll4/Desktop/blockchain-testnets/bfatest/node/geth.ipc"  # Cambiar por la ruta correcta en su sistema
+DEFAULT_IPC_PATH = "/home/simonll4/Desktop/blockchain-testnets/bfatest/node/geth.ipc"
 DEFAULT_UNIT = "wei"
 
 
@@ -65,6 +71,7 @@ def transfer(w3, src_ref, dst_ref, amount, unit, password):
         # Verificar saldo suficiente
         balance_src = w3.eth.get_balance(src)
 
+        # sirve para evitar una transaccion que va a fallar
         if balance_src < amount_wei:
             print(
                 f"Saldo insuficiente en la cuenta origen. Balance: {Web3.from_wei(balance_src, 'ether')} ETH, Intenta transferir: {amount} {unit}",

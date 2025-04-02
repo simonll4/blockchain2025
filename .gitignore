@@ -53,3 +53,12 @@ Thumbs.db
 
 # my notes
 notas.txt
+
+# TP3 script para armar un txt con todoas las transacciones que implican ether en la blockchain
+TP/3/search_transactions.py
+TP/3/transactions1.txt
+
+TP/4/api/python
+TP/4/api/src/__pycache__
+TP/4/api/test/__pycache__
+TP/4/api/.env

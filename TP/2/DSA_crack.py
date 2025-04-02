@@ -68,6 +68,9 @@ def calculate_private_key(m1, s1, m2, s2, r, q):
         int: La clave privada x calculada.
     """
     # Calcular los hashes de los mensajes
+    # se asume que el mensaje es un string, si el mensaje es una cadena de bytes no se esta completando
+    # haslib sha256 necesita una cadena de bytes y devuelve una cadena de bytes
+    # con digest() y luego intFromBytes() se puede convertir a un entero para que sea mas eficiente
     H_m1 = int(hashlib.sha256(m1.encode()).hexdigest(), 16)
     H_m2 = int(hashlib.sha256(m2.encode()).hexdigest(), 16)
 
