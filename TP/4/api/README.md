@@ -79,7 +79,7 @@ PASSWORD_FILE="/ruta/a/password.txt"
 
 ## ▶️ Ejecución
 
-1. Instalar dependencias:
+1. Instalar dependencias propias de la api (requerimets.txt del proyecto):
    ```bash
    pip install -r requirements.txt
    ```

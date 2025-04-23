@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 import logging
 
+#observacion:
+# el unico inconviente es que me obliga a definir todas las variables. se podrian poner valores default
 from config import (
     PORT,
     NODE_URI,
@@ -9,6 +11,9 @@ from config import (
     KEYSTORE_DIR,
     PASSWORD_FILE,
 )
+
+# obsevacion: hay funciones que no corresponde al modulo ethereum_utils para que sea reutilizable
+
 from ethereum_utils import (
     connect_to_node,
     get_local_account,
@@ -45,6 +50,7 @@ def get_stamped(hash_value):
 
     try:
         stamped_data = contract.functions.stamped(hash_value).call()
+        # observacion: aca es preferible comparar el bloque, mas eficiente
         if stamped_data[0] != "0x0000000000000000000000000000000000000000":
             return jsonify(signer=stamped_data[0], blockNumber=stamped_data[1]), 200
         return jsonify(message="Hash not found"), 404

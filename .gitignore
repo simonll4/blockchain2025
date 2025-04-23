@@ -51,7 +51,6 @@ Thumbs.db
 # Virtual environments
 .venv/
 
-# my notes
 notas.txt
 
 # TP3 script para armar un txt con todoas las transacciones que implican ether en la blockchain

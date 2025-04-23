@@ -21,6 +21,9 @@ SIGNATURE_PATTERN = re.compile(r"^0x[a-fA-F0-9]{130}$")
 HASH_PATTERN = re.compile(r"0x[0-9a-fA-F]{64}")
 
 
+# observacion: lo ideal seria
+# una clase stamper que se encarga de inicial el contrato con todas las variables que necesita para usar el contrato como la instancia de w3
+
 def connect_to_node(uri: str) -> Web3:
     """Conecta a un nodo de Ethereum mediante IPC"""
     if not uri:
@@ -68,6 +71,9 @@ def get_local_account(keystore_dir: str, password_file: str) -> tuple:
         logger.error(f"Error al cargar la cuenta: {e}")
         raise
 
+#observacion:
+# el nombre correcto seria stamp en vez de stamp.
+# esta funcion depende de este contrato especifico, por lo que no es reutilizable en otro proyectos
 
 def build_and_sign_transaction(
     w3, contract, account_address, private_key, hash_value, signature=None

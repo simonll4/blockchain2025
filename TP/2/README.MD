@@ -8,6 +8,7 @@
 
 ---
 
+
 # Generador de números pseudoaleatorios de Java
 
 El script [LCG_crack.py](./LCG_crack.py) implementa un ataque al generador de números pseudoaleatorios de Java (LCG - Linear Congruential Generator). El objetivo es predecir números futuros generados por el LCG a partir de una secuencia de números observados.

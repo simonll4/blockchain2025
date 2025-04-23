@@ -130,6 +130,7 @@ contract Ballot {
     }
 
     // Indica si la votación ha comenzado
+    // observacion: cuando termina la votación este metodo devulve que nunca empezo la votacion
     function started() external view returns (bool) {
         return state == VotingState.Ongoing;
     }
