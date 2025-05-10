@@ -14,11 +14,16 @@ contract CFPFactory {
     }
 
     // Estructura para estado de cuentas
-    struct AccountStatus {
-        bool registered;
-        bool authorized;
-        bool pending;
+    // observacion: enum con los 3 estados, y no pensar como combinacion de valores
+    // no todas las combinaciones son validas (si esta autorizado se supone que esta registrado)
+    // se complica la logica de los combinaciones
+    enum AccountState {
+        NotRegistered,
+        Pending,
+        Authorized
     }
+
+    // para no tener multiples mappins se puede crear una extructura creator con todo los datos
 
     address private immutable _owner; // Dirección del dueño de la factoría (quien desplegó el contrato)
 
@@ -26,7 +31,7 @@ contract CFPFactory {
 
     bytes32[] private _callIds; // Lista de todos los callIds creados
 
-    mapping(address => AccountStatus) private _accountStatus; // Estado de las cuentas
+    mapping(address => AccountState) private _accountState; // Estado de las cuentas
 
     address[] private _pending; // Cuentas pendientes de autorización
 
@@ -45,7 +50,10 @@ contract CFPFactory {
 
     // Modificador que permite solo a cuentas autorizadas ejecutar ciertas funciones
     modifier onlyAuthorized(address account) {
-        require(_accountStatus[account].authorized, "No autorizado");
+        require(
+            _accountState[account] == AccountState.Authorized,
+            "No autorizado"
+        );
         _;
     }
 
@@ -63,7 +71,10 @@ contract CFPFactory {
 
     // Modificador que verifica que la cuenta no esté registrada
     modifier notRegistered(address account) {
-        require(!_accountStatus[account].registered, "Ya se ha registrado");
+        require(
+            _accountState[account] == AccountState.NotRegistered,
+            "Ya se ha registrado"
+        );
         _;
     }
 
@@ -151,12 +162,14 @@ contract CFPFactory {
 
     // Devuelve verdadero si una cuenta se ha registrado, tanto si su estado es pendiente como si ya se la ha autorizado.
     function isRegistered(address account) public view returns (bool) {
-        return _accountStatus[account].registered;
+        AccountState state = _accountState[account];
+        return
+            state == AccountState.Pending || state == AccountState.Authorized;
     }
 
     // Devuelve verdadero si una cuenta está autorizada a crear llamados.
     function isAuthorized(address account) public view returns (bool) {
-        return _accountStatus[account].authorized;
+        return _accountState[account] == AccountState.Authorized;
     }
 
     /** Crea un llamado, con un identificador y un tiempo de cierre.
@@ -222,11 +235,7 @@ contract CFPFactory {
      *  Si ya se ha registrado, revierte con el mensaje "Ya se ha registrado"
      */
     function register() public notRegistered(msg.sender) {
-        _accountStatus[msg.sender] = AccountStatus({
-            registered: true,
-            authorized: false,
-            pending: true
-        });
+        _accountState[msg.sender] = AccountState.Pending;
         _pending.push(msg.sender);
     }
 
@@ -237,14 +246,14 @@ contract CFPFactory {
      *  si no la registra automáticamente.
      */
     function authorize(address creator) public onlyOwner {
-        AccountStatus storage status = _accountStatus[creator];
-        if (!status.registered) {
-            status.registered = true;
-        } else if (status.pending) {
+        AccountState state = _accountState[creator];
+        if (state == AccountState.NotRegistered) {
+            // Registro directo y autorización
+            _accountState[creator] = AccountState.Authorized;
+        } else if (state == AccountState.Pending) {
             _removePending(creator);
-            status.pending = false;
+            _accountState[creator] = AccountState.Authorized;
         }
-        status.authorized = true;
     }
 
     /**
@@ -254,13 +263,10 @@ contract CFPFactory {
      * Siempre marca la cuenta como no autorizada y no registrada.
      */
     function unauthorize(address creator) public onlyOwner {
-        AccountStatus storage status = _accountStatus[creator];
-        if (status.pending) {
+        if (_accountState[creator] == AccountState.Pending) {
             _removePending(creator);
         }
-        status.registered = false;
-        status.authorized = false;
-        status.pending = false;
+        _accountState[creator] = AccountState.NotRegistered;
     }
 
     /**
@@ -274,8 +280,7 @@ contract CFPFactory {
                     _pending[i] = _pending[length - 1];
                 }
                 _pending.pop();
-                _accountStatus[account].pending = false;
-                return;
+                break;
             }
         }
     }
