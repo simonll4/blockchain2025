@@ -155,7 +155,7 @@ contract CFPFactory {
     }
 
     // Devuelve la lista de todas las registraciones pendientes.
-    // Sólo puede ser ejecutada por el dueño de la factoría
+    // Sólo puede ser ejecutada por el dueño de la factorífa
     function getAllPending() public view onlyOwner returns (address[] memory) {
         return _pending;
     }

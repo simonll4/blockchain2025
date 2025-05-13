@@ -1,0 +1,7 @@
+{
+  "ganache_url": "http://127.0.0.1:7545",
+  "mnemonic": "memory shift result axis path bridge fee talk saddle pig praise arctic",
+  "account_index": 0,
+  "factory_contract_path": "contracts/CFPFactory.json",
+  "cfp_contract_path": "contracts/CFP.json"
+}

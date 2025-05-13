@@ -12,7 +12,7 @@ from eth_account import Account
 from eth_account.messages import SignableMessage, encode_defunct
 from jsonschema import validate
 
-import messages
+import messages as messages
 
 calls_schema = {
     "type": "object",
