@@ -12,6 +12,7 @@ Account.enable_unaudited_hdwallet_features()
 # Cargar la configuración desde el archivo de configuración  (config/config.json)
 config = load_config()
 ganache_url = config.get("ganache_url")
+
 hd_path_template = config.get("hd_path_template")
 w3 = Web3(Web3.HTTPProvider(ganache_url))
 
@@ -38,7 +39,7 @@ def get_account(mnemonic, index):
     return Account.from_mnemonic(mnemonic, account_path=path)
 
 
-def load_contract(w3, path):
+def load_contract(w3, path,network_id):  
     """
     Carga e instancia un contrato inteligente desde un archivo JSON compilado.
 
@@ -53,7 +54,7 @@ def load_contract(w3, path):
     with open(path) as f:
         contract_data = json.load(f)
     abi = contract_data["abi"]
-    address = Web3.to_checksum_address(contract_data["networks"]["5777"]["address"])
+    address = Web3.to_checksum_address(contract_data["networks"][network_id ]["address"])
     return w3.eth.contract(address=address, abi=abi)
 
 

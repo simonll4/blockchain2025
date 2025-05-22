@@ -33,12 +33,13 @@ config = load_config()
 # Configuración
 mnemonic = config.get("mnemonic")
 index = config.get("account_index", 0)
+network_id = config.get("network_id", "5777")
 
 # Conectar cuenta por defecto
 account = get_account(mnemonic, index)
 
 # Cargar el contrato Factory
-factory = load_contract(w3, config["factory_contract_path"])
+factory = load_contract(w3, config["factory_contract_path"], network_id)
 
 # Cargar el ABI del contrato CFP
 with open(config["cfp_contract_path"]) as f:
