@@ -103,12 +103,17 @@ contract CFPFactory {
         return _calls[callId];
     }
 
+    // Devuelve una lista de todos los callIds creados
+    function allCallIds() external view returns (bytes32[] memory) {
+        return _callIds;
+    }
+
     // Devuelve la cantidad de cuentas que han creado llamados.
     function creatorsCount() public view returns (uint256) {
         return _creators.length;
     }
 
-    // Devuelve la dirección de un creador de la lista de creadores
+    // Devuelve la dirección de un creador `de la lista de creadores
     function creators(
         uint index
     ) public view isValidIndex(index, _creators.length) returns (address) {

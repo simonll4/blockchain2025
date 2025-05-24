@@ -4,6 +4,7 @@ a través de endpoints HTTP conforme a la especificación definida en el archivo
 """
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from web3 import Web3
 from eth_account.messages import encode_defunct
 from datetime import datetime, timezone
@@ -29,6 +30,7 @@ from messages import MESSAGES
 
 app = Flask(__name__)
 config = load_config()
+CORS(app, origins=["http://localhost:5173"])
 
 # Configuración
 mnemonic = config.get("mnemonic")
@@ -383,6 +385,20 @@ def get_proposal_data(call_id, proposal):
     except Exception as e:
         print(f"[ERROR] get_proposal_data: {e}")
         return jsonify({"message": MESSAGES["INTERNAL_ERROR"]}), 500
+
+
+@app.route("/calls", methods=["GET"])
+def get_all_calls():
+    call_ids = factory.functions.allCallIds().call()
+
+    calls = []
+    for call_id in call_ids:
+        call = factory.functions.calls(call_id).call()
+        calls.append(
+            {"callId":"0x" + call_id.hex(), "creator": call[0], "cfpAddress": call[1]}
+        )
+
+    return jsonify(calls)
 
 
 if __name__ == "__main__":

@@ -31,7 +31,7 @@ pip install -r requirements.txt
 
 ## Configuración
 
-Asegurase de configurar `config/config.json`:
+Asegurarse de configurar `config/config.json`:
 
 ```json
 {
@@ -43,6 +43,14 @@ Asegurase de configurar `config/config.json`:
   "factory_contract_path": "ruta al archivo JSON del contrato CFPFactory compilado",
   "cfp_contract_path": "ruta al archivo JSON del contrato CFP compilado"
 }
+```
+## Compilación y Despliegue de Contratos
+
+Antes de iniciar el backend, asegúrate de compilar y migrar los contratos a la red ganache en `TP/7`:
+
+```bash
+truffle compile
+truffle migrate
 ```
 
 ## Ejecutar la API
@@ -125,34 +133,45 @@ Retorna la fecha de cierre del llamado en formato ISO 8601.
 
 ---
 
+### Obtener todos los llamados
+
+**URL:** `/calls`  
+**Método:** `GET`  
+**Descripción:**  
+Devuelve un array de objetos, cada uno con:
+
+- `callId`: ID del llamado
+- `creator`: dirección del creador del llamado
+- `cfpAddress`: dirección del contrato CFP asociado
+
 ### Obtener datos de una propuesta
 
-**URL:** `/proposal-data/<callId>/<proposal>`  
-**Respuesta:**  
+**URL:** `/proposal-data/<callId>/<proposal>`
+**Respuesta:**
 Devuelve los datos de una propuesta específica dentro de un llamado.
 
 ---
 
 ### Dirección del contrato Factory
 
-**URL:** `/contract-address`  
-**Respuesta:**  
+**URL:** `/contract-address`
+**Respuesta:**
 Retorna la dirección del contrato Factory desplegado en blockchain.
 
 ---
 
 ### Dirección del owner del contrato
 
-**URL:** `/contract-owner`  
-**Respuesta:**  
+**URL:** `/contract-owner`
+**Respuesta:**
 Retorna la dirección del propietario del contrato.
 
 ---
 
 ### Verificar autorización de una dirección
 
-**URL:** `/authorized/<address>`  
-**Respuesta:**  
+**URL:** `/authorized/<address>`
+**Respuesta:**
 Devuelve `true` o `false` dependiendo de si la dirección está autorizada.
 
 ---
@@ -160,3 +179,7 @@ Devuelve `true` o `false` dependiendo de si la dirección está autorizada.
 ## Notas
 
 - Los IDs (`callId`, `proposal`, `address`) deben estar en formato hexadecimal (`0x...`).
+
+```
+
+```
