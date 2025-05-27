@@ -17,21 +17,21 @@ pip install -r requirements.txt
 ## Estructura del Proyecto
 
 ```
-.
-├── app.py                     # API principal
-├── config/
-│   └── config.json            # Configuración (ruta, red, mnemonic, etc.)
-├── utils/
-│   ├── config_loader.py
-│   ├── web3_utils.py
-│   └── helpers.py
-├── messages.py                # Diccionario de mensajes de error
+src
+  ├── app.py                     # API principal
+  ├── config/
+  │   └── config.json            # Configuración
+  ├── utils/
+  │   ├── config_loader.py
+  │   ├── web3_utils.py
+  │   └── helpers.py
+  ├── messages.py                # Diccionario de mensajes de error
 
 ```
 
 ## Configuración
 
-Asegurarse de configurar `config/config.json`:
+Asegurarse de configurar `src/config/config.json`:
 
 ```json
 {

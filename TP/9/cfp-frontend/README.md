@@ -1,6 +1,6 @@
 # 📄 CFP Frontend
 
-Interfaz web desarrollada con **Vue 3**, **Vite** y **Vuetify** para interactuar con contratos inteligentes de tipo CFP (Call for Proposals). Permite visualizar llamados, registrar propuestas y verificar la existencia de propuestas previamente registradas.
+Interfaz web desarrollada con **Vue 3**, **Vite** y **Vuetify** para interactuar con la API desarrollada en TP8. Permite visualizar llamados, registrar propuestas y verificar la existencia de propuestas previamente registradas.
 
 ---
 
