@@ -52,7 +52,6 @@ Thumbs.db
 .venv/
 
 notas.txt
-
 # TP3 script para armar un txt con todoas las transacciones que implican ether en la blockchain
 TP/3/search_transactions.py
 TP/3/transactions1.txt
