@@ -9,7 +9,7 @@ const routes = [
   { path: '/', component: HomeView },
   { path: '/calls', component: CallListView },
   { path: '/call/:callId', component: CallDetailView },
-  { path: '/user', component: UserPanelView }
+  { path: '/users', component: UserPanelView }
 ];
 
 export default createRouter({

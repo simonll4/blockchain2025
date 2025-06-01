@@ -1,15 +1,56 @@
 <script setup>
+import { ref, onMounted } from "vue";
 import { useMetamask } from "@/composables/useMetamask";
+import { useIsAuthorized } from "@/composables/CFPFactory/useIsAuthorized";
+import { useIsAdmin } from "@/composables/api/useIsAdmin";
+import { HealthService } from "@/services/apiClient";
+import { useUserStore } from "@/store/user";
 
-let isAdmin = false; //TODO: Replace with actual admin check logic
-let isAuthorized = false; //TODO: Replace with actual authorization check logic
-let apiHealthy = false; //TODO: Replace with actual API health check logic
+import { useRegisterOnChain } from "@/composables/CFPFactory/useRegisterOnChain";
+import { useIsRegistered } from "@/composables/CFPFactory/useIsRegistered";
 
+const { register, isLoading, error, success, message } = useRegisterOnChain();
+
+const apiHealthy = ref(false);
+
+const { isAuthorized } = useIsAuthorized();
+const { isPending } = useIsRegistered();
+const { isAdmin } = useIsAdmin();
 const { isConnected, networkOk } = useMetamask();
+const userStore = useUserStore();
 
-function registerUser() {
-  userStore.register();
-}
+const onRegisterClick = async () => {
+  try {
+    await register();
+  } catch (err) {
+    console.error("Error al registrar:", err);
+  }
+};
+
+onMounted(async () => {
+  try {
+    apiHealthy.value = await HealthService.checkApiHealth();
+  } catch (err) {
+    console.error("Error checking API health:", err);
+    apiHealthy.value = false;
+  }
+});
+
+import { computed } from "vue";
+const userStatus = computed(() => {
+  if (isAuthorized.value) {
+    return { text: "Autorizado", color: "green" };
+  }
+  if (isPending.value) {
+    return { text: "Pendiente de autorización", color: "orange" };
+  }
+  return { text: "No registrado", color: "red" };
+});
+
+const showRegisterButton = computed(() => {
+  // Solo mostrar botón si NO está ni pendiente ni autorizado
+  return !isAuthorized.value && !isPending.value;
+});
 </script>
 
 <template>
@@ -46,12 +87,11 @@ function registerUser() {
                 </v-chip>
               </v-list-item-title>
             </v-list-item>
-
             <v-list-item>
               <v-list-item-title>
-                Usuario autorizado:
-                <v-chip :color="isAuthorized ? 'green' : 'orange'" class="ml-2">
-                  {{ isAuthorized ? "Sí" : "Pendiente/No registrado" }}
+                Estado del usuario:
+                <v-chip :color="userStatus.color" class="ml-2">
+                  {{ userStatus.text }}
                 </v-chip>
               </v-list-item-title>
             </v-list-item>
@@ -68,9 +108,9 @@ function registerUser() {
 
           <v-divider class="my-4" />
 
-          <div v-if="!isAuthorized" class="text-center">
-            <v-btn color="primary" @click="registerUser">
-              Solicitar Autorización
+          <div v-if="showRegisterButton" class="text-center">
+            <v-btn color="primary" @click="onRegisterClick">
+              Registrarse para crear CFPs
             </v-btn>
           </div>
         </v-card>

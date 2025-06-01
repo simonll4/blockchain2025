@@ -394,8 +394,23 @@ def get_all_calls():
     calls = []
     for call_id in call_ids:
         call = factory.functions.calls(call_id).call()
+        cfp_address = call[1]
+        closing_time_iso = None
+        try:
+            # Cargar el contrato CFP y obtener el closingTime
+            cfp = load_dynamic_contract(w3, cfp_address, CFP_ABI)
+            closing_time = cfp.functions.closingTime().call()
+            closing_time_iso = datetime.fromtimestamp(closing_time, timezone.utc).isoformat()
+        except Exception as e:
+            print(f"[ERROR] get_all_calls: No se pudo obtener closingTime para {cfp_address}: {e}")
+
         calls.append(
-            {"callId":"0x" + call_id.hex(), "creator": call[0], "cfpAddress": call[1]}
+            {
+                "callId": "0x" + call_id.hex(),
+                "creator": call[0],
+                "cfpAddress": cfp_address,
+                "closingTime": closing_time_iso,
+            }
         )
 
     return jsonify(calls)

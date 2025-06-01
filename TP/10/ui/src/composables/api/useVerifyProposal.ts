@@ -4,13 +4,6 @@ import { ProposalService } from "@/services/apiClient";
 import { USER_ERRORS } from "@/utils/apiErrors";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
-// Mensajes de error que corresponden al usuario
-// const USER_ERRORS = {
-//   ALREADY_REGISTERED: "La propuesta ya ha sido registrada",
-//   UNAUTHORIZED: "No autorizado",
-//   PROPOSAL_NOT_FOUND: "La propuesta no existe",
-// };
-
 export function useVerifyProposal(callId: string) {
   const isLoading = ref(false);
   const error = ref<string | null>(null);

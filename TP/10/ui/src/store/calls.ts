@@ -3,8 +3,8 @@ import { defineStore } from "pinia";
 
 export const useCallsStore = defineStore("calls", {
   state: () => ({
-    //calls: [] as any[],
-    calls: [] as Array<{ callId: string; creator: string; cfpAddress: string; closingTime?: string }>,
+    calls: [] as any[],
+    //calls: [] as Array<{ callId: string; creator: string; cfpAddress: string; closingTime?: string }>,
 
     selectedCall: null as any | null,
     isLoading: false,

@@ -3,13 +3,13 @@ import { API_ENDPOINTS } from "./endpoints";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000",
-  timeout: 5000,
+  timeout: 10000,
 });
 
 apiClient.interceptors.response.use(
   (res) => res,
   (error) => {
-    console.error("API error:", error.response?.data ); 
+    console.error("API error:", error.response?.data);
     return Promise.reject(error);
   }
 );
@@ -33,6 +33,7 @@ export const CallsService = {
       closingTime,
       signature,
     }),
+  getCreators: () => apiClient.get(API_ENDPOINTS.CALLS.CREATORS),
 };
 
 export const ProposalService = {
@@ -41,8 +42,21 @@ export const ProposalService = {
   register: (callId: string, proposal: string) =>
     apiClient.post(API_ENDPOINTS.PROPOSALS.REGISTER, { callId, proposal }),
 };
-  
-export const AuthService = {
+
+export const UserService = {
   registerAddress: (address: string, signature: string) =>
-    apiClient.post(API_ENDPOINTS.AUTH.REGISTER_ADDRESS, { address, signature }),
+    apiClient.post(API_ENDPOINTS.USER.REGISTER_ADDRESS, { address, signature }),
+  getPendingAddress: () => apiClient.get(API_ENDPOINTS.USER.PENDING_ADDRESS),
+};
+
+//TODO pasarlo a un composable
+export const HealthService = {
+  checkApiHealth: async () => {
+    try {
+      await apiClient.get(API_ENDPOINTS.HEALTH.CHECK);
+      return true;
+    } catch {
+      return false;
+    }
+  },
 };

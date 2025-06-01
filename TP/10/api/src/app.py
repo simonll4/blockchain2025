@@ -46,6 +46,15 @@ factory = load_contract(w3, config["factory_contract_path"], network_id)
 # Cargar el ABI del contrato CFP
 with open(config["cfp_contract_path"]) as f:
     CFP_ABI = json.load(f)["abi"]
+    
+    
+@app.route("/check-health", methods=["GET"])
+def check_health():
+    try:
+        return "", 200
+    except Exception as e:
+        app.logger.error(f"Health check failed: {e}")
+        return jsonify({"status": "error", "message": "Service unavailable"}), 503
 
 
 @app.route("/create", methods=["POST"])
@@ -394,11 +403,63 @@ def get_all_calls():
     calls = []
     for call_id in call_ids:
         call = factory.functions.calls(call_id).call()
+        cfp_address = call[1]
+        closing_time_iso = None
+        try:
+            # Cargar el contrato CFP y obtener el closingTime
+            cfp = load_dynamic_contract(w3, cfp_address, CFP_ABI)
+            closing_time = cfp.functions.closingTime().call()
+            closing_time_iso = datetime.fromtimestamp(closing_time, timezone.utc).isoformat()
+        except Exception as e:
+            print(f"[ERROR] get_all_calls: No se pudo obtener closingTime para {cfp_address}: {e}")
+
         calls.append(
-            {"callId":"0x" + call_id.hex(), "creator": call[0], "cfpAddress": call[1]}
+            {
+                "callId": "0x" + call_id.hex(),
+                "creator": call[0],
+                "cfpAddress": cfp_address,
+                "closingTime": closing_time_iso,
+            }
         )
 
     return jsonify(calls)
+
+
+@app.route("/creators", methods=["GET"])
+def get_all_creators():
+    try:
+        count = factory.functions.creatorsCount().call()
+        creators = []
+
+        for i in range(count):
+            creator = factory.functions.creators(i).call()
+            creators.append(creator)
+
+        return jsonify({"creators": creators}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/pending", methods=["GET"])
+def get_pending():
+    try:
+        # Verificar que se accede con la cuenta owner
+        pending_count = factory.functions.pendingCount().call({'from': account.address})
+        
+        pending = []
+        for i in range(pending_count):
+            addr = factory.functions.getPending(i).call({'from': account.address})
+            pending.append(addr)
+
+        return jsonify({
+            "pending": pending
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
 if __name__ == "__main__":

@@ -1,4 +1,7 @@
 export const API_ENDPOINTS = {
+  HEALTH: {
+    CHECK: `/check-health`, // Nuevo endpoint
+  },
   CONTRACT: {
     ADDRESS: `/contract-address`,
     OWNER: `/contract-owner`,
@@ -9,13 +12,15 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (callId: string) => `/calls/${callId}`,
     CLOSING_TIME: (callId: string) => `/closing-time/${callId}`,
     CREATE: `/create`,
+    CREATORS:`/creators`,
   },
   PROPOSALS: {
     GET_DATA: (callId: string, proposal: string) =>
       `/proposal-data/${callId}/${proposal}`,
     REGISTER: `/register-proposal`,
   },
-  AUTH: {
+  USER: {
     REGISTER_ADDRESS: `/register`,
+    PENDING_ADDRESS: `/pending`,
   },
 };
