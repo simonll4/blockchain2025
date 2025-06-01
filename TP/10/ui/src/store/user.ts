@@ -1,40 +1,60 @@
-// src/stores/user.ts
 import { defineStore } from "pinia";
+import { ref } from "vue";
 
-export const useUserStore = defineStore("user", {
-  state: () => ({
-    address: "", // dirección de Metamask
-    isConnected: false, // conectado a Metamask
-    networkOk: false, // red correcta
-    isAuthorized: false, // autorizado para crear llamados
-    isAdmin: false,           // owner del contrato
-    isPending: false          // está pendiente de autorización
-  }),
+export const useUserStore = defineStore("user", () => {
+  const address = ref("");
+  const isConnected = ref(false);
+  const networkOk = ref(false);
+  const isOwner = ref(false);
+  const isAuthorized = ref(false);
+  const isPending = ref(false);
 
-  actions: {
-    setAddress(address: string) {
-      this.address = address;
-    },
-    setConnected(connected: boolean) {
-      this.isConnected = connected;
-    },
-    setNetworkOk(ok: boolean) {
-      this.networkOk = ok;
-    },
-    // setApiAvailable(ok: boolean) {
-    //   this.apiAvailable = ok
-    // },
-    setAuthorized(value: boolean) {
-      this.isAuthorized = value;
-    },
-    setAdmin(value: boolean) {
-      this.isAdmin = value;
-    },
-    setPending(pending: boolean) {
-      this.isPending = pending
-    },
-    reset() {
-      this.$reset();
-    },
-  },
+  const setAddress = (newAddress: string) => {
+    address.value = newAddress;
+  };
+
+  const setConnected = (connected: boolean) => {
+    isConnected.value = connected;
+  };
+
+  const setNetworkOk = (ok: boolean) => {
+    networkOk.value = ok;
+  };
+
+  const setAuthorized = (value: boolean) => {
+    isAuthorized.value = value;
+  };
+
+  const setAdmin = (value: boolean) => {
+    isOwner.value = value;
+  };
+
+  const setPending = (pending: boolean) => {
+    isPending.value = pending;
+  };
+
+  const reset = () => {
+    address.value = "";
+    isConnected.value = false;
+    networkOk.value = false;
+    isAuthorized.value = false;
+    isOwner.value = false;
+    isPending.value = false;
+  };
+
+  return {
+    address,
+    isConnected,
+    networkOk,
+    isAuthorized,
+    isOwner,
+    isPending,
+    setAddress,
+    setConnected,
+    setNetworkOk,
+    setAuthorized,
+    setAdmin,
+    setPending,
+    reset,
+  };
 });

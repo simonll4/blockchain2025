@@ -4,7 +4,7 @@ import { CallsService } from "@/services/apiClient";
 import { useCallsStore } from "@/store/calls";
 import { storeToRefs } from "pinia";
 
-export function useCalls() {
+export function useApiCalls() {
   const store = useCallsStore();
   const { calls, isLoading, error } = storeToRefs(store);
 
@@ -16,7 +16,7 @@ export function useCalls() {
       store.setError(null);
     } catch (err: any) {
       store.setError("Error al cargar los llamados");
-      console.error(err);
+      //console.error(err);
     } finally {
       store.setLoading(false);
     }

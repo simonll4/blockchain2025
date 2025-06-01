@@ -2,27 +2,45 @@
 import { useMetamask } from "@/composables/useMetamask";
 import { shorten } from "@/utils/format";
 import { useCFPFactory } from "@/composables/CFPFactory/useCFPFactory";
-import { watchEffect } from "vue";
-import { useIsAdmin } from "@/composables/api/useIsAdmin";
+import { ref, watchEffect } from "vue";
+import { useApiOwner } from "@/composables/api/useApiOwner";
 
-const { isAdmin } = useIsAdmin();
+const { isOwner } = useApiOwner();
 const { account, connect } = useMetamask();
 const { init: initFactory } = useCFPFactory();
 
+const snackbar = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("error");
+
+const handleConnect = async () => {
+  try {
+    await connect();
+  } catch (error: any) {
+    snackbarMessage.value = error.message || "Error al conectar con Metamask.";
+    snackbarColor.value = "error";
+    snackbar.value = true;
+  }
+};
+
 watchEffect(async () => {
   if (account.value) {
-    try {
-      await initFactory();
-      console.log("Contrato inicializado después de conectar cuenta");
-    } catch (err) {
-      console.error("Error al inicializar contrato:", err);
-    }
+    await initFactory();
   }
 });
 </script>
 
 <template>
   <v-app class="custom-background">
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      timeout="3000"
+      location="top right"
+      variant="tonal"
+    >
+      {{ snackbarMessage }}
+    </v-snackbar>
     <!-- TOPBAR -->
     <v-app-bar color="primary" dark>
       <v-toolbar-title>Call For Proposals</v-toolbar-title>
@@ -33,7 +51,7 @@ watchEffect(async () => {
         </v-chip>
       </div>
       <div v-else>
-        <v-btn color="secondary" @click="connect">Conectar Wallet</v-btn>
+        <v-btn color="secondary" @click="handleConnect">Conectar Wallet</v-btn>
       </div>
     </v-app-bar>
 
@@ -55,7 +73,7 @@ watchEffect(async () => {
           value="calls"
         />
         <v-list-item
-          v-if="isAdmin"
+          v-if="isOwner"
           to="/users"
           prepend-icon="mdi-account-cog"
           title="Gestión de Usuarios"

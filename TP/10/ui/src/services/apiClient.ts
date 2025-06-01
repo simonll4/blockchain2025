@@ -1,8 +1,8 @@
 import axios from "axios";
-import { API_ENDPOINTS } from "./endpoints";
+import { API_ENDPOINTS } from "../utils/endpoints";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
 });
 
@@ -49,14 +49,6 @@ export const UserService = {
   getPendingAddress: () => apiClient.get(API_ENDPOINTS.USER.PENDING_ADDRESS),
 };
 
-//TODO pasarlo a un composable
-export const HealthService = {
-  checkApiHealth: async () => {
-    try {
-      await apiClient.get(API_ENDPOINTS.HEALTH.CHECK);
-      return true;
-    } catch {
-      return false;
-    }
-  },
+export const api = {
+  checkHealth: () => apiClient.get(API_ENDPOINTS.HEALTH.CHECK),
 };

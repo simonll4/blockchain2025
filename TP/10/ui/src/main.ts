@@ -1,15 +1,14 @@
-// src/main.ts
-import 'vuetify/styles' // ✅ Debe estar primero
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import App from './App.vue'
-import router from './router'
-import vuetify from './plugins/vuetify' // tu configuración custom
+import "vuetify/styles";
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import App from "./App.vue";
+import router from "./router";
+import vuetify from "./plugins/vuetify";
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(createPinia())
-app.use(router)
-app.use(vuetify) // ✅ Asegurate de aplicar Vuetify
+app.use(createPinia());
+app.use(router);
+app.use(vuetify);
 
-app.mount('#app')
+app.mount("#app");

@@ -1,56 +1,71 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, watch } from "vue";
+
 import { useMetamask } from "@/composables/useMetamask";
-import { useIsAuthorized } from "@/composables/CFPFactory/useIsAuthorized";
-import { useIsAdmin } from "@/composables/api/useIsAdmin";
-import { HealthService } from "@/services/apiClient";
-import { useUserStore } from "@/store/user";
+import { useCFPFactoryIsAuthorized } from "@/composables/CFPFactory/useCFPFactoryIsAuthorized";
+import { useApiOwner } from "@/composables/api/useApiOwner";
+import { useCFPFactoryRegister } from "@/composables/CFPFactory/useCFPFactoryRegister";
+import { useCFPFactoryIsRegistered } from "@/composables/CFPFactory/useCFPFactoryIsRegistered";
+import { useApiHealthCheck } from "@/composables/api/useApiHealthCheck";
 
-import { useRegisterOnChain } from "@/composables/CFPFactory/useRegisterOnChain";
-import { useIsRegistered } from "@/composables/CFPFactory/useIsRegistered";
-
-const { register, isLoading, error, success, message } = useRegisterOnChain();
-
-const apiHealthy = ref(false);
-
-const { isAuthorized } = useIsAuthorized();
-const { isPending } = useIsRegistered();
-const { isAdmin } = useIsAdmin();
 const { isConnected, networkOk } = useMetamask();
-const userStore = useUserStore();
 
-const onRegisterClick = async () => {
-  try {
-    await register();
-  } catch (err) {
-    console.error("Error al registrar:", err);
-  }
-};
+const { register } = useCFPFactoryRegister();
 
-onMounted(async () => {
-  try {
-    apiHealthy.value = await HealthService.checkApiHealth();
-  } catch (err) {
-    console.error("Error checking API health:", err);
-    apiHealthy.value = false;
-  }
-});
+const {
+  isAuthorized,
+  checkIsAuthorized,
+  loading: loadingIsAuthorized,
+} = useCFPFactoryIsAuthorized();
 
-import { computed } from "vue";
+const {
+  isPending,
+  checkIsRegistered,
+  loading: loadingIsRegistered,
+} = useCFPFactoryIsRegistered();
+
+const { isOwner, checkIsOwner } = useApiOwner();
+
+const { isHealthy } = useApiHealthCheck();
+
 const userStatus = computed(() => {
-  if (isAuthorized.value) {
-    return { text: "Autorizado", color: "green" };
-  }
-  if (isPending.value) {
-    return { text: "Pendiente de autorización", color: "orange" };
-  }
-  return { text: "No registrado", color: "red" };
+  const statuses = {
+    authorized: { text: "Autorizado", color: "green" },
+    pending: { text: "Pendiente de autorización", color: "orange" },
+    none: { text: "No registrado", color: "red" },
+  };
+
+  if (isAuthorized.value) return statuses.authorized;
+  if (isPending.value) return statuses.pending;
+  return statuses.none;
 });
 
+// Solo mostrar botón si NO está ni pendiente ni autorizado
 const showRegisterButton = computed(() => {
-  // Solo mostrar botón si NO está ni pendiente ni autorizado
   return !isAuthorized.value && !isPending.value;
 });
+
+// Función para manejar el clic en el botón de registro
+const onRegisterClick = async () => {
+  await register();
+  checkIsRegistered();
+};
+
+watch(
+  [isConnected, networkOk],
+  ([connected, network]) => {
+    if (connected && network) {
+      checkIsAuthorized();
+      checkIsRegistered();
+      checkIsOwner();
+    } else {
+      isAuthorized.value = false;
+      isPending.value = false;
+      isOwner.value = false;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -58,7 +73,7 @@ const showRegisterButton = computed(() => {
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card class="pa-6" elevation="3">
-          <v-card-title class="text-h5 mb-4"> Estado del Usuario </v-card-title>
+          <v-card-title class="text-h5 mb-4"> Estados </v-card-title>
 
           <v-list density="compact">
             <v-list-item>
@@ -82,15 +97,40 @@ const showRegisterButton = computed(() => {
             <v-list-item>
               <v-list-item-title>
                 Conexión con la API:
-                <v-chip :color="apiHealthy ? 'green' : 'red'" class="ml-2">
-                  {{ apiHealthy ? "OK" : "Error" }}
+                <v-chip :color="isHealthy ? 'green' : 'red'" class="ml-2">
+                  {{ isHealthy ? "OK" : "Error" }}
                 </v-chip>
               </v-list-item-title>
             </v-list-item>
-            <v-list-item>
+
+            <!-- <v-list-item>
               <v-list-item-title>
                 Estado del usuario:
                 <v-chip :color="userStatus.color" class="ml-2">
+                  {{ userStatus.text }}
+                </v-chip>
+              </v-list-item-title>
+            </v-list-item> -->
+
+            <v-list-item>
+              <v-list-item-title>
+                Estado del usuario:
+                <v-chip
+                  v-if="loadingIsAuthorized || loadingIsRegistered"
+                  class="ml-2"
+                  color="grey"
+                  text-color="white"
+                >
+                  <v-progress-circular
+                    indeterminate
+                    color="white"
+                    size="16"
+                    width="2"
+                  />
+                  <span class="ml-2">Verificando...</span>
+                </v-chip>
+
+                <v-chip v-else :color="userStatus.color" class="ml-2">
                   {{ userStatus.text }}
                 </v-chip>
               </v-list-item-title>
@@ -99,8 +139,8 @@ const showRegisterButton = computed(() => {
             <v-list-item>
               <v-list-item-title>
                 ¿Es administrador?:
-                <v-chip :color="isAdmin ? 'blue' : 'grey'" class="ml-2">
-                  {{ isAdmin ? "Sí" : "No" }}
+                <v-chip :color="isOwner ? 'blue' : 'grey'" class="ml-2">
+                  {{ isOwner ? "Sí" : "No" }}
                 </v-chip>
               </v-list-item-title>
             </v-list-item>

@@ -1,10 +1,10 @@
 // src/composables/usePendingUsers.ts
 import { ref } from "vue";
-import { useUserStore } from "@/store/useUserStore";
+import { useUserStore } from "@/store/users";
 import { UserService } from "@/services/apiClient";
 import { storeToRefs } from "pinia";
 
-export function usePendingUsers() {
+export function useApiPendingUsers() {
   const userStore = useUserStore();
   const { pendingUsers } = storeToRefs(userStore);
   const isLoading = ref(false);

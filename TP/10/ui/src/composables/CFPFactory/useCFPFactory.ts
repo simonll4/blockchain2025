@@ -1,5 +1,4 @@
-// src/composables/useCFPFactory.ts
-import { Contract, ethers } from "ethers";
+import { Contract } from "ethers";
 import { useContractStore } from "@/store/CFPFactory";
 import { storeToRefs } from "pinia";
 import { useMetamask } from "../useMetamask";
@@ -8,7 +7,7 @@ import factoryArtifact from "../../../../contracts/build/contracts/CFPFactory.js
 
 const ABI = factoryArtifact.abi;
 const NETWORKS = factoryArtifact.networks;
-const NETWORK_ID = "5777";
+const NETWORK_ID = import.meta.env.VITE_NETWORK_ID as keyof typeof NETWORKS;
 
 export function useCFPFactory() {
   const contractStore = useContractStore();
@@ -22,14 +21,16 @@ export function useCFPFactory() {
         `Dirección de contrato no encontrada para red ${NETWORK_ID}`
       );
     }
+
     factoryAddress.value = network.address;
     const rawSigner = toRaw(signer.value);
     if (!rawSigner) throw new Error("Signer no disponible");
+
     const instance = new Contract(factoryAddress.value, ABI, rawSigner);
+
     contractStore.setContract(instance);
   };
 
-  //TODO no funciona
   const createCall = async (callId: string, timestamp: number) => {
     const rawContract = toRaw(contract.value);
     if (!rawContract) {

@@ -1,33 +1,55 @@
-// src/stores/calls.ts
+// src/stores/useCallsStore.ts
 import { defineStore } from "pinia";
+import { ref } from "vue";
 
-export const useCallsStore = defineStore("calls", {
-  state: () => ({
-    calls: [] as any[],
-    //calls: [] as Array<{ callId: string; creator: string; cfpAddress: string; closingTime?: string }>,
+//TODO los mismo en callDetail.ts
+// interface Call {
+//   callId: string;
+//   creator: string;
+//   closingTime: string;
+//
+// }
+// const calls = ref<Call[]>([]);
+// const selectedCall = ref<Call | null>(null);
 
-    selectedCall: null as any | null,
-    isLoading: false,
-    error: null as string | null,
-  }),
-  actions: {
-    setCalls(data: any[]) {
-      this.calls = data;
-    },
-    setSelectedCall(data: any) {
-      this.selectedCall = data;
-    },
-    setLoading(value: boolean) {
-      this.isLoading = value;
-    },
-    setError(msg: string | null) {
-      this.error = msg;
-    },
-    reset() {
-      this.calls = [];
-      this.selectedCall = null;
-      this.isLoading = false;
-      this.error = null;
-    },
-  },
-});     
+export const useCallsStore = defineStore("calls", () => {
+  const calls = ref<any[]>([]);
+  const selectedCall = ref<any | null>(null);
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+
+  const setCalls = (data: any[]) => {
+    calls.value = data;
+  };
+
+  const setSelectedCall = (data: any) => {
+    selectedCall.value = data;
+  };
+
+  const setLoading = (value: boolean) => {
+    isLoading.value = value;
+  };
+
+  const setError = (msg: string | null) => {
+    error.value = msg;
+  };
+
+  const reset = () => {
+    calls.value = [];
+    selectedCall.value = null;
+    isLoading.value = false;
+    error.value = null;
+  };
+
+  return {
+    calls,
+    selectedCall,
+    isLoading,
+    error,
+    setCalls,
+    setSelectedCall,
+    setLoading,
+    setError,
+    reset,
+  };
+});

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { usePendingUsers } from "@/composables/api/usePendingUsers";
-import { useAuthorizeAccount } from "@/composables/CFPFactory/useAuthorizeAccount";
+import { useApiPendingUsers } from "@/composables/api/useApiPendingUsers";
+import { useCFPFactoryAuthorize } from "@/composables/CFPFactory/useCFPFactoryAuthorize";
 
-const { pendingUsers, isLoading, error, fetchPendingUsers } = usePendingUsers();
+const { pendingUsers, isLoading, error, fetchPendingUsers } = useApiPendingUsers();
 const {
   isLoading: authLoading,
   error: authError,
   success: authSuccess,
   message: authMessage,
   authorizeAccount,
-} = useAuthorizeAccount();
+} = useCFPFactoryAuthorize();
 
 const authorizing = ref<string | null>(null);
 

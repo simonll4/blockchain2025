@@ -23,14 +23,6 @@ export const calculateFileHash = async (file: File): Promise<string> => {
   });
 };
 
-// export const isValidEtherAddress = (address: string) => {
-//   return ethers.utils.isAddress(address);
-// };
-
-// ========================
-// 🚀 Exportación única
-// ========================
 export const EthersUtils = {
   calculateFileHash,
-  //   isValidEtherAddress,
 };

@@ -1,13 +1,13 @@
 import { useCFPFactory } from "./useCFPFactory";
 import { useTxHandler } from "./useTxHandler";
 
-export function useAuthorizeAccount() {
+export function useCFPFactoryAuthorize() {
   const { authorize } = useCFPFactory();
-  const { isLoading, error, success, message, execute } = useTxHandler();
+  const { isLoading, error, success, message, runTx } = useTxHandler();
 
   const authorizeAccount = async (address: string) => {
     if (!address) throw new Error("Dirección inválida");
-    await execute(
+    await runTx(
       () => authorize(address),
       `Cuenta ${address} autorizada correctamente`
     );

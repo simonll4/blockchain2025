@@ -1,14 +1,15 @@
-// src/composables/useRegisterProposal.ts
+// src/composables/useVerifyProposal.ts
 import { ref } from "vue";
 import { ProposalService } from "@/services/apiClient";
 import { USER_ERRORS } from "@/utils/apiErrors";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
-export function useRegisterProposal(callId: string) {
+export function useApiVerifyProposal(callId: string) {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const message = ref<string | null>(null);
   const success = ref(false);
+  const proposalData = ref<any>(null);
 
   const validateFile = (file: File) => {
     const validTypes = [
@@ -27,11 +28,12 @@ export function useRegisterProposal(callId: string) {
     return true;
   };
 
-  const registerProposal = async (file: File) => {
+  const verifyProposal = async (file: File) => {
     isLoading.value = true;
     error.value = null;
     message.value = null;
     success.value = false;
+    proposalData.value = null;
 
     try {
       // Validar archivo
@@ -42,16 +44,15 @@ export function useRegisterProposal(callId: string) {
 
       // Calcular hash
       const proposalHash = await calculateFileHash(file);
+      // Verificar en backend
+      const response = await ProposalService.getData(callId, proposalHash);
 
-      // Registrar en backend
-      await ProposalService.register(callId, proposalHash);
-
-      message.value = "Propuesta registrada exitosamente";
+      message.value = "Propuesta verificada y encontrada en el sistema";
       success.value = true;
+      proposalData.value = response.data;
     } catch (err: any) {
       const apiError = err.response?.data?.message;
 
-      // Verificar si es un error que debe ver el usuario
       if (apiError && Object.values(USER_ERRORS).includes(apiError)) {
         error.value = apiError;
         message.value = apiError;
@@ -70,6 +71,7 @@ export function useRegisterProposal(callId: string) {
     error,
     message,
     success,
-    registerProposal,
+    proposalData,
+    verifyProposal,
   };
 }

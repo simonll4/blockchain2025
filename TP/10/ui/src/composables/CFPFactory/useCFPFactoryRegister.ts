@@ -1,12 +1,12 @@
 import { useCFPFactory } from "./useCFPFactory";
 import { useTxHandler } from "./useTxHandler";
 
-export function useRegisterOnChain() {
+export function useCFPFactoryRegister() {
   const { register } = useCFPFactory();
-  const { isLoading, error, success, message, execute } = useTxHandler();
+  const { isLoading, error, success, message, runTx } = useTxHandler();
 
   const registerUser = async () => {
-    await execute(
+    await runTx(
       () => register(),
       "Registro exitoso en la blockchain"
     );

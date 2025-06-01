@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { useCalls } from "@/composables/api/useCalls";
-import { useCreators } from "@/composables/api/useCreators";
-import { useUserStore } from "@/store/user";
-import { shorten } from "@/utils/format";
 import { format, parseISO } from "date-fns";
-import { useCreateCallOnChain } from "@/composables/CFPFactory/useCreateCallOnChain";
 
-const { creators, loading, error } = useCreators();
-const { fetchCalls, calls, isLoading } = useCalls();
+import { shorten } from "@/utils/format";
+import { useUserStore } from "@/store/user";
+
+import { useApiCalls } from "@/composables/api/useApiCalls";
+import { useApiCreators } from "@/composables/api/useApiCreators";
+import { useCFPFactoryCreate } from "@/composables/CFPFactory/useCFPFactoryCreate";
+import { useCFPFactoryIsAuthorized } from "@/composables/CFPFactory/useCFPFactoryIsAuthorized";
+
+const { creators, loading } = useApiCreators();
+const { fetchCalls, calls, isLoading, error } = useApiCalls();
 
 const userStore = useUserStore();
 const userAddress = computed(() => userStore.address);
+const { isAuthorized } = useCFPFactoryIsAuthorized();
 
 // Tabs
 const activeTab = ref(0);
@@ -33,23 +37,14 @@ const myCalls = computed(() => {
   );
 });
 
+onMounted(async () => {
+  await fetchCalls();
+});
+
 const formatDate = (iso?: string) => {
   if (!iso) return "N/A";
   return format(parseISO(iso), "dd/MM/yyyy HH:mm");
 };
-
-onMounted(async () => {
-  try {
-    await fetchCalls();
-  } catch (err) {
-    console.error("Error al obtener llamados:", err);
-  }
-});
-
-// --------- NUEVO: lógica para crear llamados -------------
-const showCreateDialog = ref(false);
-const newCallId = ref("");
-const newClosingDate = ref(""); // string yyyy-MM-ddTHH:mm para input type="datetime-local"
 
 const {
   isLoading: isCreating,
@@ -57,16 +52,41 @@ const {
   success: createSuccess,
   message: createMessage,
   create,
-} = useCreateCallOnChain();
+} = useCFPFactoryCreate();
+
+const showCreateDialog = ref(false);
+const newCallId = ref("");
+const newClosingDate = ref("");
 
 const resetCreateForm = () => {
   newCallId.value = "";
   newClosingDate.value = "";
   showCreateDialog.value = false;
 };
-
 const submitCreateCall = async () => {
-  if (!newCallId.value || !newClosingDate.value) return;
+  if (!newCallId.value) {
+    createError.value = "Debe ingresar un ID para el llamado.";
+    return;
+  }
+  if (!newClosingDate.value) {
+    createError.value = "Debe seleccionar una fecha de cierre.";
+    return;
+  }
+  const isValidCallId = /^0x[a-fA-F0-9]{64}$/.test(newCallId.value);
+  if (!isValidCallId) {
+    createError.value =
+      "El ID debe comenzar con '0x' y contener 64 caracteres hexadecimales.";
+    return;
+  }
+
+  // Verificar si ya existe
+  const alreadyExists = calls.value.some(
+    (call) => call.callId === newCallId.value
+  );
+  if (alreadyExists) {
+    createError.value = "Ya existe un llamado con ese ID.";
+    return;
+  }
 
   try {
     const closingTimestamp = Math.floor(
@@ -77,6 +97,7 @@ const submitCreateCall = async () => {
     resetCreateForm();
   } catch (err) {
     console.error("Error al crear llamado:", err);
+    createError.value = "Ocurrió un error al crear el llamado.";
   }
 };
 </script>
@@ -86,7 +107,7 @@ const submitCreateCall = async () => {
     <h2 class="text-h5 font-weight-medium mb-4">Llamados</h2>
 
     <!-- BOTÓN crear llamado si hay usuario logueado -->
-    <v-row class="mb-4" v-if="userAddress">
+    <v-row class="mb-4" v-if="isAuthorized">
       <v-col cols="12" class="text-right">
         <v-btn
           color="success"
@@ -170,7 +191,26 @@ const submitCreateCall = async () => {
         </v-col>
       </v-row>
 
-      <v-row v-if="!filteredCalls.length && !isLoading">
+      <v-row v-if="error">
+        <v-col cols="12">
+          <v-alert type="error" border="start" border-color="red">
+            Error al cargar los llamados. {{ error }}
+            <template #append>
+              <v-btn
+                variant="text"
+                color="red"
+                class="ml-2"
+                size="small"
+                @click="fetchCalls"
+              >
+                Reintentar
+              </v-btn>
+            </template>
+          </v-alert>
+        </v-col>
+      </v-row>
+
+      <v-row v-if="!filteredCalls.length && !isLoading && !error">
         <v-col cols="12">
           <v-alert type="info" border="start" border-color="primary">
             No hay llamados para los creadores seleccionados.

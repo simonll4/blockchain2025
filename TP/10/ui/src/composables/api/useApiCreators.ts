@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia"; // <-- FALTA ESTO
 import { CallsService } from "@/services/apiClient";
 import { useCreatorsStore } from "@/store/creators";
 
-export const useCreators = () => {
+export const useApiCreators = () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const store = useCreatorsStore();

@@ -1,78 +1,86 @@
-// src/composables/useTxHandler.ts
 import { ref } from "vue";
 
-export function useTxHandler() {
+export function useTxHandler<T = any>() {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const success = ref(false);
   const message = ref<string | null>(null);
 
-  const execute = async (txFn: () => Promise<any>, successMessage: string) => {
+  const runTx = async (
+    txFn: () => Promise<{ wait: () => Promise<T> }>,
+    successMsg: string,
+    onSuccess?: (receipt: T) => void,
+    onError?: (err: any) => void
+  ): Promise<T | null> => {
     isLoading.value = true;
     error.value = null;
+    success.value = false;
+    message.value = null;
 
     try {
-      const result = await txFn();
-      message.value = successMessage;
+      const tx = await txFn();
+      const receipt = await tx.wait();
+
       success.value = true;
-      return result;
-    } catch (err) {
-      console.error("Error completo en execute:", err);
+      message.value = successMsg;
+      onSuccess?.(receipt);
 
-      // Manejo específico de errores de RPC
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "message" in err &&
-        typeof (err as any).message === "string" &&
-        (err as any).message.includes("Internal JSON-RPC")
-      ) {
-        error.value = `
-        Error de conexión con MetaMask:
-        1. Recarga la página (F5)
-        2. Verifica que MetaMask esté conectado
-        3. Revisa que estés en la red correcta
-      `;
-      } else {
-        error.value =
-          typeof err === "object" &&
-          err !== null &&
-          "reason" in err &&
-          typeof (err as any).reason === "string"
-            ? (err as any).reason
-            : typeof err === "object" &&
-              err !== null &&
-              "message" in err &&
-              typeof (err as any).message === "string"
-            ? (err as any).message
-            : "Error desconocido";
-      }
-
-      throw err;
+      return receipt;
+    } catch (err: any) {
+      // const msg = err.message || "Error desconocido";
+      const msg = "Error al ejecutar la transacción";
+      error.value = msg;
+      message.value = msg;
+      onError?.(err);
+      return null;
     } finally {
       isLoading.value = false;
     }
   };
-  // const execute = async (txFn: () => Promise<any>, successMsg: string) => {
-  //   isLoading.value = true;
-  //   error.value = null;
-  //   success.value = false;
-  //   message.value = null;
 
-  //   try {
-  //     const tx = await txFn();
-  //     const receipt = await tx.wait();
-  //     console.log("Tx confirmada:", receipt.hash);
-  //     success.value = true;
-  //     message.value = successMsg;
-  //   } catch (err: any) {
-  //     console.error("Error en transacción:", err);
-  //     error.value = err.message || "Error desconocido";
-  //     message.value = error.value;
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // };
-
-  return { isLoading, error, success, message, execute };
+  return {
+    isLoading,
+    error,
+    success,
+    message,
+    runTx,
+  };
 }
+
+// import { ref } from "vue";
+
+// export function useTxHandler() {
+//   const isLoading = ref(false);
+//   const error = ref<string | null>(null);
+//   const success = ref(false);
+//   const message = ref<string | null>(null);
+
+//   const runTx = async (txFn: () => Promise<any>, successMsg: string) => {
+//     isLoading.value = true;
+//     error.value = null;
+//     success.value = false;
+//     message.value = null;
+
+//     try {
+//       const tx = await txFn();
+//       const receipt = await tx.wait();
+//       success.value = true;
+//       message.value = successMsg;
+//       return receipt;
+//     } catch (err: any) {
+//       //console.error("Error en transacción:", err);
+//       error.value = err.message || "Error desconocido";
+//       message.value = error.value;
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   };
+
+//   return {
+//     isLoading,
+//     error,
+//     success,
+//     message,
+//     runTx,
+//   };
+// }

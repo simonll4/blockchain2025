@@ -1,11 +1,11 @@
-// src/composables/useCreateCallOnChain.ts
+
 
 import { useCFPFactory } from "./useCFPFactory";
 import { useTxHandler } from "./useTxHandler";
 
-export function useCreateCallOnChain() {
+export function useCFPFactoryCreate() {
   const { createCall } = useCFPFactory();
-  const { isLoading, error, success, message, execute } = useTxHandler();
+  const { isLoading, error, success, message, runTx } = useTxHandler();
 
   const create = async (callId: string, timestamp: number) => {
     if (!/^0x[0-9a-fA-F]{64}$/.test(callId)) {
@@ -13,10 +13,12 @@ export function useCreateCallOnChain() {
     }
 
     // Ejecutamos la transacción
-    await execute(
-      () => createCall(callId, timestamp),
-      "Llamado creado en la blockchain"
-    );
+    // await execute(
+    //   () => createCall(callId, timestamp),
+    //   "Llamado creado en la blockchain"
+    // );
+    const receipt = await runTx(() => createCall(callId, timestamp), "Llamado creado");
+console.log("Tx recibida:", receipt.transactionHash);
   };
 
   return {

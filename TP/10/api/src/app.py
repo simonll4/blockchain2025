@@ -425,6 +425,8 @@ def get_all_calls():
     return jsonify(calls)
 
 
+#TODO docuementar los endpoints
+
 @app.route("/creators", methods=["GET"])
 def get_all_creators():
     try:

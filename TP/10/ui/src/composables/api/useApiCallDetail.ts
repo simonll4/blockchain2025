@@ -2,7 +2,7 @@ import { useCallDetailStore } from "@/store/callDetail";
 import { CallsService } from "@/services/apiClient";
 import { storeToRefs } from "pinia";
 
-export function useCallDetail(callId: string) {
+export function useApiCallDetail(callId: string) {
   const store = useCallDetailStore();
   const { call, isLoading, error } = storeToRefs(store);
 

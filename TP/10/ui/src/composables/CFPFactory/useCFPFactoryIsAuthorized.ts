@@ -1,20 +1,21 @@
+// src/composables/useIsAuthorized.ts
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useCFPFactory } from "./useCFPFactory";
 import { useUserStore } from "@/store/user";
 
-export function useIsRegistered() {
+export function useCFPFactoryIsAuthorized() {
   const loading = ref(false);
   const error = ref<string | null>(null);
 
-  const { isRegistered: checkRegistration } = useCFPFactory();
+  const { isAuthorized: checkAuthorization } = useCFPFactory();
   const userStore = useUserStore();
-  const { address, isPending } = storeToRefs(userStore);
+  const { address, isAuthorized } = storeToRefs(userStore);
 
-  const checkIsRegistered = async () => {
+  const checkIsAuthorized = async () => {
     if (!address.value) {
       error.value = "Dirección de usuario no disponible";
-      userStore.setPending(false);
+      userStore.setAuthorized(false);
       return;
     }
 
@@ -22,13 +23,12 @@ export function useIsRegistered() {
     error.value = null;
 
     try {
-      const result = await checkRegistration(address.value);
-      userStore.setPending(result);
-      console.log("Registro verificado:", result);
+      const result = await checkAuthorization(address.value);
+      userStore.setAuthorized(result);
     } catch (err: any) {
-      console.error("Error verificando registro:", err);
+      //console.error("Error verificando autorización:", err);
       error.value = err.message || "Error desconocido";
-      userStore.setPending(false);
+      userStore.setAuthorized(false);
     } finally {
       loading.value = false;
     }
@@ -37,15 +37,15 @@ export function useIsRegistered() {
   watch(
     address,
     () => {
-      checkIsRegistered();
+      checkIsAuthorized();
     },
     { immediate: true }
   );
 
   return {
-    isPending,
+    isAuthorized,
     loading,
     error,
-    checkIsRegistered,
+    checkIsAuthorized,
   };
 }
