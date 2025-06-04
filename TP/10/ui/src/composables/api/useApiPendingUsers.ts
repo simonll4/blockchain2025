@@ -1,7 +1,6 @@
-// src/composables/usePendingUsers.ts
 import { ref } from "vue";
 import { useUserStore } from "@/store/users";
-import { UserService } from "@/services/apiClient";
+import { UserService } from "@/services/api/apiClient";
 import { storeToRefs } from "pinia";
 
 export function useApiPendingUsers() {
@@ -14,8 +13,7 @@ export function useApiPendingUsers() {
     isLoading.value = true;
     error.value = null;
     try {
-      const response = await UserService.getPendingAddress();
-      // ✅ Accedemos directamente al array de direcciones
+      const response = await UserService.getPendings();
       userStore.setPendingUsers(response.data.pending);
     } catch (err: any) {
       error.value = err?.message || "Error al obtener usuarios pendientes";

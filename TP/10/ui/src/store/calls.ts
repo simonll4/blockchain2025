@@ -2,18 +2,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-//TODO los mismo en callDetail.ts
-// interface Call {
-//   callId: string;
-//   creator: string;
-//   closingTime: string;
-//
-// }
-// const calls = ref<Call[]>([]);
-// const selectedCall = ref<Call | null>(null);
-
 export const useCallsStore = defineStore("calls", () => {
-  const calls = ref<any[]>([]);
+  const calls = ref<any[]>([]); // TODO definir tipo Call 
   const selectedCall = ref<any | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);

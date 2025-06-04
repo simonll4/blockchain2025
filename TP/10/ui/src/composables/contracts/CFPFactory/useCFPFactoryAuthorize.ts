@@ -1,5 +1,5 @@
-import { useCFPFactory } from "./useCFPFactory";
-import { useTxHandler } from "./useTxHandler";
+import { useCFPFactory } from "@/services/contracts/useCFPFactory";
+import { useTxHandler } from "../useTxHandler";
 
 export function useCFPFactoryAuthorize() {
   const { authorize } = useCFPFactory();

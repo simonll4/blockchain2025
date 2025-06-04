@@ -1,6 +1,5 @@
-// src/composables/useHealthCheck.ts
 import { ref } from "vue";
-import { api } from "@/services/apiClient";
+import { api } from "@/services/api/apiClient";
 
 export function useApiHealthCheck(autoCheck = true) {
   const isHealthy = ref<boolean | null>(null);

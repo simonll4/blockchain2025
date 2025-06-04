@@ -1,20 +1,19 @@
 import { calculateFileHash } from "@/utils/ethersUtils";
-import { useCFPFactory } from "./useCFPFactory";
-import { useTxHandler } from "./useTxHandler";
+import { useCFPFactory } from "../../../services/contracts/useCFPFactory";
+import { useTxHandler } from "../useTxHandler";
 
 export function useCFPFactoryRegisterProposal(callId: string) {
   const { registerProposal } = useCFPFactory();
   const { isLoading, error, success, message, runTx } = useTxHandler();
 
   const register = async (file: File) => {
-    const hash = await calculateFileHash(file);
-
-    if (!/^0x[0-9a-fA-F]{64}$/.test(hash)) {
-      const errMsg = "Hash generado no es válido como bytes32";
-      error.value = errMsg;
-      message.value = errMsg;
-      success.value = false;
-      return null;
+    var hash: string;
+    try {
+      hash = await calculateFileHash(file);
+    } catch (err) {
+      error.value = "Error al calcular el hash del archivo";
+      message.value = "Hubo un error, inténtalo de nuevo";
+      throw new Error("Failed to calculate file hash");
     }
 
     return await runTx(

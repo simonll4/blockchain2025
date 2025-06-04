@@ -1,6 +1,7 @@
-import { useCallDetailStore } from "@/store/callDetail";
-import { CallsService } from "@/services/apiClient";
 import { storeToRefs } from "pinia";
+
+import { useCallDetailStore } from "@/store/callDetail";
+import { CallsService } from "@/services/api/apiClient";
 
 export function useApiCallDetail(callId: string) {
   const store = useCallDetailStore();
@@ -20,7 +21,7 @@ export function useApiCallDetail(callId: string) {
         const { data: closingData } = await CallsService.getClosingTime(callId);
         closingTime = closingData.closingTime;
       } catch {
-        // si falla dejamos mensaje por defecto
+        console.warn("No se pudo obtener la fecha de cierre del llamado.");
       }
 
       // Armamos el objeto completo con la fecha incluida

@@ -14,21 +14,6 @@ pip install -r requirements.txt
 
 ```
 
-## Estructura del Proyecto
-
-```
-src
-  ├── app.py                     # API principal
-  ├── config/
-  │   └── config.json            # Configuración
-  ├── utils/
-  │   ├── config_loader.py
-  │   ├── web3_utils.py
-  │   └── helpers.py
-  ├── messages.py                # Diccionario de mensajes de error
-
-```
-
 ## Configuración
 
 Asegurarse de configurar `src/config/config.json`:
@@ -44,6 +29,7 @@ Asegurarse de configurar `src/config/config.json`:
   "cfp_contract_path": "ruta al archivo JSON del contrato CFP compilado"
 }
 ```
+
 ## Compilación y Despliegue de Contratos
 
 Antes de iniciar el backend, asegúrate de compilar y migrar los contratos a la red ganache en `TP/7`:
@@ -55,10 +41,25 @@ truffle migrate
 
 ## Ejecutar la API
 
-Inicia Ganache y luego ejecuta la API con:
+Inicia Ganache y luego en el directorio "api/src" ejecuta la API con:
 
 ```bash
 python app.py
+```
+
+## Estructura del Proyecto
+
+```
+src
+  ├── app.py                     # API principal
+  ├── config_loader.py
+  ├── config/
+  │   └── config.json            # Configuración
+  ├── utils/
+  │   ├── web3_utils.py
+  │   └── helpers.py
+  ├── messages.py                # Diccionario de mensajes de error
+
 ```
 
 ## Endpoints Principales
@@ -143,6 +144,8 @@ Devuelve un array de objetos, cada uno con:
 - `callId`: ID del llamado
 - `creator`: dirección del creador del llamado
 - `cfpAddress`: dirección del contrato CFP asociado
+
+---
 
 ### Obtener datos de una propuesta
 

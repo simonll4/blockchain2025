@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useCallDetailStore = defineStore("callDetail", () => {
-  const call = ref<any | null>(null);
+  const call = ref<any | null>(null); //TODO definir tipo Call
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_ENDPOINTS } from "../utils/endpoints";
+import { API_ENDPOINTS } from "@/utils/endpoints";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -27,13 +27,13 @@ export const CallsService = {
     apiClient.get(API_ENDPOINTS.CALLS.GET_BY_ID(callId)),
   getClosingTime: (callId: string) =>
     apiClient.get(API_ENDPOINTS.CALLS.CLOSING_TIME(callId)),
+  getCreators: () => apiClient.get(API_ENDPOINTS.CALLS.CREATORS),
   create: (callId: string, closingTime: string, signature: string) =>
     apiClient.post(API_ENDPOINTS.CALLS.CREATE, {
       callId,
       closingTime,
       signature,
     }),
-  getCreators: () => apiClient.get(API_ENDPOINTS.CALLS.CREATORS),
 };
 
 export const ProposalService = {
@@ -44,9 +44,9 @@ export const ProposalService = {
 };
 
 export const UserService = {
-  registerAddress: (address: string, signature: string) =>
+  register: (address: string, signature: string) =>
     apiClient.post(API_ENDPOINTS.USER.REGISTER_ADDRESS, { address, signature }),
-  getPendingAddress: () => apiClient.get(API_ENDPOINTS.USER.PENDING_ADDRESS),
+  getPendings: () => apiClient.get(API_ENDPOINTS.USER.PENDING_ADDRESS),
 };
 
 export const api = {

@@ -11,6 +11,7 @@ declare global {
 }
 
 const expectedChainId = Number(import.meta.env.VITE_CHAIN_ID);
+
 const provider = ref<ethers.BrowserProvider | null>(null);
 const signer = ref<ethers.Signer | null>(null);
 
@@ -76,21 +77,21 @@ export function useMetamask() {
   // Detectar si ya está conectado al cargar
   onMounted(async () => {
     if (!window.ethereum) return;
+    connect();
+    // const browserProvider = new ethers.BrowserProvider(window.ethereum);
+    // const accounts = await browserProvider.send("eth_accounts", []);
+    // const network = await browserProvider.getNetwork();
 
-    const browserProvider = new ethers.BrowserProvider(window.ethereum);
-    const accounts = await browserProvider.send("eth_accounts", []);
-    const network = await browserProvider.getNetwork();
+    // if (accounts.length > 0) {
+    //   provider.value = browserProvider;
+    //   signer.value = await browserProvider.getSigner();
 
-    if (accounts.length > 0) {
-      provider.value = browserProvider;
-      signer.value = await browserProvider.getSigner();
+    //   store.setAddress(accounts[0]);
+    //   store.setConnected(true);
+    //   store.setNetworkOk(Number(network.chainId) === 1337);
 
-      store.setAddress(accounts[0]);
-      store.setConnected(true);
-      store.setNetworkOk(Number(network.chainId) === 1337);
-
-      setupListeners();
-    }
+    //   setupListeners();
+    // }
   });
 
   return {

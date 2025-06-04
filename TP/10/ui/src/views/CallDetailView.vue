@@ -6,10 +6,9 @@ import { format, parseISO } from "date-fns";
 import { useApiCallDetail } from "@/composables/api/useApiCallDetail";
 import { useApiRegisterProposal } from "@/composables/api/useApiRegisterProposal";
 import { useApiVerifyProposal } from "@/composables/api/useApiVerifyProposal";
-import { useCFPFactoryRegisterProposal } from "@/composables/CFPFactory/useCFPFactoryRegisterProposal";
-import { useCFPProposalData } from "@/composables/CFP/useCFPProposalData";
-
-import { useMetamask } from "@/composables/useMetamask";
+import { useCFPFactoryRegisterProposal } from "@/composables/contracts/CFPFactory/useCFPFactoryRegisterProposal";
+import { useCFPProposalData } from "@/composables/contracts/CFP/useCFPProposalData";
+import { useMetamask } from "@/composables/metamask/useMetamask";
 
 const { isConnected } = useMetamask();
 
@@ -22,6 +21,11 @@ const {
   call,
   isLoading: callLoading,
 } = useApiCallDetail(callId);
+
+// Cargar detalle del llamado al montar el componente
+onMounted(() => {
+  fetchCallDetail();
+});
 
 const {
   registerProposal,
@@ -36,10 +40,6 @@ const {
   message: messageVerifyProposal,
   error: errorVerifyProposal,
 } = useApiVerifyProposal(callId);
-
-onMounted(() => {
-  fetchCallDetail();
-});
 
 // Registro de propuesta anónima
 const registerFile = ref<File | null>(null);
@@ -66,11 +66,12 @@ const { isLoading, error, message, register } =
 const onChainFile = ref<File | null>(null);
 const handleRegisterOnChain = async () => {
   if (!onChainFile.value) return;
+
   await fetchProposalData(onChainFile.value);
   const sender = proposalData.value?.sender;
   if (sender && sender !== "0x0000000000000000000000000000000000000000") {
     message.value = "";
-    error.value = "La propuesta ya ha sido registrada on-chain.";
+    error.value = "La propuesta ya ha sido registrada.";
     return;
   }
   await register(onChainFile.value);
@@ -97,12 +98,7 @@ const formatDate = (iso?: string) => {
           class="position-absolute top-0 start-0 mt-2 ms-2 z-index-1"
           style="min-width: unset"
         >
-          <img
-            src="@/assets/arrow-left-solid.svg"
-            alt="Volver"
-            width="15"
-            height="20"
-          />
+          <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
       </v-card-title>
 

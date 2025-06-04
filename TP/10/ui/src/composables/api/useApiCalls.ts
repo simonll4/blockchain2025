@@ -1,8 +1,8 @@
 import { onMounted } from "vue";
-// import apiClient from "@/services/apiClient";
-import { CallsService } from "@/services/apiClient";
-import { useCallsStore } from "@/store/calls";
 import { storeToRefs } from "pinia";
+
+import { CallsService } from "@/services/api/apiClient";
+import { useCallsStore } from "@/store/calls";
 
 export function useApiCalls() {
   const store = useCallsStore();

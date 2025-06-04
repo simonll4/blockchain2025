@@ -1,6 +1,6 @@
 export const API_ENDPOINTS = {
   HEALTH: {
-    CHECK: `/check-health`, // Nuevo endpoint
+    CHECK: `/check-health`,
   },
   CONTRACT: {
     ADDRESS: `/contract-address`,

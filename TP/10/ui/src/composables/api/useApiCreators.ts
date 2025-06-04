@@ -1,14 +1,14 @@
-// composables/useCreators.ts
 import { onMounted, ref } from "vue";
-import { storeToRefs } from "pinia"; // <-- FALTA ESTO
-import { CallsService } from "@/services/apiClient";
+import { storeToRefs } from "pinia";
+
+import { CallsService } from "@/services/api/apiClient";
 import { useCreatorsStore } from "@/store/creators";
 
 export const useApiCreators = () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const store = useCreatorsStore();
-  const { creators } = storeToRefs(store); // <-- ASÍ obtenés refs reactivas
+  const { creators } = storeToRefs(store);
 
   const fetchCreators = async () => {
     loading.value = true;
@@ -28,8 +28,8 @@ export const useApiCreators = () => {
 
   return {
     creators,
-    fetchCreators,
     loading,
     error,
+    fetchCreators,
   };
 };

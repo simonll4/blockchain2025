@@ -1,6 +1,6 @@
 import { watch } from "vue";
 import { storeToRefs } from "pinia";
-import { ContractService } from "@/services/apiClient";
+import { ContractService } from "@/services/api/apiClient";
 import { useUserStore } from "@/store/user";
 
 export function useApiOwner() {

@@ -1,6 +1,5 @@
-// src/composables/useVerifyProposal.ts
 import { ref } from "vue";
-import { ProposalService } from "@/services/apiClient";
+import { ProposalService } from "@/services/api/apiClient";
 import { USER_ERRORS } from "@/utils/apiErrors";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
@@ -11,23 +10,6 @@ export function useApiVerifyProposal(callId: string) {
   const success = ref(false);
   const proposalData = ref<any>(null);
 
-  const validateFile = (file: File) => {
-    const validTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
-    if (!validTypes.includes(file.type)) {
-      return "Solo se permiten archivos PDF o Word";
-    }
-    if (file.size > maxSize) {
-      return "El archivo no debe exceder los 5MB";
-    }
-    return true;
-  };
-
   const verifyProposal = async (file: File) => {
     isLoading.value = true;
     error.value = null;
@@ -36,14 +18,15 @@ export function useApiVerifyProposal(callId: string) {
     proposalData.value = null;
 
     try {
-      // Validar archivo
-      //   const validation = validateFile(file);
-      //   if (validation !== true) {
-      //     throw new Error(validation);
-      //   }
+      var proposalHash: string;
+      try {
+        proposalHash = await calculateFileHash(file);
+      } catch (err) {
+        error.value = "Error al calcular el hash del archivo";
+        message.value = "Hubo un error, inténtalo de nuevo";
+        throw new Error("Failed to calculate file hash");
+      }
 
-      // Calcular hash
-      const proposalHash = await calculateFileHash(file);
       // Verificar en backend
       const response = await ProposalService.getData(callId, proposalHash);
 

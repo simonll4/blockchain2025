@@ -7,20 +7,24 @@ import { useUserStore } from "@/store/user";
 
 import { useApiCalls } from "@/composables/api/useApiCalls";
 import { useApiCreators } from "@/composables/api/useApiCreators";
-import { useCFPFactoryCreate } from "@/composables/CFPFactory/useCFPFactoryCreate";
-import { useCFPFactoryIsAuthorized } from "@/composables/CFPFactory/useCFPFactoryIsAuthorized";
-
-const { creators, loading } = useApiCreators();
-const { fetchCalls, calls, isLoading, error } = useApiCalls();
+import { useCFPFactoryCreate } from "@/composables/contracts/CFPFactory/useCFPFactoryCreate";
+import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
 
 const userStore = useUserStore();
 const userAddress = computed(() => userStore.address);
+
+// Verificar si el usuario está autorizado para crear llamados
 const { isAuthorized } = useCFPFactoryIsAuthorized();
 
-// Tabs
+// Cargar creadores y llamados al montar el componente
+const { fetchCreators, creators, loading } = useApiCreators();
+const { fetchCalls, calls, isLoading, error } = useApiCalls();
+
+// Tabs y creadores seleccionados
 const activeTab = ref(0);
 const selectedCreators = ref<string[]>([]);
 
+// Filtrar llamados por creadores seleccionados
 const filteredCalls = computed(() => {
   if (activeTab.value !== 0) return [];
   if (!selectedCreators.value.length) return calls.value;
@@ -29,6 +33,7 @@ const filteredCalls = computed(() => {
   );
 });
 
+// Filtrar llamados propios
 const myCalls = computed(() => {
   if (activeTab.value !== 1) return [];
   if (!userAddress.value) return [];
@@ -37,15 +42,7 @@ const myCalls = computed(() => {
   );
 });
 
-onMounted(async () => {
-  await fetchCalls();
-});
-
-const formatDate = (iso?: string) => {
-  if (!iso) return "N/A";
-  return format(parseISO(iso), "dd/MM/yyyy HH:mm");
-};
-
+// Función para crear un nuevo llamado
 const {
   isLoading: isCreating,
   error: createError,
@@ -63,7 +60,9 @@ const resetCreateForm = () => {
   newClosingDate.value = "";
   showCreateDialog.value = false;
 };
-const submitCreateCall = async () => {
+
+// Funcion para crear un nuevo llamado
+const createCall = async () => {
   if (!newCallId.value) {
     createError.value = "Debe ingresar un ID para el llamado.";
     return;
@@ -93,19 +92,23 @@ const submitCreateCall = async () => {
       new Date(newClosingDate.value).getTime() / 1000
     );
     await create(newCallId.value, closingTimestamp);
-    await fetchCalls();
+    fetchCalls();
+    fetchCreators();
     resetCreateForm();
   } catch (err) {
-    console.error("Error al crear llamado:", err);
+    //console.error("Error al crear llamado:", err);
     createError.value = "Ocurrió un error al crear el llamado.";
   }
+};
+
+const formatDate = (iso?: string) => {
+  if (!iso) return "N/A";
+  return format(parseISO(iso), "dd/MM/yyyy HH:mm");
 };
 </script>
 
 <template>
   <v-container>
-    <h2 class="text-h5 font-weight-medium mb-4">Llamados</h2>
-
     <!-- BOTÓN crear llamado si hay usuario logueado -->
     <v-row class="mb-4" v-if="isAuthorized">
       <v-col cols="12" class="text-right">
@@ -150,7 +153,7 @@ const submitCreateCall = async () => {
           >
           <v-btn
             color="primary"
-            @click="submitCreateCall"
+            @click="createCall"
             :loading="isCreating"
             :disabled="isCreating"
           >
@@ -163,7 +166,7 @@ const submitCreateCall = async () => {
     <!-- Tabs -->
     <v-tabs v-model="activeTab" background-color="primary" dark>
       <v-tab> Llamados activos </v-tab>
-      <v-tab> Mis llamados </v-tab>
+      <v-tab v-if="isAuthorized"> Mis llamados </v-tab>
     </v-tabs>
 
     <!-- Contenido Tab 1 -->

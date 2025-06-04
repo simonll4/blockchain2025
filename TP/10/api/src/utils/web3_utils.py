@@ -3,7 +3,7 @@ from eth_account.messages import encode_defunct
 import json
 from flask import jsonify
 
-from .config_loader import load_config
+from config_loader import load_config
 from .helpers import validate_eth_signature_format
 from messages import MESSAGES
 

@@ -1,6 +1,5 @@
-// src/composables/useRegisterProposal.ts
 import { ref } from "vue";
-import { ProposalService } from "@/services/apiClient";
+import { ProposalService } from "@/services/api/apiClient";
 import { USER_ERRORS } from "@/utils/apiErrors";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
@@ -10,23 +9,6 @@ export function useApiRegisterProposal(callId: string) {
   const message = ref<string | null>(null);
   const success = ref(false);
 
-  const validateFile = (file: File) => {
-    const validTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
-    if (!validTypes.includes(file.type)) {
-      return "Solo se permiten archivos PDF o Word";
-    }
-    if (file.size > maxSize) {
-      return "El archivo no debe exceder los 5MB";
-    }
-    return true;
-  };
-
   const registerProposal = async (file: File) => {
     isLoading.value = true;
     error.value = null;
@@ -34,14 +16,14 @@ export function useApiRegisterProposal(callId: string) {
     success.value = false;
 
     try {
-      // Validar archivo
-      //   const validation = validateFile(file);
-      //   if (validation !== true) {
-      //     throw new Error(validation);
-      //   }
-
-      // Calcular hash
-      const proposalHash = await calculateFileHash(file);
+      var proposalHash: string;
+      try {
+        proposalHash = await calculateFileHash(file);
+      } catch (err) {
+        error.value = "Error al calcular el hash del archivo";
+        message.value = "Hubo un error, inténtalo de nuevo";
+        throw new Error("Failed to calculate file hash");
+      }
 
       // Registrar en backend
       await ProposalService.register(callId, proposalHash);

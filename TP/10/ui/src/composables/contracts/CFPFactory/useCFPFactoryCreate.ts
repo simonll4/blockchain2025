@@ -1,7 +1,5 @@
-
-
-import { useCFPFactory } from "./useCFPFactory";
-import { useTxHandler } from "./useTxHandler";
+import { useCFPFactory } from "../../../services/contracts/useCFPFactory";
+import { useTxHandler } from "../useTxHandler";
 
 export function useCFPFactoryCreate() {
   const { createCall } = useCFPFactory();
@@ -12,13 +10,7 @@ export function useCFPFactoryCreate() {
       throw new Error("El callId no es un hash válido de 32 bytes");
     }
 
-    // Ejecutamos la transacción
-    // await execute(
-    //   () => createCall(callId, timestamp),
-    //   "Llamado creado en la blockchain"
-    // );
-    const receipt = await runTx(() => createCall(callId, timestamp), "Llamado creado");
-console.log("Tx recibida:", receipt.transactionHash);
+    await runTx(() => createCall(callId, timestamp), "Llamado creado");
   };
 
   return {

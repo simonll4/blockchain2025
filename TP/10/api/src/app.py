@@ -10,7 +10,8 @@ from eth_account.messages import encode_defunct
 from datetime import datetime, timezone
 import json
 
-from utils.config_loader import load_config
+from config_loader import load_config
+
 from utils.web3_utils import (
     get_account,
     load_contract,
@@ -46,8 +47,8 @@ factory = load_contract(w3, config["factory_contract_path"], network_id)
 # Cargar el ABI del contrato CFP
 with open(config["cfp_contract_path"]) as f:
     CFP_ABI = json.load(f)["abi"]
-    
-    
+
+
 @app.route("/check-health", methods=["GET"])
 def check_health():
     try:
@@ -396,6 +397,10 @@ def get_proposal_data(call_id, proposal):
         return jsonify({"message": MESSAGES["INTERNAL_ERROR"]}), 500
 
 
+
+# TODO docuementar los endpoints
+
+
 @app.route("/calls", methods=["GET"])
 def get_all_calls():
     call_ids = factory.functions.allCallIds().call()
@@ -409,9 +414,13 @@ def get_all_calls():
             # Cargar el contrato CFP y obtener el closingTime
             cfp = load_dynamic_contract(w3, cfp_address, CFP_ABI)
             closing_time = cfp.functions.closingTime().call()
-            closing_time_iso = datetime.fromtimestamp(closing_time, timezone.utc).isoformat()
+            closing_time_iso = datetime.fromtimestamp(
+                closing_time, timezone.utc
+            ).isoformat()
         except Exception as e:
-            print(f"[ERROR] get_all_calls: No se pudo obtener closingTime para {cfp_address}: {e}")
+            print(
+                f"[ERROR] get_all_calls: No se pudo obtener closingTime para {cfp_address}: {e}"
+            )
 
         calls.append(
             {
@@ -425,7 +434,8 @@ def get_all_calls():
     return jsonify(calls)
 
 
-#TODO docuementar los endpoints
+
+
 
 @app.route("/creators", methods=["GET"])
 def get_all_creators():
@@ -447,21 +457,19 @@ def get_all_creators():
 def get_pending():
     try:
         # Verificar que se accede con la cuenta owner
-        pending_count = factory.functions.pendingCount().call({'from': account.address})
-        
+        pending_count = factory.functions.pendingCount().call({"from": account.address})
+
         pending = []
         for i in range(pending_count):
-            addr = factory.functions.getPending(i).call({'from': account.address})
+            addr = factory.functions.getPending(i).call({"from": account.address})
             pending.append(addr)
 
-        return jsonify({
-            "pending": pending
-        }), 200
+        return jsonify({"pending": pending}), 200
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# TODO get para cuentas autorizadas
 
 
 if __name__ == "__main__":

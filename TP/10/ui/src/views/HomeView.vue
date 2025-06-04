@@ -1,11 +1,11 @@
 <script setup>
 import { computed, watch } from "vue";
 
-import { useMetamask } from "@/composables/useMetamask";
-import { useCFPFactoryIsAuthorized } from "@/composables/CFPFactory/useCFPFactoryIsAuthorized";
+import { useMetamask } from "@/composables/metamask/useMetamask";
+import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
 import { useApiOwner } from "@/composables/api/useApiOwner";
-import { useCFPFactoryRegister } from "@/composables/CFPFactory/useCFPFactoryRegister";
-import { useCFPFactoryIsRegistered } from "@/composables/CFPFactory/useCFPFactoryIsRegistered";
+import { useCFPFactoryRegister } from "@/composables/contracts/CFPFactory/useCFPFactoryRegister";
+import { useCFPFactoryIsRegistered } from "@/composables/contracts/CFPFactory/useCFPFactoryIsRegistered";
 import { useApiHealthCheck } from "@/composables/api/useApiHealthCheck";
 
 const { isConnected, networkOk } = useMetamask();
@@ -40,12 +40,11 @@ const userStatus = computed(() => {
   return statuses.none;
 });
 
-// Solo mostrar botón si NO está ni pendiente ni autorizado
 const showRegisterButton = computed(() => {
-  return !isAuthorized.value && !isPending.value;
+  return !isAuthorized.value && !isPending.value && networkOk.value;
 });
 
-// Función para manejar el clic en el botón de registro
+// Función para manejar el click en el botón de registro
 const onRegisterClick = async () => {
   await register();
   checkIsRegistered();
@@ -85,14 +84,16 @@ watch(
               </v-list-item-title>
             </v-list-item>
 
-            <v-list-item>
-              <v-list-item-title>
-                Red correcta:
-                <v-chip :color="networkOk ? 'green' : 'red'" class="ml-2">
-                  {{ networkOk ? "Sí" : "No" }}
-                </v-chip>
-              </v-list-item-title>
-            </v-list-item>
+            <div v-if="isConnected">
+              <v-list-item>
+                <v-list-item-title>
+                  Red correcta:
+                  <v-chip :color="networkOk ? 'green' : 'red'" class="ml-2">
+                    {{ networkOk ? "Sí" : "No" }}
+                  </v-chip>
+                </v-list-item-title>
+              </v-list-item>
+            </div>
 
             <v-list-item>
               <v-list-item-title>
@@ -103,54 +104,51 @@ watch(
               </v-list-item-title>
             </v-list-item>
 
-            <!-- <v-list-item>
-              <v-list-item-title>
-                Estado del usuario:
-                <v-chip :color="userStatus.color" class="ml-2">
-                  {{ userStatus.text }}
-                </v-chip>
-              </v-list-item-title>
-            </v-list-item> -->
-
-            <v-list-item>
-              <v-list-item-title>
-                Estado del usuario:
-                <v-chip
-                  v-if="loadingIsAuthorized || loadingIsRegistered"
-                  class="ml-2"
-                  color="grey"
-                  text-color="white"
-                >
-                  <v-progress-circular
-                    indeterminate
-                    color="white"
-                    size="16"
-                    width="2"
-                  />
-                  <span class="ml-2">Verificando...</span>
-                </v-chip>
-
-                <v-chip v-else :color="userStatus.color" class="ml-2">
-                  {{ userStatus.text }}
-                </v-chip>
-              </v-list-item-title>
-            </v-list-item>
-
-            <v-list-item>
-              <v-list-item-title>
-                ¿Es administrador?:
-                <v-chip :color="isOwner ? 'blue' : 'grey'" class="ml-2">
-                  {{ isOwner ? "Sí" : "No" }}
-                </v-chip>
-              </v-list-item-title>
-            </v-list-item>
+            <div v-if="isConnected && networkOk">
+              <v-list-item>
+                <v-list-item-title>
+                  Estado del usuario:
+                  <v-chip
+                    v-if="loadingIsAuthorized || loadingIsRegistered"
+                    class="ml-2"
+                    color="grey"
+                    text-color="white"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="white"
+                      size="16"
+                      width="2"
+                    />
+                    <span class="ml-2">Verificando...</span>
+                  </v-chip>
+                  <v-chip v-else :color="userStatus.color" class="ml-2">
+                    {{ userStatus.text }}
+                  </v-chip>
+                </v-list-item-title>
+              </v-list-item>
+            </div>
+            <div v-if="isConnected && networkOk">
+              <v-list-item>
+                <v-list-item-title>
+                  ¿Es administrador?:
+                  <v-chip :color="isOwner ? 'blue' : 'grey'" class="ml-2">
+                    {{ isOwner ? "Sí" : "No" }}
+                  </v-chip>
+                </v-list-item-title>
+              </v-list-item>
+            </div>
           </v-list>
 
           <v-divider class="my-4" />
 
           <div v-if="showRegisterButton" class="text-center">
-            <v-btn color="primary" @click="onRegisterClick">
-              Registrarse para crear CFPs
+            <v-btn
+              color="primary"
+              @click="onRegisterClick"
+              style="text-transform: none"
+            >
+              REGISTRARME PARA CREAR CFPs
             </v-btn>
           </div>
         </v-card>
