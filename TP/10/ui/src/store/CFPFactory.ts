@@ -2,17 +2,26 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Contract } from "ethers";
 
-export const useContractStore = defineStore("contract", () => {
+export const useCFPFactoryStore = defineStore("contract", () => {
+  const contract = ref<Contract>();
   const factoryAddress = ref<string>("");
-  const contract = ref<Contract | null>(null);
 
-  const setContract = (instance: Contract) => {
+  const initContract = (instance: Contract, address: string) => {
     contract.value = instance;
+    factoryAddress.value = address;
+  };
+
+  const getContract = (): Contract => {
+    if (contract) {
+      throw new Error("Contrato no inicializado. Llama primero a `init`.");
+    }
+    return contract;
   };
 
   return {
     factoryAddress,
     contract,
-    setContract,
+    initContract,
+    getContract,
   };
 });

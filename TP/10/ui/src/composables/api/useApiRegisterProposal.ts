@@ -27,16 +27,14 @@ export function useApiRegisterProposal(callId: string) {
 
       // Registrar en backend
       await ProposalService.register(callId, proposalHash);
-
       message.value = "Propuesta registrada exitosamente";
       success.value = true;
     } catch (err: any) {
-      const apiError = err.response?.data?.message;
-
-      // Verificar si es un error que debe ver el usuario
-      if (apiError && Object.values(USER_ERRORS).includes(apiError)) {
-        error.value = apiError;
-        message.value = apiError;
+      // Manejo específico del error 403
+      if (err.response?.status === 403) {
+        error.value = "La propuesta ya ha sido registrada";
+        message.value = "La propuesta ya ha sido registrada";
+        return;
       } else {
         error.value = "Error al registrar la propuesta";
         message.value =

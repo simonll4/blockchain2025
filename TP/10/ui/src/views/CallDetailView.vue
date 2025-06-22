@@ -8,7 +8,7 @@ import { useApiRegisterProposal } from "@/composables/api/useApiRegisterProposal
 import { useApiVerifyProposal } from "@/composables/api/useApiVerifyProposal";
 import { useCFPFactoryRegisterProposal } from "@/composables/contracts/CFPFactory/useCFPFactoryRegisterProposal";
 import { useCFPProposalData } from "@/composables/contracts/CFP/useCFPProposalData";
-import { useMetamask } from "@/composables/metamask/useMetamask";
+import { useMetamask } from "@/services/metamask/useMetamask";
 
 const { isConnected } = useMetamask();
 

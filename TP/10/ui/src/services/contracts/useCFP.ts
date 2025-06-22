@@ -3,7 +3,7 @@ import { Contract } from "ethers";
 import { storeToRefs } from "pinia";
 
 import cfpArtifact from "../../../../contracts/build/contracts/CFP.json";
-import { useMetamask } from "@/composables/metamask/useMetamask";
+import { useMetamask } from "@/services/metamask/useMetamask";
 import { useCallDetailStore } from "@/store/callDetail";
 
 const ABI = cfpArtifact.abi;

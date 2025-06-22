@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useApiOwner } from "@/composables/api/useApiOwner";
+import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
 import { computed } from "vue";
 
-const { isOwner } = useApiOwner();
+const { isOwner } = useCFPFactoryIsOwner();
 
 const links = computed(() => {
   const baseLinks = [
@@ -25,11 +25,7 @@ const links = computed(() => {
 <template>
   <v-navigation-drawer permanent class="app-sidebar" width="210" elevation="0">
     <v-container class="text-center py-6">
-      <v-img
-        src="@/../public/smart-contract.png"
-        width="40"
-        class="mx-auto mb-2"
-      />
+      <v-img src="smart-contract.png" width="40" class="mx-auto mb-2" />
       <span class="font-weight-bold text-white text-h6">CFP</span>
     </v-container>
 

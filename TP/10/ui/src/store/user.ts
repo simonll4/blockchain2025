@@ -25,7 +25,7 @@ export const useUserStore = defineStore("user", () => {
     isAuthorized.value = value;
   };
 
-  const setAdmin = (value: boolean) => {
+  const setOwner = (value: boolean) => {
     isOwner.value = value;
   };
 
@@ -53,7 +53,7 @@ export const useUserStore = defineStore("user", () => {
     setConnected,
     setNetworkOk,
     setAuthorized,
-    setAdmin,
+    setOwner,
     setPending,
     reset,
   };

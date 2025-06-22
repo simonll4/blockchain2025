@@ -12,8 +12,21 @@
 </template>
 
 <script setup lang="ts">
+import { watchEffect } from "vue";
+
 import AppSidebar from "@/components/AppSidebar.vue";
 import AppTopbar from "@/components/AppTopbar.vue";
+import { useCFPFactory } from "@/services/contracts/useCFPFactory";
+import { useMetamask } from "@/services/metamask/useMetamask";
+
+const { init: initFactory } = useCFPFactory();
+const { account } = useMetamask();
+
+watchEffect(async () => {
+  if (account.value) {
+    await initFactory();
+  }
+});
 </script>
 
 <style scoped>

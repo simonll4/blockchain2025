@@ -1,11 +1,11 @@
 <script setup>
 import { computed, watch } from "vue";
 
-import { useMetamask } from "@/composables/metamask/useMetamask";
+import { useMetamask } from "@/services/metamask/useMetamask";
 import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
-import { useApiOwner } from "@/composables/api/useApiOwner";
 import { useCFPFactoryRegister } from "@/composables/contracts/CFPFactory/useCFPFactoryRegister";
 import { useCFPFactoryIsRegistered } from "@/composables/contracts/CFPFactory/useCFPFactoryIsRegistered";
+import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner"; 
 import { useApiHealthCheck } from "@/composables/api/useApiHealthCheck";
 
 const { isConnected, networkOk } = useMetamask();
@@ -24,7 +24,8 @@ const {
   loading: loadingIsRegistered,
 } = useCFPFactoryIsRegistered();
 
-const { isOwner, checkIsOwner } = useApiOwner();
+// TODO traer el estado de isOwner desde el contrato
+const { isOwner, checkIsOwner } = useCFPFactoryIsOwner();
 
 const { isHealthy } = useApiHealthCheck();
 

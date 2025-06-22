@@ -2,8 +2,8 @@ import { Contract } from "ethers";
 import { toRaw } from "vue";
 import { storeToRefs } from "pinia";
 
-import { useContractStore } from "@/store/CFPFactory";
-import { useMetamask } from "../../composables/metamask/useMetamask";
+import { useCFPFactoryStore } from "@/store/CFPFactory";
+import { useMetamask } from "../metamask/useMetamask";
 
 import factoryArtifact from "../../../../contracts/build/contracts/CFPFactory.json";
 
@@ -12,7 +12,7 @@ const NETWORKS = factoryArtifact.networks;
 const NETWORK_ID = import.meta.env.VITE_NETWORK_ID as keyof typeof NETWORKS;
 
 export function useCFPFactory() {
-  const contractStore = useContractStore();
+  const contractStore = useCFPFactoryStore();
   const { contract, factoryAddress } = storeToRefs(contractStore);
   const { signer } = useMetamask();
 
@@ -29,7 +29,16 @@ export function useCFPFactory() {
     const rawSigner = toRaw(signer.value);
     if (!rawSigner) throw new Error("Signer no disponible");
     const instance = new Contract(factoryAddress.value, ABI, rawSigner);
-    contractStore.setContract(instance);
+    //contractStore.setContract(instance);
+    contractStore.initContract(instance, factoryAddress.value);
+  };
+
+  const getOwner = async () => {
+    const rawContract = toRaw(contract.value);
+    if (!rawContract) {
+      throw new Error("Contrato no inicializado");
+    }
+    return rawContract.owner();
   };
 
   // Crear un nuevo llamado
@@ -88,6 +97,7 @@ export function useCFPFactory() {
 
   return {
     init,
+    getOwner,
     createCall,
     registerProposal,
     register,

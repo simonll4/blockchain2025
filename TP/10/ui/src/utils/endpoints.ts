@@ -21,6 +21,6 @@ export const API_ENDPOINTS = {
   },
   USER: {
     REGISTER_ADDRESS: `/register`,
-    PENDING_ADDRESS: `/pending`,
+    PENDING_ADDRESS: `/pendings`,
   },
 };

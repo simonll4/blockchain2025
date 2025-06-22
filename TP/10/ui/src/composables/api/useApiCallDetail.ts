@@ -2,14 +2,17 @@ import { storeToRefs } from "pinia";
 
 import { useCallDetailStore } from "@/store/callDetail";
 import { CallsService } from "@/services/api/apiClient";
+import { ref } from "vue";
 
 export function useApiCallDetail(callId: string) {
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
   const store = useCallDetailStore();
-  const { call, isLoading, error } = storeToRefs(store);
+  const { call } = storeToRefs(store);
 
   const fetchCallDetail = async () => {
-    store.setLoading(true);
-    store.setError(null);
+    isLoading.value = true;
+    error.value = null;
 
     try {
       // Traemos el detalle del llamado
@@ -21,7 +24,7 @@ export function useApiCallDetail(callId: string) {
         const { data: closingData } = await CallsService.getClosingTime(callId);
         closingTime = closingData.closingTime;
       } catch {
-        console.warn("No se pudo obtener la fecha de cierre del llamado.");
+        //console.warn("No se pudo obtener la fecha de cierre del llamado.");
       }
 
       // Armamos el objeto completo con la fecha incluida
@@ -30,9 +33,9 @@ export function useApiCallDetail(callId: string) {
         closingTime,
       });
     } catch (err: any) {
-      store.setError("No se pudo cargar el llamado.");
+      error.value = "No se pudo cargar el llamado";
     } finally {
-      store.setLoading(false);
+      isLoading.value = false;
     }
   };
 

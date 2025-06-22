@@ -1,24 +1,27 @@
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 
 import { CallsService } from "@/services/api/apiClient";
 import { useCallsStore } from "@/store/calls";
 
 export function useApiCalls() {
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+
   const store = useCallsStore();
-  const { calls, isLoading, error } = storeToRefs(store);
+  const { calls } = storeToRefs(store);
 
   const fetchCalls = async () => {
-    store.setLoading(true);
+    isLoading.value = true;
     try {
       const { data } = await CallsService.getAll();
       store.setCalls(data);
-      store.setError(null);
+      error.value = null;
     } catch (err: any) {
-      store.setError("Error al cargar los llamados");
+      error.value = "Error al cargar los llamados";
       //console.error(err);
     } finally {
-      store.setLoading(false);
+      isLoading.value = false;
     }
   };
 

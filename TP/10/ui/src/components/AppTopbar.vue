@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { useCFPFactory } from "@/services/contracts/useCFPFactory";
-import { useMetamask } from "@/composables/metamask/useMetamask";
+import { ref } from "vue";
+
+import { useMetamask } from "@/services/metamask/useMetamask";
 import { shorten } from "@/utils/format";
-import { ref, watchEffect } from "vue";
 
 const { account, connect } = useMetamask();
-const { init: initFactory } = useCFPFactory();
-
-watchEffect(async () => {
-  if (account.value) {
-    await initFactory();
-  }
-});
 
 const snackbar = ref(false);
 const snackbarMessage = ref("");
