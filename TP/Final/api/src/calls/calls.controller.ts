@@ -4,10 +4,18 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  Post,
+  HttpCode,
+  Body,
+  BadRequestException,
+  ForbiddenException,
+  Req,
+  NotFoundException,
 } from '@nestjs/common';
 import { CallsService } from './calls.service';
 import { MESSAGES } from '../common/messages';
 import { GetCallResponseDto } from './dto/get-call-response.dto';
+import { CreateCallDto } from './dto/create-call.dto';
 
 @Controller()
 export class CallsController {
@@ -23,23 +31,19 @@ export class CallsController {
         cfp: call.cfpAddress,
       });
     } catch (error) {
-      switch (error) {
-        case 'INVALID_CALLID':
-          throw new HttpException(
-            { message: MESSAGES.INVALID_CALLID },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'CALLID_NOT_FOUND':
-          throw new HttpException(
-            { message: MESSAGES.CALLID_NOT_FOUND },
-            HttpStatus.NOT_FOUND,
-          );
-        default:
-          throw new HttpException(
-            { message: MESSAGES.INTERNAL_ERROR },
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
       }
+
+      console.error('Error in getCall:', error);
+      throw new HttpException(
+        { message: MESSAGES.INTERNAL_ERROR },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -61,23 +65,44 @@ export class CallsController {
     try {
       return await this.callsService.getClosingTime(callId);
     } catch (error) {
-      switch (error) {
-        case 'INVALID_CALLID':
-          throw new HttpException(
-            { message: MESSAGES.INVALID_CALLID },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'CALLID_NOT_FOUND':
-          throw new HttpException(
-            { message: MESSAGES.CALLID_NOT_FOUND },
-            HttpStatus.NOT_FOUND,
-          );
-        default:
-          throw new HttpException(
-            { message: MESSAGES.INTERNAL_ERROR },
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
       }
+
+      console.error('Error in getClosingTime:', error);
+      throw new HttpException(
+        { message: MESSAGES.INTERNAL_ERROR },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('/create')
+  @HttpCode(HttpStatus.CREATED)
+  async createCall(@Body() body: CreateCallDto, @Req() req: Request) {
+    const contentTypeHeader = req.headers['content-type'] as string | undefined;
+
+    if (contentTypeHeader !== 'application/json') {
+      throw new BadRequestException({ message: MESSAGES.INVALID_MIMETYPE });
+    }
+
+    try {
+      return await this.callsService.createCall(body);
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+
+      throw new HttpException(
+        { message: MESSAGES.INTERNAL_ERROR },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

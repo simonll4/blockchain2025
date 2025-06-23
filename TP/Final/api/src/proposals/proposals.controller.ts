@@ -3,14 +3,16 @@ import {
   Post,
   Body,
   Headers,
-  HttpException,
-  HttpStatus,
   Get,
   Param,
+  HttpCode,
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ProposalsService } from './proposals.service';
 import { GetProposalResponseDto } from './dto/get-proposal.response.dto';
-import { RegisterProposalRequestDto } from './dto/register-proposal-request.dto';
 import { MESSAGES } from '../common/messages';
 
 @Controller()
@@ -36,24 +38,31 @@ export class ProposalsController {
   }
 
   @Post('register-proposal')
+  @HttpCode(201)
   async registerProposal(
-    @Body() body: RegisterProposalRequestDto,
+    @Body() body: { callId: string; proposal: string },
     @Headers('content-type') contentType?: string,
   ) {
-    //TODO: con pipes creo que se puede hacer esto Validar Content-Type
     if (contentType !== 'application/json') {
-      throw new HttpException(
-        MESSAGES.INVALID_MIMETYPE,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException({ message: MESSAGES.INVALID_MIMETYPE });
     }
 
     const { callId, proposal } = body;
-    await this.proposalService.registerProposal(callId, proposal);
 
-    return {
-      statusCode: 201,
-      message: MESSAGES.OK,
-    };
+    try {
+      await this.proposalService.registerProposal(callId, proposal);
+      return { message: MESSAGES.OK };
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException({
+        message: MESSAGES.INTERNAL_ERROR,
+      });
+    }
   }
 }

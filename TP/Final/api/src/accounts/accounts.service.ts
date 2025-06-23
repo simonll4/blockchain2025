@@ -28,10 +28,7 @@ export class AccountsService {
   }
 
   async register(address: string, signature: string): Promise<void> {
-    try {
-      // Validar y normalizar dirección
-      address = getAddress(address);
-    } catch {
+    if (!isAddress(address)) {
       throw new BadRequestException({ message: MESSAGES.INVALID_ADDRESS });
     }
 
@@ -45,7 +42,6 @@ export class AccountsService {
 
     const factory = this.contractsService.getFactory();
     const contractAddress = await factory.getAddress();
-    console.log('acaaaaa', contractAddress);
     const rawMessage = getBytes(contractAddress);
 
     // Verificar firma
