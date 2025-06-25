@@ -2,9 +2,9 @@ import { computed, ref, watch, toRaw } from "vue";
 import { Contract } from "ethers";
 import { storeToRefs } from "pinia";
 
-import cfpArtifact from "../../../../contracts/build/contracts/CFP.json";
+import cfpArtifact from "../../../../../contracts/build/contracts/CFP.json";
 import { useMetamask } from "@/services/metamask/useMetamask";
-import { useCallDetailStore } from "@/store/callDetail";
+import { useCallDetailStore } from "@/store/callDetailStore";
 
 const ABI = cfpArtifact.abi;
 

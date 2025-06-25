@@ -1,4 +1,4 @@
-import { useCFP } from "@/services/contracts/useCFP";
+import { useCFP } from "@/services/contracts/business/useCFP";
 import { useCallHandler } from "@/composables/contracts/useCallHandler";
 import { calculateFileHash } from "@/utils/ethersUtils";
 

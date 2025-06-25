@@ -130,7 +130,7 @@ const formatDate = (iso?: string) => {
           </v-col>
           <v-col cols="12" class="mb-2">
             <strong>CFP:</strong>
-            <div class="text-truncate-break">{{ call?.cfp }}</div>
+            <div class="text-truncate-break">{{ call?.cfpAdress }}</div>
           </v-col>
           <v-col cols="12">
             <strong>Creador:</strong>

@@ -2,11 +2,13 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Contract } from "ethers";
 
+import type { CFPFactory } from "@/services/contracts/types";
+
 export const useCFPFactoryStore = defineStore("contract", () => {
-  const contract = ref<Contract>();
+  const contract = ref<CFPFactory>();
   const factoryAddress = ref<string>("");
 
-  const initContract = (instance: Contract, address: string) => {
+  const initContract = (instance: CFPFactory, address: string) => {
     contract.value = instance;
     factoryAddress.value = address;
   };

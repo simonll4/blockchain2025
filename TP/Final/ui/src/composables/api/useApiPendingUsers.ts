@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { useUserStore } from "@/store/users";
+import { useUserStore } from "@/store/usersStore";
 import { UserService } from "@/services/api/apiClient";
 import { storeToRefs } from "pinia";
 

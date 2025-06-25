@@ -2,7 +2,7 @@ import { ref, computed, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { ethers } from "ethers";
 
-import { useUserStore } from "@/store/user";
+import { useUserStore } from "@/store/userStore";
 
 declare global {
   interface Window {
@@ -75,24 +75,19 @@ export function useMetamask() {
   };
 
   // Detectar si ya está conectado al cargar
-  onMounted(async () => {
-    if (!window.ethereum) return;
-    connect();
-    // const browserProvider = new ethers.BrowserProvider(window.ethereum);
-    // const accounts = await browserProvider.send("eth_accounts", []);
-    // const network = await browserProvider.getNetwork();
-
-    // if (accounts.length > 0) {
-    //   provider.value = browserProvider;
-    //   signer.value = await browserProvider.getSigner();
-
-    //   store.setAddress(accounts[0]);
-    //   store.setConnected(true);
-    //   store.setNetworkOk(Number(network.chainId) === 1337);
-
-    //   setupListeners();
-    // }
-  });
+  // onMounted(async () => {
+  //   if (!window.ethereum) return;
+  //   connect();
+  // });
+  const checkInitialConnection = async () => {
+    if (!window.ethereum) return false;
+    try {
+      await connect();
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   return {
     // estado (reactivo)
@@ -106,6 +101,7 @@ export function useMetamask() {
     setNetworkOk: store.setNetworkOk,
     reset: store.reset,
 
+    checkInitialConnection,
     connect,
     disconnect,
     provider,

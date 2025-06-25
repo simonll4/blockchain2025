@@ -3,7 +3,7 @@ import { onMounted, ref, computed } from "vue";
 import { format, parseISO } from "date-fns";
 
 import { shorten } from "@/utils/format";
-import { useUserStore } from "@/store/user";
+import { useUserStore } from "@/store/userStore";
 
 import { useApiCalls } from "@/composables/api/useApiCalls";
 import { useApiCreators } from "@/composables/api/useApiCreators";

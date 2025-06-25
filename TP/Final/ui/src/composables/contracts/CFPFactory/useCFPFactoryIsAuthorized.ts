@@ -2,8 +2,8 @@ import { watch } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useCallHandler } from "../useCallHandler";
-import { useCFPFactory } from "../../../services/contracts/useCFPFactory";
-import { useUserStore } from "@/store/user";
+import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
+import { useUserStore } from "@/store/userStore";
 
 export function useCFPFactoryIsAuthorized() {
   const { loading, error, message, runCall } = useCallHandler<boolean>();

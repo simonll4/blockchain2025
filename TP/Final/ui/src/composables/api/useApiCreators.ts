@@ -2,7 +2,7 @@ import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 
 import { CallsService } from "@/services/api/apiClient";
-import { useCreatorsStore } from "@/store/creators";
+import { useCreatorsStore } from "@/store/creatorsStore";
 
 export const useApiCreators = () => {
   const loading = ref(false);

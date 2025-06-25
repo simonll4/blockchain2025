@@ -1,6 +1,6 @@
 import { storeToRefs } from "pinia";
 
-import { useCallDetailStore } from "@/store/callDetail";
+import { useCallDetailStore } from "@/store/callDetailStore";
 import { CallsService } from "@/services/api/apiClient";
 import { ref } from "vue";
 

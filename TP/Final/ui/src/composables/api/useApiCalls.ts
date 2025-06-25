@@ -2,7 +2,7 @@ import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 
 import { CallsService } from "@/services/api/apiClient";
-import { useCallsStore } from "@/store/calls";
+import { useCallsStore } from "@/store/callsStore";
 
 export function useApiCalls() {
   const isLoading = ref(false);

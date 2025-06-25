@@ -1,15 +1,17 @@
-import { Contract } from "ethers";
 import { toRaw } from "vue";
 import { storeToRefs } from "pinia";
 
-import { useCFPFactoryStore } from "@/store/CFPFactory";
-import { useMetamask } from "../metamask/useMetamask";
+import { useMetamask } from "../../metamask/useMetamask";
+import { CFPFactory__factory } from "@/services/contracts/types/factories/CFPFactory__factory";
+import { useCFPFactoryStore } from "@/store/CFPFactoryStore";
 
-import factoryArtifact from "../../../../contracts/build/contracts/CFPFactory.json";
+//import factoryArtifact from "../../../../../contracts/build/contracts/CFPFactory.json";
 
-const ABI = factoryArtifact.abi;
-const NETWORKS = factoryArtifact.networks;
-const NETWORK_ID = import.meta.env.VITE_NETWORK_ID as keyof typeof NETWORKS;
+//const ABI = factoryArtifact.abi;
+//const NETWORKS = factoryArtifact.networks;
+//const NETWORK_ID = import.meta.env.VITE_NETWORK_ID as keyof typeof NETWORKS;
+
+const ADDRESS = import.meta.env.VITE_CFPFACTORY_ADDRESS;
 
 export function useCFPFactory() {
   const contractStore = useCFPFactoryStore();
@@ -18,18 +20,16 @@ export function useCFPFactory() {
 
   // Inicializar el contrato CFPFactory
   const init = async () => {
-    const network = NETWORKS[NETWORK_ID];
-    if (!network?.address) {
-      throw new Error(
-        `Dirección de contrato no encontrada para red ${NETWORK_ID}`
-      );
-    }
+    //const network = NETWORKS[NETWORK_ID];
+    // if (!network?.address) {
+    //   throw new Error(
+    //     `Dirección de contrato no encontrada para red ${NETWORK_ID}`
+    //   );
+    // }
 
-    factoryAddress.value = network.address;
     const rawSigner = toRaw(signer.value);
     if (!rawSigner) throw new Error("Signer no disponible");
-    const instance = new Contract(factoryAddress.value, ABI, rawSigner);
-    //contractStore.setContract(instance);
+    const instance = CFPFactory__factory.connect(ADDRESS, rawSigner);
     contractStore.initContract(instance, factoryAddress.value);
   };
 

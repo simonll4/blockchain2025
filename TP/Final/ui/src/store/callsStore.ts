@@ -6,7 +6,7 @@ import type { Call } from "@/types/call";
 export const useCallsStore = defineStore("calls", () => {
   const calls = ref<Call[]>([]);
 
-  const setCalls = (data: any[]) => {
+  const setCalls = (data: Call[]) => {
     calls.value = data;
   };
 

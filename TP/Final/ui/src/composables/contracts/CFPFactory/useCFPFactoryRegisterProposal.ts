@@ -1,5 +1,5 @@
 import { calculateFileHash } from "@/utils/ethersUtils";
-import { useCFPFactory } from "../../../services/contracts/useCFPFactory";
+import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
 import { useTxHandler } from "../useTxHandler";
 
 export function useCFPFactoryRegisterProposal(callId: string) {

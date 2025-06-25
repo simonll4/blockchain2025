@@ -1,8 +1,8 @@
 import { watch } from "vue";
 import { storeToRefs } from "pinia";
 
-import { useCFPFactory } from "@/services/contracts/useCFPFactory";
-import { useUserStore } from "@/store/user";
+import { useCFPFactory } from "@/services/contracts/business/useCFPFactory";
+import { useUserStore } from "@/store/userStore";
 import { useCallHandler } from "@/composables/contracts/useCallHandler";
 
 export function useCFPFactoryIsRegistered() {

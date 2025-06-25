@@ -18,6 +18,12 @@ const links = computed(() => {
     });
   }
 
+  baseLinks.push({
+    title: "Registrar ENS",
+    icon: "mdi-account-key",
+    to: "/ens-register",
+  });
+
   return baseLinks;
 });
 </script>

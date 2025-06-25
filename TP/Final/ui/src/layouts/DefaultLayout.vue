@@ -12,20 +12,39 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from "vue";
+import { onMounted, watchEffect } from "vue";
 
 import AppSidebar from "@/components/AppSidebar.vue";
 import AppTopbar from "@/components/AppTopbar.vue";
-import { useCFPFactory } from "@/services/contracts/useCFPFactory";
+import { useCFPFactory } from "@/services/contracts/business/useCFPFactory";
 import { useMetamask } from "@/services/metamask/useMetamask";
 
+import { useUsuariosRegistrar } from "@/services/contracts/ens/useUsuariosRegistrar";
+import { useReverseRegistrar } from "@/services/contracts/ens/useReverseRegistrar";
+import { usePublicResolver } from "@/services/contracts/ens/usePublicResolver";
+import { useENSRegistry } from "@/services/contracts/ens/useENSRegistry";
+
+const { account, checkInitialConnection } = useMetamask();
+
+const { init: initUsuariosRegistrar } = useUsuariosRegistrar();
+const { init: initReverseRegistrar } = useReverseRegistrar();
+const { init: initPublicResolver } = usePublicResolver();
+const { init: initENSRegistry } = useENSRegistry();
 const { init: initFactory } = useCFPFactory();
-const { account } = useMetamask();
 
 watchEffect(async () => {
   if (account.value) {
-    await initFactory();
+    // Initialize all contracts when the account is connected
+    initFactory();
+    initUsuariosRegistrar();
+    initReverseRegistrar();
+    initPublicResolver();
+    initENSRegistry();
   }
+});
+
+onMounted(() => {
+  checkInitialConnection();
 });
 </script>
 
