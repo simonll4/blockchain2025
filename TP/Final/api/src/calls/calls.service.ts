@@ -13,60 +13,70 @@ import { ContractsService } from '../contracts/contracts.service';
 import { Call } from './interfaces/call.interface';
 import { MESSAGES } from 'src/common/messages';
 import { CreateCallDto } from './dto/create-call.dto';
+import { ENSService } from 'src/contracts/ens/ens.service';
 
 @Injectable()
 export class CallsService {
-  constructor(private readonly contractsService: ContractsService) {}
+  constructor(
+    private readonly contractsService: ContractsService,
+    private readonly ensService: ENSService,
+  ) {}
 
   async getCall(callId: string): Promise<Call> {
     if (!ethers.isHexString(callId, 32)) {
       throw new BadRequestException(MESSAGES.INVALID_CALLID);
     }
 
-    const factory: CFPFactory = this.contractsService.getFactory();
+    const factory = this.contractsService.getFactory();
     const call = await factory.calls(callId);
-    const creator: string = call.creator;
-    const cfpAddress: string = call.cfp;
 
-    if (creator === ethers.ZeroAddress) {
+    if (call.creator === ethers.ZeroAddress) {
       throw new NotFoundException(MESSAGES.CALLID_NOT_FOUND);
     }
 
+    const creator = await this.ensService.resolveNameOrAddress(call.creator);
+    const cfpAddress = call.cfp;
+    const cfp = await this.ensService.resolveNameOrAddress(cfpAddress);
+
     let closingTime: string | null = null;
     try {
-      const cfpContract: CFP = this.contractsService.getCfp(cfpAddress);
-      const ct: BigNumberish = await cfpContract.closingTime();
+      const cfpContract = this.contractsService.getCfp(cfpAddress);
+      const ct = await cfpContract.closingTime();
       closingTime = new Date(Number(ct) * 1000).toISOString();
     } catch {
       closingTime = null;
     }
 
-    return { callId, creator, cfpAddress, closingTime };
+    return { callId, creator, cfp, closingTime };
   }
 
   async getAllCalls(): Promise<Call[]> {
     try {
-      const factory: CFPFactory = this.contractsService.getFactory();
-      const callIds: string[] = await factory.allCallIds();
+      const factory = this.contractsService.getFactory();
+      const callIds = await factory.allCallIds();
 
-      const calls: Call[] = [];
+      const calls: Call[] = await Promise.all(
+        callIds.map(async (callId) => {
+          const call = await factory.calls(callId);
 
-      for (const callId of callIds) {
-        const call = await factory.calls(callId);
-        const creator: string = call.creator;
-        const cfpAddress: string = call.cfp;
+          const creator = await this.ensService.resolveNameOrAddress(
+            call.creator,
+          );
+          const cfpAddress = call.cfp;
+          const cfp = await this.ensService.resolveNameOrAddress(cfpAddress);
 
-        let closingTime: string | null = null;
-        try {
-          const cfpContract: CFP = this.contractsService.getCfp(cfpAddress);
-          const ct: BigNumberish = await cfpContract.closingTime();
-          closingTime = new Date(Number(ct) * 1000).toISOString();
-        } catch {
-          closingTime = null;
-        }
+          let closingTime: string | null = null;
+          try {
+            const cfpContract = this.contractsService.getCfp(cfpAddress);
+            const ct = await cfpContract.closingTime();
+            closingTime = new Date(Number(ct) * 1000).toISOString();
+          } catch {
+            closingTime = null;
+          }
 
-        calls.push({ callId, creator, cfpAddress, closingTime });
-      }
+          return { callId, creator, cfp, closingTime };
+        }),
+      );
 
       return calls;
     } catch (error) {
@@ -189,98 +199,3 @@ export class CallsService {
     }
   }
 }
-
-// import { Injectable, InternalServerErrorException } from '@nestjs/common';
-// import { ethers, BigNumberish } from 'ethers';
-
-// import { FactoryContract } from '../contracts/interfaces/cfp-factory.interface';
-// import { CFPContract } from '../contracts/interfaces/cfp.interface';
-// import { ContractsService } from '../contracts/contracts.service';
-// import { Call } from './interfaces/call.interface';
-// import { MESSAGES } from 'src/common/messages';
-
-// @Injectable()
-// export class CallsService {
-//   constructor(private readonly contractsService: ContractsService) {}
-
-//   async getCall(callId: string): Promise<Call> {
-//     if (!ethers.isHexString(callId, 32)) {
-//       throw new Error('INVALID_CALLID');
-//     }
-
-//     const factory: FactoryContract = this.contractsService.getFactory();
-//     const call = await factory.calls(callId);
-//     const creator: string = call.creator;
-//     const cfpAddress: string = call.cfp;
-
-//     if (creator === ethers.ZeroAddress) {
-//       throw new Error('CALLID_NOT_FOUND');
-//     }
-
-//     let closingTime: string | null = null;
-//     try {
-//       const cfpContract: CFPContract = this.contractsService.getCfp(cfpAddress);
-//       const ct: BigNumberish = await cfpContract.closingTime();
-//       closingTime = new Date(Number(ct) * 1000).toISOString();
-//     } catch {
-//       closingTime = null;
-//     }
-
-//     return { callId, creator, cfpAddress, closingTime };
-//   }
-
-//   async getAllCalls(): Promise<Call[]> {
-//     try {
-//       const factory: FactoryContract = this.contractsService.getFactory();
-//       const callIds: string[] = await factory.allCallIds();
-
-//       const calls: Call[] = [];
-
-//       for (const callId of callIds) {
-//         const call = await factory.calls(callId);
-//         const creator: string = call.creator;
-//         const cfpAddress: string = call.cfp;
-
-//         let closingTime: string | null = null;
-//         try {
-//           const cfpContract: CFPContract =
-//             this.contractsService.getCfp(cfpAddress);
-//           const ct: BigNumberish = await cfpContract.closingTime();
-//           closingTime = new Date(Number(ct) * 1000).toISOString();
-//         } catch {
-//           closingTime = null;
-//         }
-
-//         calls.push({ callId, creator, cfpAddress, closingTime });
-//       }
-
-//       return calls;
-//     } catch (error) {
-//       console.error('Error in getAllCalls:', error);
-//       throw new InternalServerErrorException(MESSAGES.INTERNAL_ERROR);
-//     }
-//   }
-
-//   async getClosingTime(callId: string): Promise<{ closingTime: string }> {
-//     if (!ethers.isHexString(callId, 32)) {
-//       throw new Error('INVALID_CALLID');
-//     }
-
-//     const factory: FactoryContract = this.contractsService.getFactory();
-//     const call = await factory.calls(callId);
-//     const creator: string = call.creator;
-//     const cfpAddress: string = call.cfp;
-
-//     if (creator === ethers.ZeroAddress) {
-//       throw new Error('CALLID_NOT_FOUND');
-//     }
-
-//     try {
-//       const cfpContract: CFPContract = this.contractsService.getCfp(cfpAddress);
-//       const ct: BigNumberish = await cfpContract.closingTime();
-//       return { closingTime: new Date(Number(ct) * 1000).toISOString() };
-//     } catch {
-//       throw new Error('INTERNAL_ERROR');
-//     }
-//   }
-// }

@@ -3,7 +3,7 @@ import { toRaw } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useMetamask } from "@/services/metamask/useMetamask";
-import { usePublicResolverStore } from "@/store/ens/usePublicResolverStore";
+import { usePublicResolverStore } from "@/store/contracts/ens/PublicResolverStore";
 import { PublicResolver__factory } from "@/services/contracts/types/factories/PublicResolver__factory";
 import type { PublicResolver } from "@/services/contracts/types/PublicResolver";
 

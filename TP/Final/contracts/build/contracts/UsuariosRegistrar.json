@@ -3129,12 +3129,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x00CeabF3BFE931C40568B75d7dEB88f7B473E3Dc",
-      "transactionHash": "0xaa88194668eb83856db52314f8b99e15088a8bdaec9fbf2d3df7e08eff2f4907"
+      "address": "0xedc9248405076b2F3824670759B5B63E08212c48",
+      "transactionHash": "0xc8bd6eb4b6cfc7c15eda9586e569c6432aa3413eb847ba671e71c676d06c0797"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-06-24T22:27:23.801Z",
+  "updatedAt": "2025-06-27T19:55:11.982Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Registrador específico para el dominio usuarios.cfp",

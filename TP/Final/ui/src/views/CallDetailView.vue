@@ -22,8 +22,8 @@ const {
   isLoading: callLoading,
 } = useApiCallDetail(callId);
 
-// Cargar detalle del llamado al montar el componente
-onMounted(() => {
+// Cargar detalle del llamado al montar el componente resolver el creador
+onMounted(async () => {
   fetchCallDetail();
 });
 
@@ -130,12 +130,14 @@ const formatDate = (iso?: string) => {
           </v-col>
           <v-col cols="12" class="mb-2">
             <strong>CFP:</strong>
-            <div class="text-truncate-break">{{ call?.cfpAdress }}</div>
+            <div class="text-truncate-break">{{ call?.cfp }}</div>
           </v-col>
+
           <v-col cols="12">
             <strong>Creador:</strong>
             <div class="text-truncate-break">{{ call?.creator }}</div>
           </v-col>
+
           <v-col cols="12" class="mb-2">
             <strong>Fecha de cierre:</strong>
             <div>

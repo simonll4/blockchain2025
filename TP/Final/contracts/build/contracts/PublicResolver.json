@@ -17646,12 +17646,12 @@
         }
       },
       "links": {},
-      "address": "0xda37A265b65526741A7c2753e6B5BAC70FE84177",
-      "transactionHash": "0xc29009550373736900eadd3af8dc8ddc07e1203896252200723c30455502973c"
+      "address": "0x386630A886ceAC31E5AAD386fb8d60be4CA87072",
+      "transactionHash": "0xeac96ed99f8f9cd38a0033711a27579d033571fa13fd003bd94aa6ff315fc6ec"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-06-24T22:27:23.853Z",
+  "updatedAt": "2025-06-27T19:55:12.013Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

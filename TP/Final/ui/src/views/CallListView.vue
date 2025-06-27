@@ -2,29 +2,25 @@
 import { onMounted, ref, computed } from "vue";
 import { format, parseISO } from "date-fns";
 
-import { shorten } from "@/utils/format";
+import { formatCreator } from "@/utils/format";
 import { useUserStore } from "@/store/userStore";
 
 import { useApiCalls } from "@/composables/api/useApiCalls";
 import { useApiCreators } from "@/composables/api/useApiCreators";
-import { useCFPFactoryCreate } from "@/composables/contracts/CFPFactory/useCFPFactoryCreate";
 import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
+import { useCreateCallWithENS } from "@/composables/contracts/useCreateCallWithENS";
 
 const userStore = useUserStore();
 const userAddress = computed(() => userStore.address);
 
-// Verificar si el usuario está autorizado para crear llamados
 const { isAuthorized } = useCFPFactoryIsAuthorized();
 
-// Cargar creadores y llamados al montar el componente
 const { fetchCreators, creators, loading } = useApiCreators();
 const { fetchCalls, calls, isLoading, error } = useApiCalls();
 
-// Tabs y creadores seleccionados
 const activeTab = ref(0);
 const selectedCreators = ref<string[]>([]);
 
-// Filtrar llamados por creadores seleccionados
 const filteredCalls = computed(() => {
   if (activeTab.value !== 0) return [];
   if (!selectedCreators.value.length) return calls.value;
@@ -33,7 +29,6 @@ const filteredCalls = computed(() => {
   );
 });
 
-// Filtrar llamados propios
 const myCalls = computed(() => {
   if (activeTab.value !== 1) return [];
   if (!userAddress.value) return [];
@@ -42,61 +37,56 @@ const myCalls = computed(() => {
   );
 });
 
-// Función para crear un nuevo llamado
 const {
+  createCallWithENS,
   isLoading: isCreating,
   error: createError,
   success: createSuccess,
   message: createMessage,
-  create,
-} = useCFPFactoryCreate();
+  reset: resetCreateStatus,
+} = useCreateCallWithENS();
 
 const showCreateDialog = ref(false);
-const newCallId = ref("");
+const newCallName = ref("");
+const newCallDescription = ref("");
 const newClosingDate = ref("");
 
 const resetCreateForm = () => {
-  newCallId.value = "";
+  newCallName.value = "";
+  newCallDescription.value = "";
   newClosingDate.value = "";
   showCreateDialog.value = false;
 };
 
-// Funcion para crear un nuevo llamado
 const createCall = async () => {
-  if (!newCallId.value) {
-    createError.value = "Debe ingresar un ID para el llamado.";
+  resetCreateStatus();
+  if (!newCallName.value) {
+    createError.value = "Debe ingresar un nombre para el llamado.";
+    return;
+  }
+  if (!newCallDescription.value) {
+    createError.value = "Debe ingresar una descripción para el llamado.";
     return;
   }
   if (!newClosingDate.value) {
     createError.value = "Debe seleccionar una fecha de cierre.";
     return;
   }
-  const isValidCallId = /^0x[a-fA-F0-9]{64}$/.test(newCallId.value);
-  if (!isValidCallId) {
-    createError.value =
-      "El ID debe comenzar con '0x' y contener 64 caracteres hexadecimales.";
-    return;
-  }
 
-  // Verificar si ya existe
-  const alreadyExists = calls.value.some(
-    (call) => call.callId === newCallId.value
+  const closingTimestamp = Math.floor(
+    new Date(newClosingDate.value).getTime() / 1000
   );
-  if (alreadyExists) {
-    createError.value = "Ya existe un llamado con ese ID.";
-    return;
-  }
 
   try {
-    const closingTimestamp = Math.floor(
-      new Date(newClosingDate.value).getTime() / 1000
+    await createCallWithENS(
+      newCallName.value,
+      newCallDescription.value,
+      closingTimestamp
     );
-    await create(newCallId.value, closingTimestamp);
-    fetchCalls();
-    fetchCreators();
-    resetCreateForm();
-  } catch (err) {
-    //console.error("Error al crear llamado:", err);
+    if (createSuccess.value) {
+      resetCreateForm();
+    }
+  } catch {
     createError.value = "Ocurrió un error al crear el llamado.";
   }
 };
@@ -123,7 +113,56 @@ const formatDate = (iso?: string) => {
     </v-row>
 
     <!-- Diálogo para crear llamado -->
-    <v-dialog v-model="showCreateDialog" max-width="500px">
+    <!-- Diálogo para crear llamado -->
+    <v-dialog v-model="showCreateDialog" max-width="600px">
+      <v-card>
+        <v-card-title>Crear nuevo llamado</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="newCallName"
+            label="Nombre del llamado (ENS)"
+            :disabled="isCreating"
+            required
+          />
+          <v-textarea
+            v-model="newCallDescription"
+            label="Descripción"
+            auto-grow
+            :disabled="isCreating"
+            required
+          />
+          <v-text-field
+            v-model="newClosingDate"
+            label="Fecha y hora de cierre"
+            type="datetime-local"
+            :disabled="isCreating"
+            required
+          />
+
+          <v-alert v-if="createError" type="error" dense class="mt-2">
+            {{ createError }}
+          </v-alert>
+          <v-alert v-if="createSuccess" type="success" dense class="mt-2">
+            {{ createMessage }}
+          </v-alert>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn text @click="showCreateDialog = false" :disabled="isCreating">
+            Cancelar
+          </v-btn>
+          <v-btn
+            color="primary"
+            @click="createCall"
+            :loading="isCreating"
+            :disabled="isCreating"
+          >
+            Crear
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- <v-dialog v-model="showCreateDialog" max-width="500px">
       <v-card>
         <v-card-title>Crear nuevo llamado</v-card-title>
         <v-card-text>
@@ -161,7 +200,7 @@ const formatDate = (iso?: string) => {
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
 
     <!-- Tabs -->
     <v-tabs v-model="activeTab" background-color="primary" dark>
@@ -176,7 +215,7 @@ const formatDate = (iso?: string) => {
           <v-select
             v-model="selectedCreators"
             :items="creators"
-            :item-title="shorten"
+            :item-title="formatCreator"
             :item-value="(item) => item"
             label="Filtrar por creador(es)"
             clearable
@@ -231,7 +270,7 @@ const formatDate = (iso?: string) => {
         >
           <v-card class="pa-4" elevation="3">
             <v-card-title class="text-h6">
-              Llamado: {{ shorten(call.callId) }}
+              Llamado: {{ formatCreator(call.callId) }}
             </v-card-title>
 
             <v-card-text>
@@ -242,14 +281,14 @@ const formatDate = (iso?: string) => {
                   color="blue-grey-lighten"
                   text-color="black"
                 >
-                  {{ shorten(call.creator) }}
+                  {{ formatCreator(call.creator) }}
                 </v-chip>
               </div>
 
               <div>
                 <strong>Dirección CFP:</strong>
                 <v-chip class="ma-1" color="blue-lighten-1" text-color="black">
-                  {{ shorten(call.cfpAddress) }}
+                  {{ formatCreator(call.cfp) }}
                 </v-chip>
               </div>
 
@@ -301,7 +340,7 @@ const formatDate = (iso?: string) => {
         >
           <v-card class="pa-4" elevation="3">
             <v-card-title class="text-h6">
-              Llamado: {{ shorten(call.callId) }}
+              Llamado: {{ formatCreator(call.callId) }}
             </v-card-title>
 
             <v-card-text>
@@ -312,14 +351,14 @@ const formatDate = (iso?: string) => {
                   color="blue-grey-lighten"
                   text-color="black"
                 >
-                  {{ shorten(call.creator) }}
+                  {{ formatCreator(call.creator) }}
                 </v-chip>
               </div>
 
               <div>
                 <strong>Dirección CFP:</strong>
                 <v-chip class="ma-1" color="blue-lighten-1" text-color="black">
-                  {{ shorten(call.cfpAddress) }}
+                  {{ formatCreator(call.cfp) }}
                 </v-chip>
               </div>
 

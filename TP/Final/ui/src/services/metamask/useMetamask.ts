@@ -26,8 +26,9 @@ export function useMetamask() {
       if (accounts.length > 0) {
         store.setAddress(accounts[0]);
         store.setConnected(true);
-        // actualizar signer por si cambió
+        // actualizar provider y signer por si cambió
         const newProvider = new ethers.BrowserProvider(window.ethereum);
+        provider.value = newProvider;
         signer.value = await newProvider.getSigner();
       } else {
         disconnect();
@@ -75,10 +76,11 @@ export function useMetamask() {
   };
 
   // Detectar si ya está conectado al cargar
-  // onMounted(async () => {
-  //   if (!window.ethereum) return;
-  //   connect();
-  // });
+  onMounted(async () => {
+    if (!window.ethereum) return;
+    connect();
+  });
+
   const checkInitialConnection = async () => {
     if (!window.ethereum) return false;
     try {

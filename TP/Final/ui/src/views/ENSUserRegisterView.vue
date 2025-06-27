@@ -1,54 +1,37 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, watchEffect } from "vue";
+import { storeToRefs } from "pinia";
 
 import { useMetamask } from "@/services/metamask/useMetamask";
-
 import { useENSRegisterUser } from "@/composables/contracts/ens/useENSRegisterUser";
-import { useENSResolveAddress } from "@/composables/contracts/ens/useENSResolveAddress";
+import { useUserStore } from "@/store/userStore";
+
+const userStore = useUserStore();
+const { ensName } = storeToRefs(userStore);
 
 const username = ref("");
-const isLoading = ref(false);
-const error = ref<string | null>(null);
-const success = ref(false);
+const snackbar = ref(false);
 
 const { account } = useMetamask();
-
 const userAddress = computed(() => account.value || "");
-const resolvedName = ref<string | null>(null);
 
-const { registerUserName } = useENSRegisterUser();
-const { resolveAddress } = useENSResolveAddress();
-
-const fetchENSName = async () => {
-  if (!userAddress.value) return;
-  try {
-    const name = await resolveAddress(userAddress.value);
-    resolvedName.value = name;
-  } catch {
-    resolvedName.value = null;
-  }
-};
+const { registerUserName, isLoading, error, success, message } =
+  useENSRegisterUser();
 
 const onRegister = async () => {
-  error.value = null;
-  success.value = false;
-  if (!username.value) return;
-
-  isLoading.value = true;
-  try {
-    await registerUserName(username.value);
-    success.value = true;
-    await fetchENSName();
-  } catch (e: any) {
-    console.error("Error al registrar el nombre ENS:", e);
-    error.value = e.message || "Error al registrar el nombre";
-  } finally {
-    isLoading.value = false;
-  }
+  const ok = await registerUserName(username.value);
+  // if (ok) {
+  //   username.value = "";
+  // }
+  // if (message.value) {
+  //   snackbar.value = true;
+  // }
 };
 
-onMounted(() => {
-  fetchENSName();
+watchEffect(() => {
+  if (message.value) {
+    snackbar.value = true;
+  }
 });
 </script>
 
@@ -109,12 +92,147 @@ onMounted(() => {
       <div class="text-center">
         <div class="mb-2 text-caption">Resolución actual:</div>
         <v-chip
-          v-if="resolvedName"
+          v-if="ensName"
           color="primary"
           class="mb-2"
           prepend-icon="mdi-account"
         >
-          {{ resolvedName }}
+          {{ ensName }}
+        </v-chip>
+        <v-chip v-else color="grey" class="mb-2" prepend-icon="mdi-wallet">
+          {{ userAddress }}
+        </v-chip>
+      </div>
+    </v-card>
+
+    <!-- Snackbar de notificación -->
+    <!-- <v-snackbar
+      v-model="snackbar"
+      :timeout="4000"
+      color="success"
+      variant="tonal"
+      location="bottom center"
+    >
+      {{ message }}
+    </v-snackbar> -->
+  </v-container>
+</template>
+
+<style scoped>
+.fill-height {
+  min-height: 100vh;
+}
+</style>
+
+<!-- <script setup lang="ts">
+import { ref, computed, watchEffect } from "vue";
+import { storeToRefs } from "pinia";
+
+import { useMetamask } from "@/services/metamask/useMetamask";
+import { useENSRegisterUser } from "@/composables/contracts/ens/useENSRegisterUser";
+import { useUserStore } from "@/store/userStore";
+
+const userStore = useUserStore();
+const { ensName } = storeToRefs(userStore); // ✅ reactivo
+
+const username = ref("");
+const isLoading = ref(false);
+const error = ref<string | null>(null);
+const success = ref(false);
+
+const { account } = useMetamask();
+const userAddress = computed(() => account.value || "");
+
+const { registerUserName } = useENSRegisterUser();
+
+const onRegister = async () => {
+  error.value = null;
+  success.value = false;
+  if (!username.value) return;
+
+  isLoading.value = true;
+  try {
+    await registerUserName(username.value);
+    success.value = true;
+    //await fetchENSName(); // actualiza ensName
+  } catch (e: any) {
+    console.error("Error al registrar el nombre ENS:", e);
+    error.value = e.message || "Error al registrar el nombre";
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+watchEffect(async () => {
+  if (account.value) {
+    // resolveAddress(account.value);
+  }
+});
+</script>
+
+<template>
+  <v-container
+    class="fill-height d-flex flex-column justify-center align-center"
+  >
+    <v-card class="pa-6" max-width="420" elevation="8">
+      <v-card-title class="text-h5 font-weight-bold mb-2">
+        Registrar tu nombre ENS
+      </v-card-title>
+      <v-card-subtitle class="mb-4">
+        Asocia un nombre de usuario a tu dirección de Ethereum
+      </v-card-subtitle>
+
+      <v-form @submit.prevent="onRegister" v-if="!success">
+        <v-text-field
+          v-model="username"
+          label="Nombre de usuario"
+          prepend-inner-icon="mdi-account"
+          :disabled="isLoading"
+          :rules="[(v) => !!v || 'El nombre es requerido']"
+          required
+        />
+        <v-btn
+          :loading="isLoading"
+          color="primary"
+          class="mt-4"
+          type="submit"
+          block
+        >
+          Registrar
+        </v-btn>
+
+        <v-alert
+          v-if="error"
+          type="error"
+          class="mt-3"
+          border="start"
+          variant="tonal"
+        >
+          {{ error }}
+        </v-alert>
+      </v-form>
+
+      <v-alert
+        v-if="success"
+        type="success"
+        class="mt-3"
+        border="start"
+        variant="tonal"
+      >
+        ¡Registro exitoso! Tu nombre ENS ha sido registrado.
+      </v-alert>
+
+      <v-divider class="my-6" />
+
+      <div class="text-center">
+        <div class="mb-2 text-caption">Resolución actual:</div>
+        <v-chip
+          v-if="ensName"
+          color="primary"
+          class="mb-2"
+          prepend-icon="mdi-account"
+        >
+          {{ ensName }}
         </v-chip>
         <v-chip v-else color="grey" class="mb-2" prepend-icon="mdi-wallet">
           {{ userAddress }}
@@ -128,4 +246,4 @@ onMounted(() => {
 .fill-height {
   min-height: 100vh;
 }
-</style>
+</style> -->

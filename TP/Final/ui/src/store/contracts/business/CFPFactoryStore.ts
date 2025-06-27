@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { Contract } from "ethers";
 
 import type { CFPFactory } from "@/services/contracts/types";
 
@@ -13,11 +12,11 @@ export const useCFPFactoryStore = defineStore("contract", () => {
     factoryAddress.value = address;
   };
 
-  const getContract = (): Contract => {
-    if (contract) {
+  const getContract = (): CFPFactory => {
+    if (!contract.value) {
       throw new Error("Contrato no inicializado. Llama primero a `init`.");
     }
-    return contract;
+    return contract.value;
   };
 
   return {

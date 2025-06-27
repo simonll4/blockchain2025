@@ -1,6 +1,6 @@
 export interface Call {
   callId: string;
-  cfpAddress: string;
+  cfp: string;
   closingTime: string;
   creator: string;
 }

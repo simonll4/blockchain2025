@@ -1,6 +1,6 @@
 export class Call {
   callId: string;
   creator: string;
-  cfpAddress: string;
+  cfp: string;
   closingTime: string | null;
 }

@@ -5,10 +5,11 @@ import { useMetamask } from "@/services/metamask/useMetamask";
 import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
 import { useCFPFactoryRegister } from "@/composables/contracts/CFPFactory/useCFPFactoryRegister";
 import { useCFPFactoryIsRegistered } from "@/composables/contracts/CFPFactory/useCFPFactoryIsRegistered";
-import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner"; 
+import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
 import { useApiHealthCheck } from "@/composables/api/useApiHealthCheck";
 
-const { isConnected, networkOk } = useMetamask();
+
+const { isConnected, networkOk, account } = useMetamask();
 
 const { register } = useCFPFactoryRegister();
 
@@ -52,9 +53,9 @@ const onRegisterClick = async () => {
 };
 
 watch(
-  [isConnected, networkOk],
-  ([connected, network]) => {
-    if (connected && network) {
+  [isConnected, networkOk, account],
+  ([connected, network, currentAccount]) => {
+    if (connected && network && currentAccount) {
       checkIsAuthorized();
       checkIsRegistered();
       checkIsOwner();

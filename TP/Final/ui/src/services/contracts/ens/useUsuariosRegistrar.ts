@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia";
 import { labelhash } from "@/utils/ens";
 import { useMetamask } from "@/services/metamask/useMetamask";
 import { UsuariosRegistrar__factory } from "@/services/contracts/types/factories/UsuariosRegistrar__factory";
-import { useUsuariosRegistrarStore } from "@/store/ens/useUsuariosRegistrarStore";
+import { useUsuariosRegistrarStore } from "@/store/contracts/ens/UsuariosRegistrarStore";
 
 const ADDRESS = import.meta.env.VITE_USUARIOS_REGISTRAR_ADDRESS;
 
@@ -27,7 +27,6 @@ export function useUsuariosRegistrar() {
     const rawAccount = toRaw(account.value);
     if (!rawContract) throw new Error("Contrato no inicializado");
     if (!rawAccount) throw new Error("Cuenta no disponible");
-
     const hashedLabel = labelhash(username);
     return rawContract.register(hashedLabel, rawAccount);
   };

@@ -1,34 +1,42 @@
-import { Contract } from "ethers";
 import { toRaw } from "vue";
 import { storeToRefs } from "pinia";
-import { useENSStore } from "@/store/ens/useENSStore";
 import { useMetamask } from "@/services/metamask/useMetamask";
-import LlamadosRegistrarArtifact from "../../../../../contracts/build/contracts/LlamadosRegistrar.json";
+import { useLlamadosRegistrarStore } from "@/store/contracts/ens/LlamadosRegistrarStore";
+import { LlamadosRegistrar__factory } from "@/services/contracts/types/factories/LlamadosRegistrar__factory";
+import { labelhash } from "@/utils/ens";
 
-const ABI = LlamadosRegistrarArtifact.abi;
-const NETWORKS = LlamadosRegistrarArtifact.networks;
-const NETWORK_ID = import.meta.env.VITE_NETWORK_ID as keyof typeof NETWORKS;
+const ADDRESS = import.meta.env.VITE_LLAMADOS_REGISTRAR_ADDRESS;
 
 export function useLlamadosRegistrar() {
-  const ensStore = useENSStore();
-  const { llamadosRegistrar } = storeToRefs(ensStore);
-  const { setLlamadosRegistrar } = ensStore;
-  const { signer } = useMetamask();
-  const address = NETWORKS[NETWORK_ID]?.address;
-  if (!address) throw new Error("Dirección LlamadosRegistrar no encontrada");
-  const rawSigner = toRaw(signer.value);
-  if (!rawSigner) throw new Error("Signer no disponible");
+  const { signer, account } = useMetamask();
+  const store = useLlamadosRegistrarStore();
+  const { contract, contractAddress } = storeToRefs(store);
 
-  if (!llamadosRegistrar.value) {
-    const instance = new Contract(address, ABI, rawSigner);
-    setLlamadosRegistrar(instance);
-  }
+  const init = async () => {
+    const rawSigner = toRaw(signer.value);
+    if (!rawSigner) throw new Error("Signer no disponible");
 
-  const register = async (llamadoName: string) => {
-    if (!llamadosRegistrar.value)
-      throw new Error("Contrato LlamadosRegistrar no inicializado");
-    return llamadosRegistrar.value.register(llamadoName);
+    const instance = LlamadosRegistrar__factory.connect(ADDRESS, rawSigner);
+    const address = await instance.getAddress();
+
+    store.initContract(instance, address);
   };
 
-  return { register, contract: llamadosRegistrar };
+  const register = async (label: string) => {
+    const rawContract = toRaw(contract.value);
+    const rawAccount = toRaw(account.value);
+    if (!rawContract)
+      throw new Error("Contrato LlamadosRegistrar no inicializado");
+    if (!rawAccount) throw new Error("Cuenta no disponible");
+    const hashedLabel = labelhash(label);
+    console.log("aca",rawAccount)
+    return rawContract.register(hashedLabel, rawAccount);
+  };
+
+  return {
+    init,
+    register,
+    contract,
+    contractAddress,
+  };
 }

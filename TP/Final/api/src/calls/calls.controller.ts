@@ -28,7 +28,7 @@ export class CallsController {
 
       return new GetCallResponseDto({
         creator: call.creator,
-        cfp: call.cfpAddress,
+        cfp: call.cfp,
       });
     } catch (error) {
       if (

@@ -8,6 +8,7 @@ export const useUserStore = defineStore("user", () => {
   const isOwner = ref(false);
   const isAuthorized = ref(false);
   const isPending = ref(false);
+  const ensName = ref<string>("");
 
   const setAddress = (newAddress: string) => {
     address.value = newAddress;
@@ -33,6 +34,10 @@ export const useUserStore = defineStore("user", () => {
     isPending.value = pending;
   };
 
+  const setENSName = (name: string) => {
+    ensName.value = name;
+  };
+
   const reset = () => {
     address.value = "";
     isConnected.value = false;
@@ -40,15 +45,18 @@ export const useUserStore = defineStore("user", () => {
     isAuthorized.value = false;
     isOwner.value = false;
     isPending.value = false;
+    ensName.value = "";
   };
 
   return {
     address,
+    ensName,
     isConnected,
     networkOk,
     isAuthorized,
     isOwner,
     isPending,
+    setENSName,
     setAddress,
     setConnected,
     setNetworkOk,

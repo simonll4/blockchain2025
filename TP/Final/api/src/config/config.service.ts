@@ -39,6 +39,26 @@ export class ConfigService {
   getCFPContractPath(): string {
     return this.get<string>('cfp_contract_path');
   }
+
+  getFactoryContractAddress(): string {
+    return this.get<string>('factory_contract_address');
+  }
+
+  getCFPContractAddress(): string {
+    return this.get<string>('cfp_contract_address');
+  }
+
+  getEnsRegistryAddress(): string {
+    return this.get<string>('ens_registry_address');
+  }
+
+  getPublicResolverAddress(): string {
+    return this.get<string>('public_resolver_address');
+  }
+
+  getReverseRegistrarAddress(): string {
+    return this.get<string>('reverse_registrar_address');
+  }
 }
 
 // import { Injectable } from '@nestjs/common';

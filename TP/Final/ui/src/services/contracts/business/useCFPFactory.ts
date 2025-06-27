@@ -3,34 +3,21 @@ import { storeToRefs } from "pinia";
 
 import { useMetamask } from "../../metamask/useMetamask";
 import { CFPFactory__factory } from "@/services/contracts/types/factories/CFPFactory__factory";
-import { useCFPFactoryStore } from "@/store/CFPFactoryStore";
-
-//import factoryArtifact from "../../../../../contracts/build/contracts/CFPFactory.json";
-
-//const ABI = factoryArtifact.abi;
-//const NETWORKS = factoryArtifact.networks;
-//const NETWORK_ID = import.meta.env.VITE_NETWORK_ID as keyof typeof NETWORKS;
+import { useCFPFactoryStore } from "@/store/contracts/business/CFPFactoryStore";
 
 const ADDRESS = import.meta.env.VITE_CFPFACTORY_ADDRESS;
 
 export function useCFPFactory() {
   const contractStore = useCFPFactoryStore();
-  const { contract, factoryAddress } = storeToRefs(contractStore);
+  const { contract } = storeToRefs(contractStore);
   const { signer } = useMetamask();
 
   // Inicializar el contrato CFPFactory
   const init = async () => {
-    //const network = NETWORKS[NETWORK_ID];
-    // if (!network?.address) {
-    //   throw new Error(
-    //     `Dirección de contrato no encontrada para red ${NETWORK_ID}`
-    //   );
-    // }
-
     const rawSigner = toRaw(signer.value);
     if (!rawSigner) throw new Error("Signer no disponible");
     const instance = CFPFactory__factory.connect(ADDRESS, rawSigner);
-    contractStore.initContract(instance, factoryAddress.value);
+    contractStore.initContract(instance, ADDRESS);
   };
 
   const getOwner = async () => {
@@ -39,6 +26,14 @@ export function useCFPFactory() {
       throw new Error("Contrato no inicializado");
     }
     return rawContract.owner();
+  };
+
+  const getCall = async (callId: string) => {
+    const rawContract = toRaw(contract.value);
+    if (!rawContract) {
+      throw new Error("Contrato no inicializado");
+    }
+    return rawContract.calls(callId);
   };
 
   // Crear un nuevo llamado
@@ -98,6 +93,7 @@ export function useCFPFactory() {
   return {
     init,
     getOwner,
+    getCall,
     createCall,
     registerProposal,
     register,

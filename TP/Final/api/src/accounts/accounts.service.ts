@@ -8,10 +8,14 @@ import { isAddress, getAddress, verifyMessage, getBytes } from 'ethers';
 import { ContractsService } from '../contracts/contracts.service';
 import { CFPFactory } from '../contracts/types/CFPFactory'; // ✅ nuevo
 import { MESSAGES } from 'src/common/messages';
+import { ENSService } from 'src/contracts/ens/ens.service';
 
 @Injectable()
 export class AccountsService {
-  constructor(private readonly contractsService: ContractsService) {}
+  constructor(
+    private readonly contractsService: ContractsService,
+    private readonly ensService: ENSService,
+  ) {}
 
   async isAuthorized(address: string): Promise<boolean> {
     if (!isAddress(address)) {
@@ -73,17 +77,33 @@ export class AccountsService {
   }
 
   async getAllCreators(): Promise<string[]> {
-    const factory: CFPFactory = this.contractsService.getFactory();
+    const factory = this.contractsService.getFactory();
     const count = await factory.creatorsCount();
-    const creators: string[] = [];
+
+    const creators: Promise<string>[] = [];
 
     for (let i = 0; i < count; i++) {
-      const creator: string = await factory.creators(i);
-      creators.push(creator);
+      const promise = factory
+        .creators(i)
+        .then((addr) => this.ensService.resolveNameOrAddress(addr));
+      creators.push(promise);
     }
 
-    return creators;
+    return Promise.all(creators);
   }
+
+  // async getAllCreators(): Promise<string[]> {
+  //   const factory: CFPFactory = this.contractsService.getFactory();
+  //   const count = await factory.creatorsCount();
+  //   const creators: string[] = [];
+
+  //   for (let i = 0; i < count; i++) {
+  //     const creator: string = await factory.creators(i);
+  //     creators.push(creator);
+  //   }
+
+  //   return creators;
+  // }
 
   async getPendings(): Promise<string[]> {
     const factory: CFPFactory = this.contractsService.getFactory();

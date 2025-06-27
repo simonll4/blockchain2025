@@ -2,7 +2,7 @@ import { toRaw } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useMetamask } from "@/services/metamask/useMetamask";
-import { useReverseRegistrarStore } from "@/store/ens/useReverseRegistrarStore";
+import { useReverseRegistrarStore } from "@/store/contracts/ens/ReverseRegistrarStore";
 import { ReverseRegistrar__factory } from "@/services/contracts/types/factories/ReverseRegistrar__factory";
 import type { ReverseRegistrar } from "../types";
 
@@ -12,7 +12,7 @@ const ADDRESS = import.meta.env.VITE_REVERSE_REGISTRAR_ADDRESS;
 export function useReverseRegistrar() {
   const store = useReverseRegistrarStore();
   const { contract, contractAddress } = storeToRefs(store);
-  const { signer } = useMetamask();
+  const { signer, account } = useMetamask();
 
   const init = async () => {
     const rawSigner = toRaw(signer.value);
@@ -33,6 +33,20 @@ export function useReverseRegistrar() {
     return getContract().setName(name);
   };
 
+  const setNameFor = async (
+    targetAddress: string,
+    name: string
+  ) => {
+    const rawContract = toRaw(contract.value);
+    const rawAccount = toRaw(account.value);
+    if (!rawContract) throw new Error("ReverseRegistrar no inicializado");
+    return rawContract.setNameFor(
+      targetAddress,
+      rawAccount,
+      name
+    );
+  };
+
   const claim = async (owner: string) => {
     return getContract().claim(owner);
   };
@@ -51,6 +65,7 @@ export function useReverseRegistrar() {
     contractAddress,
     ADDR_REVERSE_NODE,
     setName,
+    setNameFor,
     claim,
     claimWithResolver,
     node,
