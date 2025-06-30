@@ -4,9 +4,9 @@ import { useCFPFactory } from "@/services/contracts/business/useCFPFactory";
 import { useENSRegisterCall } from "@/composables/contracts/ens/useENSRegisterCall";
 import { useApiCalls } from "@/composables/api/useApiCalls";
 
-import { validateENSName, checkENSAvailability } from "@/utils/ensHelpers";
-import { useTxHandler } from "./useTxHandler";
-import { useCallHandler } from "./useCallHandler";
+import { normalizeCallName, checkENSAvailability } from "@/utils/ensHelpers";
+import { useTxHandler } from "./handlers/useTxHandler";
+import { useCallHandler } from "./handlers/useCallHandler";
 
 export function useCreateCallWithENS() {
   const { account } = useMetamask();
@@ -33,7 +33,7 @@ export function useCreateCallWithENS() {
     reset();
     try {
       // 1. Validar y normalizar nombre ENS
-      const parsed = validateENSName(callName);
+      const parsed = normalizeCallName(callName);
       if (!parsed) {
         txHandler.error.value =
           "Nombre ENS inválido. Solo se permite un subdominio bajo 'llamados.cfp'.";
@@ -61,7 +61,7 @@ export function useCreateCallWithENS() {
       );
       if (!receipt) return false;
 
-      // 4. Obtener la dirección del contrato CFP (llamada de solo lectura)
+      // 4. Obtener la dirección del contrato CFP
       let callInfo;
       try {
         callInfo = await callHandler.runCall(() => getCall(callId));
@@ -79,7 +79,12 @@ export function useCreateCallWithENS() {
       }
 
       // 5. Registrar en ENS el nombre y la descripción (ya usa runTx internamente)
-      const registered = await registerCall(label, cfpAddress, description);
+      const registered = await registerCall(
+        label,
+        fullDomain,
+        cfpAddress,
+        description
+      );
       if (!registered) {
         txHandler.error.value = "No se pudo registrar el llamado en ENS.";
         return false;
@@ -99,7 +104,6 @@ export function useCreateCallWithENS() {
   return {
     createCallWithENS,
     reset,
-    // Exponer los estados de los handlers
     isLoading: txHandler.isLoading,
     error: txHandler.error,
     success: txHandler.success,

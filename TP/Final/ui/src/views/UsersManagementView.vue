@@ -1,27 +1,70 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 
 import { useApiPendingUsers } from "@/composables/api/useApiPendingUsers";
 import { useCFPFactoryAuthorize } from "@/composables/contracts/CFPFactory/useCFPFactoryAuthorize";
+import { useENSResolvePendingUsers } from "@/composables/contracts/ens/useENSResolvePendingUsers.ts";
 
 const { pendingUsers, isLoading, error, fetchPendingUsers } =
   useApiPendingUsers();
 const {
-  isLoading: authLoading,
+  isLoading: authLoadingGlobal, // global, pero ya no lo usaremos para el botón individual
   error: authError,
   success: authSuccess,
   message: authMessage,
   authorizeAccount,
 } = useCFPFactoryAuthorize();
 
-onMounted(() => {
-  fetchPendingUsers();
+const { resolvePendingUsers } = useENSResolvePendingUsers();
+
+const loadingUser = ref<string | null>(null); // <-- nuevo: loading individual
+
+onMounted(async () => {
+  await fetchPendingUsers();
+  await resolvePendingUsers();
 });
 
-const onAuthorizeClick = async (address: string) => {
-  await authorizeAccount(address);
-  await fetchPendingUsers();
+/**
+ * Autoriza el usuario, resolviendo el address si solo tiene name
+ */
+const onAuthorizeClick = async (user: {
+  name: string | null;
+  address: string | null;
+}) => {
+  let addressToAuthorize = user.address;
+  const userKey = user.name || user.address || null;
+
+  loadingUser.value = userKey;
+
+  try {
+    if (!addressToAuthorize && user.name) {
+      await resolvePendingUsers();
+      const resolved = pendingUsers.value.find((u) => u.name === user.name);
+      console.log("Resolved user:", resolved);
+      addressToAuthorize = resolved?.address || null;
+    }
+
+    if (!addressToAuthorize) {
+      console.error("No se pudo resolver la dirección para autorizar");
+      return;
+    }
+
+    await authorizeAccount(addressToAuthorize);
+    await fetchPendingUsers();
+    await resolvePendingUsers();
+  } catch (error) {
+    console.error("Error autorizando usuario:", error);
+  } finally {
+    loadingUser.value = null;
+  }
 };
+
+/**
+ * Muestra siempre name si existe, sino address
+ */
+const displayName = (user: { name: string | null; address: string | null }) =>
+  user.name || user.address || "Unknown";
 </script>
 
 <template>
@@ -57,23 +100,23 @@ const onAuthorizeClick = async (address: string) => {
 
     <v-list v-if="!isLoading && pendingUsers.length">
       <v-list-item
-        v-for="(address, index) in pendingUsers"
+        v-for="(user, index) in pendingUsers"
         :key="index"
         class="border rounded-lg mb-2"
       >
         <v-row no-gutters align="center" class="w-100">
           <v-col cols="10">
             <div class="font-mono text-truncate px-4 py-2">
-              {{ address }}
+              {{ displayName(user) }}
             </div>
           </v-col>
           <v-col cols="2" class="text-right pr-2">
             <v-btn
               color="primary"
               variant="flat"
-              :loading="authLoading"
-              :disabled="authLoading"
-              @click="() => onAuthorizeClick(address)"
+              :loading="loadingUser === (user.name || user.address)"
+              :disabled="loadingUser === (user.name || user.address)"
+              @click="() => onAuthorizeClick(user)"
             >
               Autorizar
             </v-btn>

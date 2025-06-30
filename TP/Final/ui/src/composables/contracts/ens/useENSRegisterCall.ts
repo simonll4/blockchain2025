@@ -7,7 +7,7 @@ import { useENSRegistry } from "@/services/contracts/ens/useENSRegistry";
 import { usePublicResolver } from "@/services/contracts/ens/usePublicResolver";
 import { useReverseRegistrar } from "@/services/contracts/ens/useReverseRegistrar";
 
-import { useTxHandler } from "@/composables/contracts/useTxHandler";
+import { useTxHandler } from "@/composables/contracts/handlers/useTxHandler";
 
 export function useENSRegisterCall() {
   const { account } = useMetamask();
@@ -24,19 +24,20 @@ export function useENSRegisterCall() {
   const { isLoading, error, success, message, runTx } = useTxHandler();
 
   const registerCall = async (
-    callName: string,
+    label: string,
+    fullDomain: string,
     cfpContractAddress: string,
     description: string
   ) => {
     // Paso 1: Validar y normalizar el nombre ENS
-    const parsed = normalizeCallName(callName);
-    if (!parsed) {
-      error.value =
-        "Nombre ENS inválido. Solo se permite un subdominio bajo 'llamados.cfp'.";
-      return false;
-    }
+    // const parsed = normalizeCallName(callName);
+    // if (!parsed) {
+    //   error.value =
+    //     "Nombre ENS inválido. Solo se permite un subdominio bajo 'llamados.cfp'.";
+    //   return false;
+    // }
 
-    const { label, fullDomain } = parsed;
+    //const { label, fullDomain } = parsed;
     const node = namehash(fullDomain);
     const labelHash = keccak256(toUtf8Bytes(label));
 
@@ -102,36 +103,6 @@ export function useENSRegisterCall() {
     return true;
   };
 
-  /**
-   * Normaliza un nombre de llamado válido.
-   * Ejemplos válidos:
-   * - "llamado1" => { label: "llamado1", fullDomain: "llamado1.llamados.cfp" }
-   * - "llamado1.llamados.cfp" => { label: "llamado1", fullDomain: "llamado1.llamados.cfp" }
-   */
-  const normalizeCallName = (
-    input: string
-  ): { label: string; fullDomain: string } | null => {
-    const trimmed = input.trim().toLowerCase();
-    if (trimmed === "") return null;
-
-    const parts = trimmed.split(".");
-    // Caso simple: "nombre"
-    if (parts.length === 1 && /^[a-z0-9-]+$/.test(parts[0])) {
-      return { label: parts[0], fullDomain: `${parts[0]}.llamados.cfp` };
-    }
-    // Caso completo: "nombre.llamados.cfp"
-    if (
-      parts.length === 3 &&
-      /^[a-z0-9-]+$/.test(parts[0]) &&
-      parts[1] === "llamados" &&
-      parts[2] === "cfp"
-    ) {
-      return { label: parts[0], fullDomain: trimmed };
-    }
-
-    return null;
-  };
-
   return {
     registerCall,
     isLoading,
@@ -139,7 +110,6 @@ export function useENSRegisterCall() {
     success,
     message,
     getOwner,
-    normalizeCallName,
     generateCallId: (input: string) =>
       keccak256(toUtf8Bytes(input + Date.now())),
   };

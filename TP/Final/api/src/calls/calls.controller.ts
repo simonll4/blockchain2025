@@ -29,6 +29,7 @@ export class CallsController {
       return new GetCallResponseDto({
         creator: call.creator,
         cfp: call.cfp,
+        description: call.description,
       });
     } catch (error) {
       if (

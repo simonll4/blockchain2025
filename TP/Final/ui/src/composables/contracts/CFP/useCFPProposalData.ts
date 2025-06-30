@@ -1,5 +1,5 @@
 import { useCFP } from "@/services/contracts/business/useCFP";
-import { useCallHandler } from "@/composables/contracts/useCallHandler";
+import { useCallHandler } from "@/composables/contracts/handlers/useCallHandler";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
 export function useCFPProposalData() {

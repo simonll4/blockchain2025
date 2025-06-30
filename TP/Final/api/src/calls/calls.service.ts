@@ -34,9 +34,13 @@ export class CallsService {
       throw new NotFoundException(MESSAGES.CALLID_NOT_FOUND);
     }
 
+    // Obtener nombre del creador
     const creator = await this.ensService.resolveNameOrAddress(call.creator);
+
+    // Obtener nombre y descripción del CFP (llamado)
     const cfpAddress = call.cfp;
-    const cfp = await this.ensService.resolveNameOrAddress(cfpAddress);
+    const { name: cfp, description } =
+      await this.ensService.getNameAndDescription(cfpAddress);
 
     let closingTime: string | null = null;
     try {
@@ -47,23 +51,65 @@ export class CallsService {
       closingTime = null;
     }
 
-    return { callId, creator, cfp, closingTime };
+    return {
+      callId,
+      creator,
+      cfp,
+      description: description || '', // si no tiene descripción, devolver string vacío
+      closingTime,
+    };
   }
+
+  // async getCall(callId: string): Promise<Call> {
+  //   if (!ethers.isHexString(callId, 32)) {
+  //     throw new BadRequestException(MESSAGES.INVALID_CALLID);
+  //   }
+
+  //   const factory = this.contractsService.getFactory();
+  //   const call = await factory.calls(callId);
+
+  //   if (call.creator === ethers.ZeroAddress) {
+  //     throw new NotFoundException(MESSAGES.CALLID_NOT_FOUND);
+  //   }
+
+  //   const creator = await this.ensService.resolveNameOrAddress(call.creator);
+  //   const cfpAddress = call.cfp;
+  //   const cfp = await this.ensService.resolveNameOrAddress(cfpAddress);
+
+  //   let closingTime: string | null = null;
+  //   try {
+  //     const cfpContract = this.contractsService.getCfp(cfpAddress);
+  //     const ct = await cfpContract.closingTime();
+  //     closingTime = new Date(Number(ct) * 1000).toISOString();
+  //   } catch {
+  //     closingTime = null;
+  //   }
+
+  //   return { callId, creator, cfp, closingTime };
+  // }
 
   async getAllCalls(): Promise<Call[]> {
     try {
       const factory = this.contractsService.getFactory();
       const callIds = await factory.allCallIds();
 
-      const calls: Call[] = await Promise.all(
+      const calls: (Call | null)[] = await Promise.all(
         callIds.map(async (callId) => {
           const call = await factory.calls(callId);
+
+          // Validar si existe (como en getCall)
+          if (call.creator === ethers.ZeroAddress) {
+            return null;
+          }
 
           const creator = await this.ensService.resolveNameOrAddress(
             call.creator,
           );
           const cfpAddress = call.cfp;
-          const cfp = await this.ensService.resolveNameOrAddress(cfpAddress);
+
+          // Obtener nombre ENS y descripción del CFP (igual que getCall)
+          const { name: cfp, description } =
+            await this.ensService.getNameAndDescription(cfpAddress);
 
           let closingTime: string | null = null;
           try {
@@ -74,16 +120,58 @@ export class CallsService {
             closingTime = null;
           }
 
-          return { callId, creator, cfp, closingTime };
+          return {
+            callId,
+            creator,
+            cfp,
+            description: description || '',
+            closingTime,
+          };
         }),
       );
 
-      return calls;
+      // Filtrar los nulos si hubo llamados inválidos (como los del ZeroAddress)
+      return calls.filter(Boolean) as Call[];
     } catch (error) {
       console.error('Error in getAllCalls:', error);
       throw new InternalServerErrorException(MESSAGES.INTERNAL_ERROR);
     }
   }
+
+  // async getAllCalls(): Promise<Call[]> {
+  //   try {
+  //     const factory = this.contractsService.getFactory();
+  //     const callIds = await factory.allCallIds();
+
+  //     const calls: Call[] = await Promise.all(
+  //       callIds.map(async (callId) => {
+  //         const call = await factory.calls(callId);
+
+  //         const creator = await this.ensService.resolveNameOrAddress(
+  //           call.creator,
+  //         );
+  //         const cfpAddress = call.cfp;
+  //         const cfp = await this.ensService.resolveNameOrAddress(cfpAddress);
+
+  //         let closingTime: string | null = null;
+  //         try {
+  //           const cfpContract = this.contractsService.getCfp(cfpAddress);
+  //           const ct = await cfpContract.closingTime();
+  //           closingTime = new Date(Number(ct) * 1000).toISOString();
+  //         } catch {
+  //           closingTime = null;
+  //         }
+
+  //         return { callId, creator, cfp, closingTime };
+  //       }),
+  //     );
+
+  //     return calls;
+  //   } catch (error) {
+  //     console.error('Error in getAllCalls:', error);
+  //     throw new InternalServerErrorException(MESSAGES.INTERNAL_ERROR);
+  //   }
+  // }
 
   async getClosingTime(callId: string): Promise<{ closingTime: string }> {
     if (!ethers.isHexString(callId, 32)) {

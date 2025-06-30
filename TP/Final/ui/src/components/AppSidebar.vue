@@ -7,9 +7,9 @@ const { isOwner } = useCFPFactoryIsOwner();
 const links = computed(() => {
   const baseLinks = [
     { title: "Inicio", icon: "mdi-home", to: "/" },
+    { title: "Registrar ENS", icon: "mdi-account-key", to: "/ens-register" },
     { title: "Llamados", icon: "mdi-file-document-multiple", to: "/calls" },
   ];
-
   if (isOwner.value) {
     baseLinks.push({
       title: "Gestión de Usuarios",
@@ -17,12 +17,6 @@ const links = computed(() => {
       to: "/users",
     });
   }
-
-  baseLinks.push({
-    title: "Registrar ENS",
-    icon: "mdi-account-key",
-    to: "/ens-register",
-  });
 
   return baseLinks;
 });

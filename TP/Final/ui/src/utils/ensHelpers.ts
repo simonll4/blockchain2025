@@ -5,7 +5,7 @@ import { namehash } from "@/utils/ens";
  * Valida y normaliza un nombre ENS para llamados.
  * Devuelve { label, fullDomain } o null si es inválido.
  */
-export function validateENSName(
+export function normalizeCallName(
   input: string
 ): { label: string; fullDomain: string } | null {
   const trimmed = input.trim().toLowerCase();
@@ -24,6 +24,35 @@ export function validateENSName(
   }
   return null;
 }
+
+/**
+ * Normaliza el nombre de usuario ingresado.
+ * Acepta:
+ * - Un subdominio simple: "usuario" -> { label: "usuario", fullDomain: "usuario.usuarios.cfp" }
+ * - Un dominio completo: "usuario.usuarios.cfp" -> { label: "usuario", fullDomain: "usuario.usuarios.cfp" }
+ * Retorna null si el formato es inválido.
+ */
+export const normalizeUsername = (
+  input: string
+): { label: string; fullDomain: string } | null => {
+  const trimmed = input.trim().toLowerCase();
+  if (trimmed === "") return null;
+  const parts = trimmed.split(".");
+  // Caso: solo label
+  if (parts.length === 1 && /^[a-z0-9-]+$/.test(parts[0])) {
+    return { label: parts[0], fullDomain: `${parts[0]}.usuarios.cfp` };
+  }
+  // Caso: nombre.usuarios.cfp
+  if (
+    parts.length === 3 &&
+    /^[a-z0-9-]+$/.test(parts[0]) &&
+    parts[1] === "usuarios" &&
+    parts[2] === "cfp"
+  ) {
+    return { label: parts[0], fullDomain: trimmed };
+  }
+  return null;
+};
 
 /**
  * Chequea si un nombre ENS está disponible para el usuario actual.

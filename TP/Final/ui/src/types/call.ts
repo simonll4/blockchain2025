@@ -3,4 +3,5 @@ export interface Call {
   cfp: string;
   closingTime: string;
   creator: string;
+  description: string;
 }

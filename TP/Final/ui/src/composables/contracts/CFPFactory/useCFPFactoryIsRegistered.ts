@@ -3,7 +3,7 @@ import { storeToRefs } from "pinia";
 
 import { useCFPFactory } from "@/services/contracts/business/useCFPFactory";
 import { useUserStore } from "@/store/userStore";
-import { useCallHandler } from "@/composables/contracts/useCallHandler";
+import { useCallHandler } from "@/composables/contracts/handlers/useCallHandler";
 
 export function useCFPFactoryIsRegistered() {
   const { isRegistered } = useCFPFactory();

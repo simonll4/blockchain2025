@@ -92,32 +92,21 @@ export class AccountsService {
     return Promise.all(creators);
   }
 
-  // async getAllCreators(): Promise<string[]> {
-  //   const factory: CFPFactory = this.contractsService.getFactory();
-  //   const count = await factory.creatorsCount();
-  //   const creators: string[] = [];
-
-  //   for (let i = 0; i < count; i++) {
-  //     const creator: string = await factory.creators(i);
-  //     creators.push(creator);
-  //   }
-
-  //   return creators;
-  // }
-
   async getPendings(): Promise<string[]> {
     const factory: CFPFactory = this.contractsService.getFactory();
 
     try {
       const count = await factory.pendingCount();
-      const pending: string[] = [];
+      const pending: Promise<string>[] = [];
 
       for (let i = 0; i < count; i++) {
-        const addr: string = await factory.getPending(i);
-        pending.push(addr);
+        const promise = factory
+          .getPending(i)
+          .then((addr) => this.ensService.resolveNameOrAddress(addr));
+        pending.push(promise);
       }
 
-      return pending;
+      return Promise.all(pending);
     } catch (error) {
       console.error('Error in getPendings:', error);
       throw new UnauthorizedException('Unauthorized access or RPC error');

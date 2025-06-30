@@ -69,6 +69,7 @@ const handleRegisterOnChain = async () => {
 
   await fetchProposalData(onChainFile.value);
   const sender = proposalData.value?.sender;
+  console.log("Sender:", sender);
   if (sender && sender !== "0x0000000000000000000000000000000000000000") {
     message.value = "";
     error.value = "La propuesta ya ha sido registrada.";
@@ -103,6 +104,7 @@ const formatDate = (iso?: string) => {
       </v-card-title>
 
       <!-- Detalle del llamado -->
+      <!-- Detalle del llamado -->
       <v-card-title class="text-h6 mt-4 mb-2">Detalle del Llamado</v-card-title>
 
       <!-- Skeleton Loader mientras carga -->
@@ -117,36 +119,44 @@ const formatDate = (iso?: string) => {
       </v-sheet>
 
       <!-- Contenido real una vez cargado -->
+      <!-- Contenido real una vez cargado -->
       <v-sheet
         v-else
-        elevation="1"
-        class="pa-4 mb-4 rounded-lg"
-        color="grey-lighten-4"
+        elevation="2"
+        class="pa-6 mb-6 rounded-xl"
+        color="grey-lighten-5"
       >
-        <v-row dense>
-          <v-col cols="12" class="mb-2">
-            <strong>ID:</strong>
-            <div class="text-truncate-break">{{ callId }}</div>
-          </v-col>
-          <v-col cols="12" class="mb-2">
-            <strong>CFP:</strong>
-            <div class="text-truncate-break">{{ call?.cfp }}</div>
-          </v-col>
-
+        <v-row>
           <v-col cols="12">
-            <strong>Creador:</strong>
-            <div class="text-truncate-break">{{ call?.creator }}</div>
+            <h2 class="text-h5 font-weight-bold mb-3">
+              📄 CFP: {{ call?.cfp || "Sin título" }}
+            </h2>
           </v-col>
 
           <v-col cols="12" class="mb-2">
-            <strong>Fecha de cierre:</strong>
-            <div>
-              {{
-                call?.closingTime
-                  ? formatDate(call.closingTime)
-                  : "Fecha no disponible"
-              }}
+            <v-icon size="20" class="me-1">mdi-account-circle</v-icon>
+            <strong>Creador:</strong>
+            <div class="ms-4">{{ call?.creator || "No disponible" }}</div>
+          </v-col>
+
+          <v-col cols="12" class="mb-2">
+            <v-icon size="20" class="me-1">mdi-text-box-outline</v-icon>
+            <strong>Descripción:</strong>
+            <div class="ms-4 text-truncate-break">
+              {{ call?.description || "Sin descripción" }}
             </div>
+          </v-col>
+
+          <v-col cols="12" class="mt-4">
+            <v-chip
+              color="deep-purple-accent-2"
+              text-color="white"
+              size="small"
+              style="font-weight: bold; font-size: 0.85rem"
+              variant="elevated"
+            >
+              Cierra: {{ formatDate(call?.closingTime) }}
+            </v-chip>
           </v-col>
         </v-row>
       </v-sheet>

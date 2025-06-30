@@ -1,5 +1,6 @@
 <script setup>
-import { computed, watch } from "vue";
+import { computed, watch, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import { useMetamask } from "@/services/metamask/useMetamask";
 import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
@@ -7,7 +8,7 @@ import { useCFPFactoryRegister } from "@/composables/contracts/CFPFactory/useCFP
 import { useCFPFactoryIsRegistered } from "@/composables/contracts/CFPFactory/useCFPFactoryIsRegistered";
 import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
 import { useApiHealthCheck } from "@/composables/api/useApiHealthCheck";
-
+import { useENSResolveUserAddress } from "@/composables/contracts/ens/useENSResolveUserAddress";
 
 const { isConnected, networkOk, account } = useMetamask();
 
@@ -25,7 +26,19 @@ const {
   loading: loadingIsRegistered,
 } = useCFPFactoryIsRegistered();
 
-// TODO traer el estado de isOwner desde el contrato
+const { ensName, loading } = useENSResolveUserAddress();
+
+const router = useRouter();
+const ensDismissed = ref(false);
+
+const showEnsNotice = computed(() => {
+  return !ensDismissed.value && (!ensName.value || ensName.value.trim() === "");
+});
+
+const goToEnsRegister = () => {
+  router.push("/ens-register");
+};
+
 const { isOwner, checkIsOwner } = useCFPFactoryIsOwner();
 
 const { isHealthy } = useApiHealthCheck();
@@ -154,6 +167,45 @@ watch(
             </v-btn>
           </div>
         </v-card>
+
+        <template v-if="showEnsNotice">
+          <v-alert
+            elevation="4"
+            color="indigo-darken-3"
+            variant="flat"
+            class="mt-6 pa-5 rounded-xl"
+            closable
+            @click:close="ensDismissed = true"
+          >
+            <div
+              class="d-flex flex-column flex-sm-row align-center justify-space-between"
+            >
+              <div
+                class="text-white text-body-1 font-weight-medium d-flex align-center"
+              >
+                <v-icon
+                  icon="mdi-alert-circle-outline"
+                  class="mr-2"
+                  color="white"
+                />
+                No tenés un nombre ENS asociado a tu cuenta.
+                <br class="d-sm-none" />
+                &nbsp;Podés registrarlo haciendo clic en el botón.
+              </div>
+              <v-btn
+                class="mt-4 mt-sm-0 ml-sm-6"
+                color="blue"
+                variant="elevated"
+                size="large"
+                rounded="xl"
+                prepend-icon="mdi-domain-plus"
+                @click="goToEnsRegister"
+              >
+                Registrar ENS
+              </v-btn>
+            </div>
+          </v-alert>
+        </template>
       </v-col>
     </v-row>
   </v-container>
