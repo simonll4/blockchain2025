@@ -24,20 +24,26 @@ const selectedCreators = ref<string[]>([]);
 
 const filteredCalls = computed(() => {
   if (activeTab.value !== 0) return [];
-  if (!selectedCreators.value.length) return calls.value;
-  return calls.value.filter((call) =>
-    selectedCreators.value.includes(call.creator)
-  );
+  let filtered = calls.value;
+  if (selectedCreators.value.length) {
+    filtered = calls.value.filter((call) =>
+      selectedCreators.value.includes(call.creator)
+    );
+  }
+  // Invertir el orden de los llamados
+  return filtered.slice().reverse();
 });
 
 const myCalls = computed(() => {
   if (activeTab.value !== 1) return [];
   if (!userAddress.value && !userENS.value) return [];
-  return calls.value.filter(
+  const filtered = calls.value.filter(
     (call) =>
       call.creator.toLowerCase() === userAddress.value?.toLowerCase() ||
       call.creator.toLowerCase() === userENS.value?.toLowerCase()
   );
+  // Invertir el orden de los llamados
+  return filtered.slice().reverse();
 });
 
 const {
@@ -395,104 +401,3 @@ onMounted(async () => {
   white-space: normal;
 }
 </style>
-
-<!-- <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
-import { format, parseISO } from "date-fns";
-
-import { formatCreator } from "@/utils/format";
-import { useUserStore } from "@/store/userStore";
-
-import { useApiCalls } from "@/composables/api/useApiCalls";
-import { useApiCreators } from "@/composables/api/useApiCreators";
-import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
-import { useCreateCallWithENS } from "@/composables/contracts/useCreateCallWithENS";
-
-const userStore = useUserStore();
-const userAddress = computed(() => userStore.address);
-
-const { isAuthorized } = useCFPFactoryIsAuthorized();
-
-const { fetchCreators, creators, loading } = useApiCreators();
-const { fetchCalls, calls, isLoading, error } = useApiCalls();
-
-const activeTab = ref(0);
-const selectedCreators = ref<string[]>([]);
-
-const filteredCalls = computed(() => {
-  if (activeTab.value !== 0) return [];
-  if (!selectedCreators.value.length) return calls.value;
-  return calls.value.filter((call) =>
-    selectedCreators.value.includes(call.creator)
-  );
-});
-
-const myCalls = computed(() => {
-  if (activeTab.value !== 1) return [];
-  if (!userAddress.value) return [];
-  return calls.value.filter(
-    (call) => call.creator.toLowerCase() === userAddress.value.toLowerCase()
-  );
-});
-
-const {
-  createCallWithENS,
-  isLoading: isCreating,
-  error: createError,
-  success: createSuccess,
-  message: createMessage,
-  reset: resetCreateStatus,
-} = useCreateCallWithENS();
-
-const showCreateDialog = ref(false);
-const newCallName = ref("");
-const newCallDescription = ref("");
-const newClosingDate = ref("");
-
-const resetCreateForm = () => {
-  newCallName.value = "";
-  newCallDescription.value = "";
-  newClosingDate.value = "";
-  showCreateDialog.value = false;
-};
-
-const createCall = async () => {
-  resetCreateStatus();
-  if (!newCallName.value) {
-    createError.value = "Debe ingresar un nombre para el llamado.";
-    return;
-  }
-  if (!newCallDescription.value) {
-    createError.value = "Debe ingresar una descripción para el llamado.";
-    return;
-  }
-  if (!newClosingDate.value) {
-    createError.value = "Debe seleccionar una fecha de cierre.";
-    return;
-  }
-
-  const closingTimestamp = Math.floor(
-    new Date(newClosingDate.value).getTime() / 1000
-  );
-
-  try {
-    await createCallWithENS(
-      newCallName.value,
-      newCallDescription.value,
-      closingTimestamp
-    );
-    if (createSuccess.value) {
-      resetCreateForm();
-    }
-  } catch {
-    createError.value = "Ocurrió un error al crear el llamado.";
-  }
-};
-
-const formatDate = (iso?: string) => {
-  if (!iso) return "N/A";
-  return format(parseISO(iso), "dd/MM/yyyy HH:mm");
-};
-</script>
-
--->

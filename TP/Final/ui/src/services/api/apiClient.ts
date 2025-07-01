@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { API_ENDPOINTS } from "@/utils/endpoints";
 
 const apiClient = axios.create({

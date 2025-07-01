@@ -6,11 +6,9 @@ export const useLlamadosRegistrarStore = defineStore(
   "llamadosRegistrar",
   () => {
     const contract = ref<LlamadosRegistrar>();
-    const contractAddress = ref<string>("");
 
     const initContract = (instance: LlamadosRegistrar, address: string) => {
       contract.value = instance;
-      contractAddress.value = address;
     };
 
     const getContract = (): LlamadosRegistrar => {
@@ -24,7 +22,6 @@ export const useLlamadosRegistrarStore = defineStore(
 
     return {
       contract,
-      contractAddress,
       initContract,
       getContract,
     };

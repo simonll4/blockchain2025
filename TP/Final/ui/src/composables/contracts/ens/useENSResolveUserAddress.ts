@@ -6,7 +6,7 @@ import { usePublicResolver } from "@/services/contracts/ens/usePublicResolver";
 import { useCallHandler } from "@/composables/contracts/handlers/useCallHandler";
 
 /**
- * Composable para resolver una dirección Ethereum a un nombre ENS
+ * Composable para resolver la dirección Ethereum de cuenta Metamask a nombre ENS
  */
 export function useENSResolveUserAddress() {
   const { node } = useReverseRegistrar();

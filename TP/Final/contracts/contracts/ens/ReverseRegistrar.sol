@@ -96,6 +96,16 @@ contract ReverseRegistrar {
         return _node;
     }
 
+
+    /**
+     * @dev Sets the `name()` record for the reverse ENS record associated with
+     * the given address. First updates the resolver to the default reverse
+     * resolver if necessary.
+     * @param addr The address to set the name for.
+     * @param owner The owner of the reverse record in ENS.
+     * @param name The name to set for this address.
+     * @return The ENS node hash of the reverse record.
+     */
     function setNameFor(
         address addr,
         address owner,
@@ -110,39 +120,6 @@ contract ReverseRegistrar {
             ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, owner);
         }
     }
-
-    // /**
-    //  * @notice Crea y configura el PTR de una dirección arbitraria.
-    //  * @param addr      Dirección que tendrá el registro inverso.
-    //  * @param owner     Quien quedará como dueño del nodo PTR.
-    //  * @param resolver  Resolver a usar (suele ser PublicResolver).
-    //  * @param name      Nombre ENS completo, p. ej. "foo.llamados.cfp".
-    //  */
-    // function setNameForAddr(
-    //     address addr,
-    //     address owner,
-    //     address resolver,
-    //     string calldata name
-    // ) external returns (bytes32 reverseNode) {
-    //     bytes32 label = sha3HexAddress(addr);
-    //     reverseNode = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
-
-    //     // 1. Creamos/poseemos el nodo
-    //     _ensureOwnership(label);
-
-    //     // 2. Resolver
-    //     if (resolver != address(0) && resolver != ens.resolver(reverseNode)) {
-    //         ens.setResolver(reverseNode, resolver);
-    //     }
-
-    //     // 3. Escribimos el texto "name"
-    //     INameResolver(resolver).setName(reverseNode, name);
-
-    //     // 4. Transferimos la propiedad al owner final
-    //     if (owner != ens.owner(reverseNode)) {
-    //         ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, owner);
-    //     }
-    // }
 
     /**
      * @dev Returns the node hash for a given account's reverse records.
@@ -197,30 +174,4 @@ contract ReverseRegistrar {
             ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, address(this));
         }
     }
-    // /**
-    //  * @dev SHA3 de la representación hexadec. minúscula de una address
-    //  *      (función optimizada en ensamblador, igual que la original).
-    //  */
-    // function _sha3HexAddress(address addr) private pure returns (bytes32 ret) {
-    //     assembly {
-    //         let
-    //             lookup
-    //         := 0x3031323334353637383961626364656600000000000000000000000000000000
-
-    //         for {
-    //             let i := 40
-    //         } gt(i, 0) {
-
-    //         } {
-    //             i := sub(i, 1)
-    //             mstore8(i, byte(and(addr, 0xf), lookup))
-    //             addr := shr(4, addr)
-    //             i := sub(i, 1)
-    //             mstore8(i, byte(and(addr, 0xf), lookup))
-    //             addr := shr(4, addr)
-    //         }
-
-    //         ret := keccak256(0, 40)
-    //     }
-    // }
 }

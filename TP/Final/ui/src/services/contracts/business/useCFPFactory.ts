@@ -4,9 +4,14 @@ import { storeToRefs } from "pinia";
 import { useMetamask } from "../../metamask/useMetamask";
 import { CFPFactory__factory } from "@/services/contracts/types/factories/CFPFactory__factory";
 import { useCFPFactoryStore } from "@/store/contracts/business/CFPFactoryStore";
+import type { CFPFactory } from "../types";
+import contractsConfig from "../../../../contractsConfig.json";
 
-const ADDRESS = import.meta.env.VITE_CFPFACTORY_ADDRESS;
+const ADDRESS = contractsConfig.contracts.cfpFactory;
 
+/**
+ * Composable para interactuar con el contrato CFPFactory.
+ */
 export function useCFPFactory() {
   const contractStore = useCFPFactoryStore();
   const { contract } = storeToRefs(contractStore);
@@ -20,74 +25,50 @@ export function useCFPFactory() {
     contractStore.initContract(instance, ADDRESS);
   };
 
-  const getOwner = async () => {
+  const getContract = (): CFPFactory => {
     const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.owner();
+    if (!rawContract) throw new Error("CFPFactory no inicializado");
+    return rawContract;
+  };
+
+  /* METODOS DEL CONTRATO */
+
+  const getOwner = async () => {
+    return getContract().owner();
   };
 
   const getCall = async (callId: string) => {
-    const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.calls(callId);
+    return getContract().calls(callId);
   };
 
   // Crear un nuevo llamado
   const createCall = async (callId: string, timestamp: number) => {
-    const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.create(callId, timestamp);
+    return getContract().create(callId, timestamp);
   };
 
   // Registrar una propuesta en un llamado
   const registerProposal = async (callId: string, proposal: string) => {
-    const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.registerProposal(callId, proposal);
+    return getContract().registerProposal(callId, proposal);
   };
 
   // Verificar si una dirección está autorizada para crear llamdos
   const isAuthorized = async (address: string) => {
-    const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.isAuthorized(address);
+    return getContract().isAuthorized(address);
   };
 
   // Verificar si una dirección está registrada en el contrato para crear llamados
   const isRegistered = async (address: string): Promise<boolean> => {
-    const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.isRegistered(address);
+    return getContract().isRegistered(address);
   };
 
   // Registrarse en el contrato para poder crear llamados
   const register = async () => {
-    const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.register();
+    return getContract().register();
   };
 
   // Autorizar a una cuenta para crear llamados
   const authorize = async (creator: string) => {
-    const rawContract = toRaw(contract.value);
-    if (!rawContract) {
-      throw new Error("Contrato no inicializado");
-    }
-    return rawContract.authorize(creator);
+    return getContract().authorize(creator);
   };
 
   return {

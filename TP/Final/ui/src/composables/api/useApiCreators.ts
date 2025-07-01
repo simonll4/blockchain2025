@@ -2,12 +2,15 @@ import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 
 import { CallsService } from "@/services/api/apiClient";
-import { useCreatorsStore } from "@/store/creatorsStore";
+import { useUserStore } from "@/store/usersStore";
 
+/**
+ * Composable para obtener los creadores de llamadas desde la API.
+ */
 export const useApiCreators = () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
-  const store = useCreatorsStore();
+  const store = useUserStore();
   const { creators } = storeToRefs(store);
 
   const fetchCreators = async () => {

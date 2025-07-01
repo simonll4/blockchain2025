@@ -1,8 +1,10 @@
 import { ref } from "vue";
 import { ProposalService } from "@/services/api/apiClient";
-import { USER_ERRORS } from "@/utils/apiErrors";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
+/**
+ * Composable para verificar si una propuesta ya existe en la blockchain
+ */
 export function useApiVerifyProposal(callId: string) {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
@@ -36,7 +38,7 @@ export function useApiVerifyProposal(callId: string) {
     } catch (err: any) {
       const apiError = err.response?.data?.message;
 
-      if (apiError && Object.values(USER_ERRORS).includes(apiError)) {
+      if (err.response?.status === 404) {
         error.value = apiError;
         message.value = apiError;
       } else {

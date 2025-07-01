@@ -1,28 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ethers } from 'ethers';
+
 import { ConfigService } from '../../config/config.service';
 import { ContractLoader } from '../utils/contract-loader';
 import { PublicResolver, ReverseRegistrar } from '../types';
 
 @Injectable()
-export class ENSService {
-  private readonly provider: ethers.JsonRpcProvider;
-  private readonly reverse: ReverseRegistrar;
-  private readonly resolver: PublicResolver;
+export class ENSService implements OnModuleInit {
+  private provider: ethers.JsonRpcProvider;
+  private reverse: ReverseRegistrar;
+  private resolver: PublicResolver;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly loader: ContractLoader,
-  ) {
+  ) {}
+
+  onModuleInit() {
     this.provider = new ethers.JsonRpcProvider(
       this.configService.getGanacheUrl(),
     );
-
     this.reverse = this.loader.loadReverseRegistrar(this.provider);
     this.resolver = this.loader.loadPublicResolver(this.provider);
   }
 
-  async resolveNameOrAddress(address: string): Promise<string> {
+  async resolveAddress(address: string): Promise<string> {
     try {
       const node = await this.reverse.node(address);
       const name = await this.resolver.name(node);
@@ -62,38 +64,3 @@ export class ENSService {
     }
   }
 }
-
-// import { Injectable } from '@nestjs/common';
-// import { ethers } from 'ethers';
-// import { ConfigService } from '../../config/config.service';
-// import { ContractLoader } from '../utils/contract-loader';
-
-// @Injectable()
-// export class ENSService {
-//   private readonly provider: ethers.JsonRpcProvider;
-
-//   constructor(
-//     private readonly configService: ConfigService,
-//     private readonly loader: ContractLoader,
-//   ) {
-//     this.provider = new ethers.JsonRpcProvider(
-//       this.configService.getGanacheUrl(),
-//     );
-//   }
-
-//   async resolveNameOrAddress(address: string): Promise<string> {
-//     try {
-//       const reverse = this.loader.loadReverseRegistrar(this.provider);
-//       const resolver = this.loader.loadPublicResolver(this.provider);
-
-//       const node = await reverse.node(address);
-//       const name = await resolver.name(node);
-//       console.log(name);
-
-//       return name || address;
-//     } catch (error) {
-//       console.error('[ENSService] Error resolving address:', error);
-//       return address;
-//     }
-//   }
-// }

@@ -5,6 +5,10 @@ import { useCFPFactory } from "@/services/contracts/business/useCFPFactory";
 import { useUserStore } from "@/store/userStore";
 import { useCallHandler } from "@/composables/contracts/handlers/useCallHandler";
 
+
+/**
+ * Composable para verificar on-chain si un usuario está registrado en CFPFactory usando cuenta Metamask
+ */
 export function useCFPFactoryIsRegistered() {
   const { isRegistered } = useCFPFactory();
   const userStore = useUserStore();
@@ -42,39 +46,3 @@ export function useCFPFactoryIsRegistered() {
     checkIsRegistered,
   };
 }
-
-// import { watch } from "vue";
-// import { storeToRefs } from "pinia";
-
-// import { useCFPFactory } from "../../../services/contracts/useCFPFactory";
-// import { useUserStore } from "@/store/user";
-// import { useCallHandler } from "@/composables/contracts/useCallHandler";
-
-// export function useCFPFactoryIsRegistered() {
-//   const { isRegistered } = useCFPFactory();
-//   const userStore = useUserStore();
-//   const { address, isPending } = storeToRefs(userStore);
-//   const { loading, error, runCall } = useCallHandler<boolean>();
-
-//   const checkIsRegistered = async () => {
-//     if (!address.value) {
-//       userStore.setPending(false);
-//       return;
-//     }
-
-//     await runCall(
-//       () => isRegistered(address.value),
-//       (result) => userStore.setPending(result),
-//       () => userStore.setPending(false)
-//     );
-//   };
-
-//   watch(address, checkIsRegistered, { immediate: true });
-
-//   return {
-//     isPending,
-//     loading,
-//     error,
-//     checkIsRegistered,
-//   };
-// }

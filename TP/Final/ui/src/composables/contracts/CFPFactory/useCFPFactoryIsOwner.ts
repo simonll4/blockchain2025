@@ -5,6 +5,9 @@ import { useCallHandler } from "../handlers/useCallHandler";
 import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
 import { useUserStore } from "@/store/userStore";
 
+/**
+ * Composable para verificar on-chain si un usuario es owner de CFPFactory usando cuenta Metamask
+ */
 export function useCFPFactoryIsOwner() {
   const { loading, error, message, runCall } = useCallHandler<boolean>();
   const { getOwner } = useCFPFactory();

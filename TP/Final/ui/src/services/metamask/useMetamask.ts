@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { ethers } from "ethers";
 
 import { useUserStore } from "@/store/userStore";
+import contractsConfig from "../../../contractsConfig.json";
 
 declare global {
   interface Window {
@@ -10,7 +11,7 @@ declare global {
   }
 }
 
-const expectedChainId = Number(import.meta.env.VITE_CHAIN_ID);
+const expectedChainId = contractsConfig.network.chainId;
 
 const provider = ref<ethers.BrowserProvider | null>(null);
 const signer = ref<ethers.Signer | null>(null);
@@ -92,7 +93,7 @@ export function useMetamask() {
   };
 
   return {
-    // estado (reactivo)
+    // estados
     address,
     isConnected,
     networkOk,

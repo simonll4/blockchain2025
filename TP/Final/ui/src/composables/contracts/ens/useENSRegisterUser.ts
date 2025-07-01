@@ -1,5 +1,5 @@
 import { useMetamask } from "@/services/metamask/useMetamask";
-import { namehash } from "@/utils/ens";
+import { namehash, labelhash } from "@/utils/ens";
 
 import { useUsuariosRegistrar } from "@/services/contracts/ens/useUsuariosRegistrar";
 import { useENSRegistry } from "@/services/contracts/ens/useENSRegistry";
@@ -35,13 +35,14 @@ export function useENSRegisterUser() {
 
     const { label, fullDomain } = parsed;
     const node = namehash(fullDomain); // Nodo ENS (hash del nombre completo)
+    const labelHash = labelhash(label); // Hash del label
 
     // Paso 2: Verificar si el nodo ya está registrado y si el usuario es el propietario
     try {
       const owner = await getOwner(node);
       if (
-        owner !== "0x0000000000000000000000000000000000000000" && // Ya registrado
-        owner.toLowerCase() !== account.value?.toLowerCase() // Pero no por el mismo user
+        owner !== "0x0000000000000000000000000000000000000000" &&
+        owner.toLowerCase() !== account.value?.toLowerCase()
       ) {
         error.value = `El nombre ENS "${fullDomain}" ya fue registrado por otro usuario.`;
         return false;
@@ -51,22 +52,22 @@ export function useENSRegisterUser() {
       return false;
     }
 
-    // Paso 3: Registrar el nombre ENS llamando al registrador de usuarios (FIFSRegistrar)
+    // Paso 3: Registrar el nombre ENS llamando al registrador de usuarios
     const step1 = await runTx(
-      () => registerUsername(label), // Se pasa solo el label, no el dominio completo
+      () => registerUsername(labelHash),
       "Usuario registrado en ENS"
     );
     if (!step1) return false;
 
     // Paso 4: Verificar que el resolver esté inicializado correctamente
-    if (!resolverAddress.value) {
+    if (!resolverAddress) {
       error.value = "No se pudo obtener la dirección del resolver deseado";
       return false;
     }
 
     // Paso 5: Asignar el resolver al nodo
     const step2 = await runTx(
-      () => setResolver(node, resolverAddress.value),
+      () => setResolver(node, String(resolverAddress)),
       "Resolver asignado correctamente"
     );
     if (!step2) return false;

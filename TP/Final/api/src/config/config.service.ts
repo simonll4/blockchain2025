@@ -1,9 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import configData from './config.json';
+import config from './config.json';
+import contractsConfig from './contractsConfig.json';
+
+type ContractsConfig = {
+  ensRegistry: string;
+  fifsRegistrar: string;
+  usuariosRegistrar: string;
+  llamadosRegistrar: string;
+  reverseRegistrar: string;
+  publicResolver: string;
+  cfpFactory: string;
+};
+
+type config = {
+  ganache_url: string;
+  mnemonic: string;
+  account_index: number;
+  hd_path_template: string;
+};
 
 @Injectable()
 export class ConfigService {
-  private readonly config: Record<string, any> = configData;
+  private readonly config: config = config;
+  private readonly contracts: ContractsConfig = contractsConfig.contracts;
 
   get<T = unknown>(key: string): T {
     return this.config[key] as T;
@@ -11,10 +30,6 @@ export class ConfigService {
 
   getGanacheUrl(): string {
     return this.get<string>('ganache_url');
-  }
-
-  getNetworkId(): string {
-    return this.get<string>('network_id');
   }
 
   getMnemonic(): string {
@@ -32,71 +47,19 @@ export class ConfigService {
     );
   }
 
-  getFactoryContractPath(): string {
-    return this.get<string>('factory_contract_path');
-  }
-
-  getCFPContractPath(): string {
-    return this.get<string>('cfp_contract_path');
-  }
-
   getFactoryContractAddress(): string {
-    return this.get<string>('factory_contract_address');
-  }
-
-  getCFPContractAddress(): string {
-    return this.get<string>('cfp_contract_address');
+    return this.contracts.cfpFactory;
   }
 
   getEnsRegistryAddress(): string {
-    return this.get<string>('ens_registry_address');
+    return this.contracts.ensRegistry;
   }
 
   getPublicResolverAddress(): string {
-    return this.get<string>('public_resolver_address');
+    return this.contracts.publicResolver;
   }
 
   getReverseRegistrarAddress(): string {
-    return this.get<string>('reverse_registrar_address');
+    return this.contracts.reverseRegistrar;
   }
 }
-
-// import { Injectable } from '@nestjs/common';
-// import configData from './config.json';
-
-// @Injectable()
-// export class ConfigService {
-//   private readonly config: Record<string, any> = configData;
-
-//   get(key: string): any {
-//     return this.config[key];
-//   }
-
-//   getGanacheUrl(): string {
-//     return this.get('ganache_url');
-//   }
-
-//   getNetworkId(): string {
-//     return this.get('network_id');
-//   }
-
-//   getMnemonic(): string {
-//     return this.get('mnemonic');
-//   }
-
-//   getAccountIndex(): number {
-//     return this.get('account_index');
-//   }
-
-//   getHDPath(index: number): string {
-//     return this.get('hd_path_template').replace('{index}', index.toString());
-//   }
-
-//   getFactoryContractPath(): string {
-//     return this.get('factory_contract_path');
-//   }
-
-//   getCFPContractPath(): string {
-//     return this.get('cfp_contract_path');
-//   }
-// }

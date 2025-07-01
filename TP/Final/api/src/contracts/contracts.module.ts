@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ContractsService } from './contracts.service';
+import { CFPFactoryService } from './services/business.service';
 import { ConfigModule } from '../config/config.module';
 import { ContractLoader } from './utils/contract-loader';
 import { ContractsController } from './contracts.controller';
-import { ENSService } from './ens/ens.service';
+import { ENSService } from './services/ens.service';
 
 @Module({
   imports: [ConfigModule],
-  providers: [ContractsService, ContractLoader, ENSService],
-  exports: [ContractsService, ENSService],
+  providers: [CFPFactoryService, ContractLoader, ENSService],
+  exports: [CFPFactoryService, ENSService],
   controllers: [ContractsController],
 })
 export class ContractsModule {}

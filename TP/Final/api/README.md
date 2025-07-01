@@ -14,11 +14,6 @@ Esta API está modularizada en los siguientes módulos principales, cada uno con
    ```bash
    npm run start:dev
    ```
-   O para producción (requiere build previo):
-   ```bash
-   npm run build
-   npm run start:prod
-   ```
 
 ### 2. Pruebas automáticas (directorio `/test`)
 
@@ -39,17 +34,16 @@ Las pruebas automáticas están escritas en Python y se encuentran en la carpeta
    pytest test_apiserver.py
    ```
 
-Asegúrate de que la API esté corriendo antes de ejecutar los tests.
-
 ---
 
 ## Módulo: **Accounts**
 
 ### `/register`
+
 - Permite a un usuario registrarse para crear llamados, y los autoriza de inmediato.
 - **Método:** `POST`
 - **Content-type:** `application/json`
-- **Cuerpo:**  
+- **Cuerpo:**
   ```json
   {
     "address": "Dirección del solicitante",
@@ -59,7 +53,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
   El mensaje a firmar es una secuencia de bytes de longitud 20, procesado por `encode_defunct` de `eth_account.messages` (Python).
 - **Respuestas:**
   - **200:** `{ "message": "OK" }`
-  - **400:**  
+  - **400:**
     - `INVALID_MIMETYPE`
     - `INVALID_ADDRESS`
     - `INVALID_SIGNATURE`
@@ -69,6 +63,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/authorized/:address`
+
 - Verifica si una dirección está autorizada como creadora de llamados.
 - **Método:** `GET`
 - **Argumento:** `:address` (dirección a consultar)
@@ -80,6 +75,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/creators`
+
 - Retorna todas las direcciones autorizadas como creadoras de llamados.
 - **Método:** `GET`
 - **Respuestas:**
@@ -89,6 +85,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/pendings`
+
 - Retorna todas las direcciones pendientes de autorización como creadoras.
 - **Método:** `GET`
 - **Respuestas:**
@@ -100,10 +97,11 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ## Módulo: **Calls**
 
 ### `/create`
+
 - Crea un llamado a presentación de propuestas utilizando la función correspondiente de `CFPFactory`.
 - **Método:** `POST`
 - **Content-type:** `application/json`
-- **Cuerpo:**  
+- **Cuerpo:**
   ```json
   {
     "callId": "Hash identificador",
@@ -114,13 +112,13 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
   El mensaje a firmar es una secuencia de bytes de longitud 52 (20 bytes de dirección + 32 bytes de callId), procesado por `encode_defunct` de `eth_account.messages` (Python).
 - **Respuestas:**
   - **201:** `{ "message": "OK" }`
-  - **400:**  
+  - **400:**
     - `INVALID_MIMETYPE`
     - `INVALID_CALLID`
     - `INVALID_TIME_FORMAT`
     - `INVALID_CLOSING_TIME`
     - `INVALID_SIGNATURE`
-  - **403:**  
+  - **403:**
     - `ALREADY_CREATED`
     - `UNAUTHORIZED`
   - **500:** `INTERNAL_ERROR`
@@ -128,10 +126,11 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/calls`
+
 - Retorna todos los llamados creados.
 - **Método:** `GET`
 - **Respuestas:**
-  - **200:**  
+  - **200:**
     ```json
     [
       {
@@ -147,11 +146,12 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/calls/:call_id`
+
 - Obtiene información de un llamado específico.
 - **Método:** `GET`
 - **Argumento:** `:call_id` (hash identificador)
 - **Respuestas:**
-  - **200:**  
+  - **200:**
     ```json
     {
       "creator": "Dirección",
@@ -165,6 +165,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/closing-time/:call_id`
+
 - Obtiene la fecha y hora de cierre de un llamado.
 - **Método:** `GET`
 - **Argumento:** `:call_id` (hash identificador)
@@ -179,10 +180,11 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ## Módulo: **Proposals**
 
 ### `/register-proposal`
+
 - Permite a un usuario registrar una propuesta en un determinado llamado.
 - **Método:** `POST`
 - **Content-type:** `application/json`
-- **Cuerpo:**  
+- **Cuerpo:**
   ```json
   {
     "callId": "Hash identificador del llamado",
@@ -191,7 +193,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
   ```
 - **Respuestas:**
   - **201:** `{ "message": "OK" }`
-  - **400:**  
+  - **400:**
     - `INVALID_MIMETYPE`
     - `INVALID_CALLID`
     - `INVALID_PROPOSAL`
@@ -202,13 +204,14 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/proposal-data/:call_id/:proposal`
+
 - Obtiene los datos de una propuesta registrada.
 - **Método:** `GET`
-- **Argumentos:**  
+- **Argumentos:**
   - `:call_id` (hash del llamado)
   - `:proposal` (hash de la propuesta)
 - **Respuestas:**
-  - **200:**  
+  - **200:**
     ```json
     {
       "sender": "Dirección",
@@ -216,10 +219,10 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
       "timestamp": "ISO 8601"
     }
     ```
-  - **400:**  
+  - **400:**
     - `INVALID_CALLID`
     - `INVALID_PROPOSAL`
-  - **404:**  
+  - **404:**
     - `CALLID_NOT_FOUND`
     - `PROPOSAL_NOT_FOUND`
   - **500:** `INTERNAL_ERROR`
@@ -229,6 +232,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ## Módulo: **Contracts**
 
 ### `/contract-address`
+
 - Obtiene la dirección del contrato factoría.
 - **Método:** `GET`
 - **Respuestas:**
@@ -237,6 +241,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ---
 
 ### `/contract-owner`
+
 - Obtiene la dirección del dueño del contrato factoría.
 - **Método:** `GET`
 - **Respuestas:**
@@ -247,6 +252,7 @@ Asegúrate de que la API esté corriendo antes de ejecutar los tests.
 ## Módulo: **Health**
 
 ### `/health`
+
 - Endpoint de salud para verificar el estado de la API.
 - **Método:** `GET`
 - **Respuestas:**

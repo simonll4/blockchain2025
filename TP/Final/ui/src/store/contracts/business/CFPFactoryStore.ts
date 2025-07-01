@@ -5,11 +5,9 @@ import type { CFPFactory } from "@/services/contracts/types";
 
 export const useCFPFactoryStore = defineStore("contract", () => {
   const contract = ref<CFPFactory>();
-  const factoryAddress = ref<string>("");
 
   const initContract = (instance: CFPFactory, address: string) => {
     contract.value = instance;
-    factoryAddress.value = address;
   };
 
   const getContract = (): CFPFactory => {
@@ -20,7 +18,6 @@ export const useCFPFactoryStore = defineStore("contract", () => {
   };
 
   return {
-    factoryAddress,
     contract,
     initContract,
     getContract,

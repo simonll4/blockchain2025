@@ -1,13 +1,13 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ethers } from 'ethers';
 import PQueue from 'p-queue';
-import { ConfigService } from '../config/config.service';
-import { ContractLoader } from './utils/contract-loader';
-import { CFPFactory } from './types/CFPFactory';
-import { CFP } from './types';
+import { ConfigService } from '../../config/config.service';
+import { ContractLoader } from '../utils/contract-loader';
+import { CFPFactory } from '../types/CFPFactory';
+import { CFP } from '../types';
 
 @Injectable()
-export class ContractsService {
+export class CFPFactoryService {
   private provider: ethers.JsonRpcProvider;
   private signer: ethers.Signer;
   private factoryContract: CFPFactory;
@@ -40,16 +40,24 @@ export class ContractsService {
     return wallet.connect(this.provider);
   }
 
-  getSigner(): ethers.Signer {
-    return this.signer;
-  }
-
   getFactory(): CFPFactory {
     return this.factoryContract;
   }
 
   getCfp(address: string): CFP {
     return this.loader.loadCfpContract(address, this.signer);
+  }
+
+  /**
+   * Fuerza la actualización del nonce local desde la blockchain.
+   */
+  async refreshNonce(): Promise<number> {
+    const address = await this.signer.getAddress();
+    this.currentNonce = await this.provider.getTransactionCount(
+      address,
+      'pending',
+    );
+    return this.currentNonce;
   }
 
   async sendTransaction(

@@ -4,6 +4,7 @@ import { ref } from "vue";
 
 export const useUserStore = defineStore("users", () => {
   const pendingUsers = ref<PendingUser[]>([]);
+  const creators = ref<string[]>([]);
 
   const setPendingUsers = (users: PendingUser[]) => {
     pendingUsers.value = users;
@@ -18,14 +19,15 @@ export const useUserStore = defineStore("users", () => {
     }
   };
 
-  const clearPendingUsers = () => {
-    pendingUsers.value = [];
+  const setCreators = (newCreators: string[]) => {
+    creators.value = newCreators;
   };
 
   return {
     pendingUsers,
     setPendingUsers,
     addPendingUser,
-    clearPendingUsers,
+    creators,
+    setCreators,
   };
 });

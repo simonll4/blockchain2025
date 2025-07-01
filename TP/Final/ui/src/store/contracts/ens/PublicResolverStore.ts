@@ -4,11 +4,9 @@ import type { PublicResolver } from "@/services/contracts/types";
 
 export const usePublicResolverStore = defineStore("publicResolver", () => {
   const contract = ref<PublicResolver>();
-  const contractAddress = ref<string>("");
 
   const initContract = (instance: PublicResolver, address: string) => {
     contract.value = instance;
-    contractAddress.value = address;
   };
 
   const getContract = (): PublicResolver => {
@@ -22,7 +20,6 @@ export const usePublicResolverStore = defineStore("publicResolver", () => {
 
   return {
     contract,
-    contractAddress,
     initContract,
     getContract,
   };

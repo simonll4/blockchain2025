@@ -4,6 +4,9 @@ import { useCallDetailStore } from "@/store/callDetailStore";
 import { CallsService } from "@/services/api/apiClient";
 import { ref } from "vue";
 
+/**
+ * Composable para obtener el detalle de un llamado específico desde la API.
+ */
 export function useApiCallDetail(callId: string) {
   const isLoading = ref(false);
   const error = ref<string | null>(null);

@@ -1,16 +1,3 @@
-<template>
-  <v-app class="custom-background">
-    <AppSidebar />
-    <AppTopbar />
-
-    <v-main>
-      <v-container fluid class="pa-4">
-        <router-view />
-      </v-container>
-    </v-main>
-  </v-app>
-</template>
-
 <script setup lang="ts">
 import { onMounted, watchEffect } from "vue";
 
@@ -58,6 +45,19 @@ onMounted(() => {
   checkInitialConnection();
 });
 </script>
+
+<template>
+  <v-app class="custom-background">
+    <AppSidebar />
+    <AppTopbar />
+
+    <v-main>
+      <v-container fluid class="pa-4">
+        <router-view />
+      </v-container>
+    </v-main>
+  </v-app>
+</template>
 
 <style scoped>
 .custom-background {

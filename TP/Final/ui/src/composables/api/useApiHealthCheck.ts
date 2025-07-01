@@ -1,6 +1,9 @@
 import { ref } from "vue";
 import { api } from "@/services/api/apiClient";
 
+/**
+ * Composable para verificar la salud de la API.
+ */
 export function useApiHealthCheck(autoCheck = true) {
   const isHealthy = ref<boolean | null>(null);
   const isChecking = ref(false);

@@ -1,5 +1,6 @@
 import { keccak256, toUtf8Bytes } from "ethers";
 import { namehash } from "@/utils/ens";
+import contractsConfig from "../../contractsConfig.json";
 
 /**
  * Valida y normaliza un nombre ENS para llamados.
@@ -12,13 +13,13 @@ export function normalizeCallName(
   if (trimmed === "") return null;
   const parts = trimmed.split(".");
   if (parts.length === 1 && /^[a-z0-9-]+$/.test(parts[0])) {
-    return { label: parts[0], fullDomain: `${parts[0]}.llamados.cfp` };
+    return { label: parts[0], fullDomain: `${parts[0]}.${contractsConfig.domains.llamados}` };
   }
+  const expectedParts = contractsConfig.domains.llamados.split(".");
   if (
-    parts.length === 3 &&
+    parts.length === expectedParts.length + 1 &&
     /^[a-z0-9-]+$/.test(parts[0]) &&
-    parts[1] === "llamados" &&
-    parts[2] === "cfp"
+    parts.slice(1).join(".") === contractsConfig.domains.llamados
   ) {
     return { label: parts[0], fullDomain: trimmed };
   }
@@ -40,14 +41,14 @@ export const normalizeUsername = (
   const parts = trimmed.split(".");
   // Caso: solo label
   if (parts.length === 1 && /^[a-z0-9-]+$/.test(parts[0])) {
-    return { label: parts[0], fullDomain: `${parts[0]}.usuarios.cfp` };
+    return { label: parts[0], fullDomain: `${parts[0]}.${contractsConfig.domains.usuarios}` };
   }
   // Caso: nombre.usuarios.cfp
+  const expectedParts = contractsConfig.domains.usuarios.split(".");
   if (
-    parts.length === 3 &&
+    parts.length === expectedParts.length + 1 &&
     /^[a-z0-9-]+$/.test(parts[0]) &&
-    parts[1] === "usuarios" &&
-    parts[2] === "cfp"
+    parts.slice(1).join(".") === contractsConfig.domains.usuarios
   ) {
     return { label: parts[0], fullDomain: trimmed };
   }
@@ -67,7 +68,6 @@ export async function checkENSAvailability(
   try {
     const node = namehash(fullDomain);
     const owner = await getOwner(node);
-    console.log("acaaa", owner);
     if (owner !== "0x0000000000000000000000000000000000000000") {
       // if (
       //   owner !== "0x0000000000000000000000000000000000000000" &&

@@ -1,10 +1,10 @@
 import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
-import { ContractsService } from './contracts.service';
+import { CFPFactoryService } from './services/business.service';
 import { MESSAGES } from 'src/common/messages';
 
 @Controller()
 export class ContractsController {
-  constructor(private readonly contractsService: ContractsService) {}
+  constructor(private readonly contractsService: CFPFactoryService) {}
 
   @Get('/contract-address')
   async getContractAddress() {

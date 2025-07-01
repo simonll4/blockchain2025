@@ -2,6 +2,9 @@ import { useCFP } from "@/services/contracts/business/useCFP";
 import { useCallHandler } from "@/composables/contracts/handlers/useCallHandler";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
+/**
+ * Composable para obtener los datos de una propuesta en CFP usando cuenta Metamask
+ */
 export function useCFPProposalData() {
   const { getProposalData } = useCFP();
   const { loading, error, message, result, runCall } = useCallHandler<any>();

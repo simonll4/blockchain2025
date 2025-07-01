@@ -6,7 +6,7 @@ import { useCallHandler } from "@/composables/contracts/handlers/useCallHandler"
 import { namehash } from "@/utils/ens";
 
 /**
- * Composable para resolver nombres ENS a direcciones y guardarlos en pendingUsers
+ * Composable para resolver nombres ENS a direcciones de cuentas pendientes a autorizar
  */
 export function useENSResolvePendingUsers() {
   const userStore = useUserStore();

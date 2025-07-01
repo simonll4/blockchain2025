@@ -1,12 +1,6 @@
 {
   "ganache_url": "http://127.0.0.1:7545",
-  "network_id": "5777",
   "mnemonic": "drink toast wet panel pulse example leave together brush segment index screen",
   "account_index": 0,
-  "hd_path_template": "m/44'/60'/0'/0/{index}",
-  "factory_contract_address": "0xbF6982139cb666c0eCD3500E85490491b6353f16",
-  "cfp_contract_address": "0x43eaF60809931ed635C5443AFEFf1C684fCf602C",
-  "ens_registry_address": "0x68A110bdc9160F0dfA7b0d0418Aa04cA995A6fC8",
-  "public_resolver_address": "0x386630A886ceAC31E5AAD386fb8d60be4CA87072",
-  "reverse_registrar_address": "0x76cD790B19300cb66F27dCF928459bA3214EA4B1"
+  "hd_path_template": "m/44'/60'/0'/0/{index}"
 }

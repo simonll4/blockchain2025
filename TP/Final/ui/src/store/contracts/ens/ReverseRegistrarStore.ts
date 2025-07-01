@@ -4,11 +4,9 @@ import type { ReverseRegistrar } from "@/services/contracts/types";
 
 export const useReverseRegistrarStore = defineStore("reverseRegistrar", () => {
   const contract = ref<ReverseRegistrar>();
-  const contractAddress = ref<string>("");
 
   const initContract = (instance: ReverseRegistrar, address: string) => {
     contract.value = instance;
-    contractAddress.value = address;
   };
 
   const getContract = (): ReverseRegistrar => {
@@ -22,7 +20,6 @@ export const useReverseRegistrarStore = defineStore("reverseRegistrar", () => {
 
   return {
     contract,
-    contractAddress,
     initContract,
     getContract,
   };

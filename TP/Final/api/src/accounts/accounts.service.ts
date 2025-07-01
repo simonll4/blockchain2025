@@ -5,15 +5,15 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { isAddress, getAddress, verifyMessage, getBytes } from 'ethers';
-import { ContractsService } from '../contracts/contracts.service';
+import { CFPFactoryService } from '../contracts/services/business.service';
 import { CFPFactory } from '../contracts/types/CFPFactory'; // ✅ nuevo
 import { MESSAGES } from 'src/common/messages';
-import { ENSService } from 'src/contracts/ens/ens.service';
+import { ENSService } from 'src/contracts/services/ens.service';
 
 @Injectable()
 export class AccountsService {
   constructor(
-    private readonly contractsService: ContractsService,
+    private readonly contractsService: CFPFactoryService,
     private readonly ensService: ENSService,
   ) {}
 
@@ -22,7 +22,7 @@ export class AccountsService {
       throw new BadRequestException({ message: MESSAGES.INVALID_ADDRESS });
     }
 
-    const factory: CFPFactory = this.contractsService.getFactory(); // ✅ tipado fuerte
+    const factory: CFPFactory = this.contractsService.getFactory();
     try {
       return await factory.isAuthorized(address);
     } catch (error) {
@@ -85,7 +85,7 @@ export class AccountsService {
     for (let i = 0; i < count; i++) {
       const promise = factory
         .creators(i)
-        .then((addr) => this.ensService.resolveNameOrAddress(addr));
+        .then((addr) => this.ensService.resolveAddress(addr));
       creators.push(promise);
     }
 
@@ -102,7 +102,7 @@ export class AccountsService {
       for (let i = 0; i < count; i++) {
         const promise = factory
           .getPending(i)
-          .then((addr) => this.ensService.resolveNameOrAddress(addr));
+          .then((addr) => this.ensService.resolveAddress(addr));
         pending.push(promise);
       }
 

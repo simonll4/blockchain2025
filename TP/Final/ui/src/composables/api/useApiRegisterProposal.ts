@@ -1,8 +1,10 @@
 import { ref } from "vue";
 import { ProposalService } from "@/services/api/apiClient";
-import { USER_ERRORS } from "@/utils/apiErrors";
 import { calculateFileHash } from "@/utils/ethersUtils";
 
+/**
+ * Composable para registrar una propuesta en la blockchain de manera anonima
+ */
 export function useApiRegisterProposal(callId: string) {
   const isLoading = ref(false);
   const error = ref<string | null>(null);

@@ -58,7 +58,11 @@ const handleVerify = async () => {
 };
 
 // Registrar directamente on-chain con Metamask
-const { proposalData, fetchProposalData } = useCFPProposalData();
+const {
+  proposalData,
+  fetchProposalData,
+  message: messageProposalData,
+} = useCFPProposalData();
 const { isLoading, error, message, register } =
   useCFPFactoryRegisterProposal(callId);
 
@@ -68,7 +72,7 @@ const handleRegisterOnChain = async () => {
   if (!onChainFile.value) return;
 
   await fetchProposalData(onChainFile.value);
-  const sender = proposalData.value?.sender;
+  const sender = proposalData.value[0];
   console.log("Sender:", sender);
   if (sender && sender !== "0x0000000000000000000000000000000000000000") {
     message.value = "";

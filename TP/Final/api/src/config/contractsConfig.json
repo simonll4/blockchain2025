@@ -1,0 +1,21 @@
+{
+  "network": {
+    "chainId": 1337
+  },
+  "contracts": {
+    "ensRegistry": "0x68A110bdc9160F0dfA7b0d0418Aa04cA995A6fC8",
+    "fifsRegistrar": "0x730cEE74D9DdDAF0aA4E28F2c0e41b54bF53D3A3",
+    "usuariosRegistrar": "0xedc9248405076b2F3824670759B5B63E08212c48",
+    "llamadosRegistrar": "0x093ca0a0d8f47c1557e0F19E1DD464ae4F4e9DE1",
+    "reverseRegistrar": "0x76cD790B19300cb66F27dCF928459bA3214EA4B1",
+    "publicResolver": "0x386630A886ceAC31E5AAD386fb8d60be4CA87072",
+    "cfpFactory": "0xbF6982139cb666c0eCD3500E85490491b6353f16"
+  },
+  "domains": {
+    "tld": "cfp",
+    "usuarios": "usuarios.cfp",
+    "llamados": "llamados.cfp",
+    "reverse": "addr.reverse"
+  },
+  "timestamp": "2025-07-01T03:02:39.368Z"
+}

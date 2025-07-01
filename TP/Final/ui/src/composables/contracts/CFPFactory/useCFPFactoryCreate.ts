@@ -1,6 +1,9 @@
 import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
 import { useTxHandler } from "../handlers/useTxHandler";
 
+/**
+ * Composable para crear un llamado en CFPFactory usando cuenta Metamask
+ */
 export function useCFPFactoryCreate() {
   const { createCall } = useCFPFactory();
   const { isLoading, error, success, message, runTx } = useTxHandler();

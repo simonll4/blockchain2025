@@ -2,6 +2,9 @@ import { calculateFileHash } from "@/utils/ethersUtils";
 import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
 import { useTxHandler } from "../handlers/useTxHandler";
 
+/**
+ * Composable para registrar on-chain una propuesta en CFPFactory usando cuenta Metamask
+ */
 export function useCFPFactoryRegisterProposal(callId: string) {
   const { registerProposal } = useCFPFactory();
   const { isLoading, error, success, message, runTx } = useTxHandler();
