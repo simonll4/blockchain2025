@@ -59,10 +59,10 @@ calls_list_schema = {
         "properties": {
             "callId": {"type": "string"},
             "creator": {"type": "string"},
-            "cfpAddress": {"type": "string"},
+            "cfp": {"type": "string"},
             "closingTime": {"type": "string"},
         },
-        "required": ["callId", "creator", "cfpAddress", "closingTime"],
+        "required": ["callId", "creator", "cfp", "closingTime"],
     },
 }
 

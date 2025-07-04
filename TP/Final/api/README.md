@@ -1,6 +1,52 @@
 # Documentación de la API
 
-Esta API está modularizada en los siguientes módulos principales, cada uno con sus propios endpoints y responsabilidades. A continuación, se describen los endpoints agrupados por módulo, junto con los posibles mensajes de error.
+---
+## Configuración de la API
+
+Antes de ejecutar la API, es necesario configurar manualmente el archivo de configuración `src/config/config.json` y asegurarse que el archivo `src/config/contractsConfig.json` tenga la informacion correcta del despligue de los contratos:
+
+### 1. `config.json`
+
+Este archivo contiene la configuración de la cuenta que utilizará la API para interactuar con la blockchain. Editar con los datos correspondientes a tu entorno:
+
+```json
+{
+  "ganache_url": "http://127.0.0.1:7545",           // URL del nodo Ethereum (por ejemplo, Ganache, Infura, etc.)
+  "mnemonic": "<frase mnemotécnica>",               // Frase mnemotécnica de la wallet a utilizar
+  "account_index": 0,                                // Índice de la cuenta a usar del HD wallet
+  "hd_path_template": "m/44'/60'/0'/0/{index}"      // Ruta HD para derivar cuentas
+}
+```
+
+### 2. `contractsConfig.json`
+
+Este archivo contiene la información de la red y las direcciones de los contratos desplegados que utiliza la API:
+
+```json
+{
+  "network": {
+    "chainId": 1337
+  },
+  "contracts": {
+    "ensRegistry": "<dirección ENSRegistry>",
+    "fifsRegistrar": "<dirección FIFSRegistrar>",
+    "usuariosRegistrar": "<dirección UsuariosRegistrar>",
+    "llamadosRegistrar": "<dirección LlamadosRegistrar>",
+    "reverseRegistrar": "<dirección ReverseRegistrar>",
+    "publicResolver": "<dirección PublicResolver>",
+    "cfpFactory": "<dirección CFPFactory>"
+  },
+  "domains": {
+    "tld": "cfp",
+    "usuarios": "usuarios.cfp",
+    "llamados": "llamados.cfp",
+    "reverse": "addr.reverse"
+  },
+  "timestamp": "<fecha de despliegue>"
+}
+```
+
+---
 
 ## Instalación y ejecución
 
@@ -37,6 +83,7 @@ Las pruebas automáticas están escritas en Python y se encuentran en la carpeta
 ---
 
 ## Módulo: **Accounts**
+Esta API está modularizada en los siguientes módulos principales, cada uno con sus propios endpoints y responsabilidades. A continuación, se describen los endpoints agrupados por módulo, junto con los posibles mensajes de error.
 
 ### `/register`
 
@@ -76,7 +123,7 @@ Las pruebas automáticas están escritas en Python y se encuentran en la carpeta
 
 ### `/creators`
 
-- Retorna todas las direcciones autorizadas como creadoras de llamados.
+- Retorna todas las direcciones autorizadas como creadoras de llamados. Si una dirección tiene un nombre ENS registrado, se devuelve el nombre en vez de la dirección.
 - **Método:** `GET`
 - **Respuestas:**
   - **200:** `{ "creators": [ "address1", "address2", ... ] }`
@@ -86,7 +133,7 @@ Las pruebas automáticas están escritas en Python y se encuentran en la carpeta
 
 ### `/pendings`
 
-- Retorna todas las direcciones pendientes de autorización como creadoras.
+- Retorna todas las direcciones pendientes de autorización como creadoras. Si una dirección tiene un nombre ENS registrado, se devuelve el nombre en vez de la dirección.
 - **Método:** `GET`
 - **Respuestas:**
   - **200:** `{ "pending": [ "address1", "address2", ... ] }`
@@ -134,9 +181,10 @@ Las pruebas automáticas están escritas en Python y se encuentran en la carpeta
     ```json
     [
       {
-        "creator": "Dirección",
-        "cfp": "Dirección del contrato",
-        "closingTime": "ISO 8601"
+        "creator": "Dirección o nombre ENS del creador",
+        "cfp": "Dirección o nombre ENS del contrato",
+        "closingTime": "ISO 8601",
+        "description":"Descripcion del llamado"
       },
       ...
     ]
@@ -154,8 +202,9 @@ Las pruebas automáticas están escritas en Python y se encuentran en la carpeta
   - **200:**
     ```json
     {
-      "creator": "Dirección",
-      "cfp": "Dirección del contrato"
+      "creator": "Dirección o nombre ENS del creador",
+      "cfp": "Dirección o nombre ENS del contrato",
+      "description": "Descripcion del llamado"
     }
     ```
   - **400:** `INVALID_CALLID`
