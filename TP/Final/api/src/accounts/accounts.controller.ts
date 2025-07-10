@@ -38,9 +38,7 @@ export class AccountsController {
   @Post('/register')
   @HttpCode(200)
   async register(@Body() body: RegisterAccountDto, @Req() req: Request) {
-    // Validación de Content-Type
     const contentTypeHeader = req.headers['content-type'] as string | undefined;
-
     if (contentTypeHeader !== 'application/json') {
       throw new BadRequestException({ message: MESSAGES.INVALID_MIMETYPE });
     }

@@ -2,11 +2,11 @@
 
 ## Propósito del Proyecto
 
-Este proyecto implementa un sistema de **Llamados a Presentación de Propuestas (CFP)** basado en blockchain, que permite:
+Este proyecto truffle implementa un sistema de **Llamados a Presentación de Propuestas (CFP)** basado en blockchain, que permite:
 
 ### Funcionalidades Principales
 
-- **Gestión de Llamados**: Crear y administrar convocatorias para presentación de propuestas con fechas de cierre específicas
+- **Gestión de Llamados**: Crear y administrar llamados para presentación de propuestas con fechas de cierre específicas
 - **Registro de Propuestas**: Permitir a usuarios registrados enviar propuestas a los llamados activos
 - **Sistema de Autorización**: Control de acceso con estados de cuenta (No registrado, Pendiente, Autorizado)
 - **Nomenclatura ENS**: Integración con Ethereum Name Service para identificación de usuarios y llamados
@@ -24,7 +24,7 @@ Este proyecto implementa un sistema de **Llamados a Presentación de Propuestas 
 
 Asegúrate de tener instalado en tu sistema:
 
-- **Node.js** (recomendado v14 o superior)
+- **Node.js** (recomendado v18 o superior)
 - **npm** (v6 o superior)
 - **Truffle**  
   Instala Truffle globalmente si no lo tienes:
@@ -42,13 +42,7 @@ Asegúrate de tener instalado en tu sistema:
 
 ## Instalación del Proyecto
 
-1. **Clona el repositorio:**
-   ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd <carpeta_del_proyecto>
-   ```
-
-2. **Instala las dependencias:**
+1. **Instala las dependencias:**
    ```bash
    npm install
    ```
@@ -59,7 +53,6 @@ Asegúrate de tener instalado en tu sistema:
 
 - Por defecto, el proyecto está configurado para usar la red local de Ganache.
 - Si necesitas modificar la configuración de red, edita el archivo `truffle-config.js`.
-- No se requiere configuración adicional para un entorno local estándar.
 
 ---
 

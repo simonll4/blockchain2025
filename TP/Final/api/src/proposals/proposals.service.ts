@@ -18,6 +18,15 @@ import { ProposalData } from './interfaces/proposal-data.interface';
 export class ProposalsService {
   constructor(private readonly contractsService: CFPFactoryService) {}
 
+  /**
+   * Obtiene los datos de una propuesta específica dentro de un llamado (call).
+   * @param callId Hash identificador del llamado (32 bytes hex string).
+   * @param proposal Hash identificador de la propuesta (32 bytes hex string).
+   * @returns Datos de la propuesta (ProposalData).
+   * @throws HttpException con BAD_REQUEST si el callId o proposal no son hex strings válidos de 32 bytes.
+   * @throws HttpException con NOT_FOUND si el llamado o la propuesta no existen.
+   * @throws HttpException con INTERNAL_SERVER_ERROR si hay errores de conexión RPC o del contrato.
+   */
   async getProposalData(
     callId: string,
     proposal: string,
@@ -69,10 +78,19 @@ export class ProposalsService {
         HttpStatus.NOT_FOUND,
       );
     }
-
     return proposalData;
   }
 
+  /**
+   * Registra una propuesta dentro de un llamado (call) específico.
+   * @param callId Hash identificador del llamado (32 bytes hex string).
+   * @param proposal Hash identificador de la propuesta (32 bytes hex string).
+   * @returns Promise<void> - No retorna valor, solo ejecuta la transacción.
+   * @throws BadRequestException si el callId o proposal no son hex strings válidos de 32 bytes.
+   * @throws NotFoundException si el llamado especificado no existe en el contrato.
+   * @throws ForbiddenException si la propuesta ya está registrada en el llamado.
+   * @throws InternalServerErrorException si ocurre un error de conexión RPC o al interactuar con los contratos.
+   */
   async registerProposal(callId: string, proposal: string): Promise<void> {
     if (!ethers.isHexString(callId, 32)) {
       throw new BadRequestException({ message: MESSAGES.INVALID_CALLID });

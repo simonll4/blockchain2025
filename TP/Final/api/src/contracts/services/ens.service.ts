@@ -24,6 +24,12 @@ export class ENSService implements OnModuleInit {
     this.resolver = this.loader.loadPublicResolver(this.provider);
   }
 
+  /**
+   * Resuelve una dirección Ethereum a su nombre ENS asociado.
+   * Si no se encuentra un nombre, devuelve la dirección original.
+   * @param address Dirección Ethereum a resolver.
+   * @returns Nombre ENS asociado o la dirección original si no se encuentra.
+   */
   async resolveAddress(address: string): Promise<string> {
     try {
       const node = await this.reverse.node(address);
@@ -37,6 +43,11 @@ export class ENSService implements OnModuleInit {
     }
   }
 
+  /**
+   * Obtiene el nombre y la descripción de un nombre ENS.
+   * @param address Dirección Ethereum a consultar.
+   * @returns Un objeto que contiene el nombre ENS y su descripción (si existe).
+   */
   async getNameAndDescription(
     address: string,
   ): Promise<{ name: string; description?: string }> {

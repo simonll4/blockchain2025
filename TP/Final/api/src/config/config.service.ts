@@ -1,3 +1,8 @@
+/**
+ * Servicio de configuración.
+ * Proporciona acceso a parámetros de configuración y direcciones de contratos.
+ * Utiliza archivos JSON para cargar la configuración general y de contratos.
+ */
 import { Injectable } from '@nestjs/common';
 import config from './config.json';
 import contractsConfig from './contractsConfig.json';

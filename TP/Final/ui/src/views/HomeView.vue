@@ -30,9 +30,10 @@ const { ensName, loading: loadingEnsName } = useENSResolveUserAddress();
 
 const router = useRouter();
 const ensDismissed = ref(false);
+const registerDismissed = ref(false);
 
 const showEnsNotice = computed(() => {
-  return !ensDismissed.value && (!ensName.value || ensName.value.trim() === "");
+  return !ensDismissed.value && (!ensName.value || ensName.value.trim() === "") && account.value !== ""  && networkOk.value;
 });
 
 const goToEnsRegister = () => {
@@ -60,7 +61,7 @@ const userStatus = computed(() => {
 });
 
 const showRegisterButton = computed(() => {
-  return !isAuthorized.value && !isPending.value && networkOk.value;
+  return !registerDismissed.value && !isAuthorized.value && !isPending.value && networkOk.value;
 });
 
 // Función para manejar el click en el botón de registro
@@ -70,20 +71,24 @@ const onRegisterClick = async () => {
 };
 
 var isLoading = ref(true);
+var dataLoaded = ref(false);
 
 watch(
   [isConnected, networkOk, account],
   async ([connected, network, currentAccount]) => {
+    dataLoaded.value = false;
     if (connected && network && currentAccount) {
       await checkIsRegistered();
       await checkIsAuthorized();
       checkIsOwner();
-      isLoading.value = false;
+      dataLoaded.value = true;
     } else {
       isAuthorized.value = false;
       isPending.value = false;
       isOwner.value = false;
+      dataLoaded.value = true;
     }
+    isLoading.value = false;
   },
   { immediate: true }
 );
@@ -138,7 +143,22 @@ watch(
               </v-list-item>
 
               <div v-if="isConnected && networkOk">
-                <v-list-item>
+                <v-list-item v-if="!dataLoaded">
+                  <v-list-item-title>
+                    Estado del usuario:
+                    <v-chip class="ml-2" color="grey" text-color="white">
+                      <v-progress-circular
+                        indeterminate
+                        color="white"
+                        size="16"
+                        width="2"
+                      />
+                      <span class="ml-2">Cargando...</span>
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item>
+
+                <v-list-item v-else>
                   <v-list-item-title>
                     Estado del usuario:
                     <v-chip :color="userStatus.color" class="ml-2">
@@ -149,7 +169,22 @@ watch(
               </div>
 
               <div v-if="isConnected && networkOk">
-                <v-list-item>
+                <v-list-item v-if="!dataLoaded">
+                  <v-list-item-title>
+                    ¿Es administrador?:
+                    <v-chip class="ml-2" color="grey" text-color="white">
+                      <v-progress-circular
+                        indeterminate
+                        color="white"
+                        size="16"
+                        width="2"
+                      />
+                      <span class="ml-2">Cargando...</span>
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item>
+
+                <v-list-item v-else>
                   <v-list-item-title>
                     ¿Es administrador?:
                     <v-chip :color="isOwner ? 'blue' : 'grey'" class="ml-2">
@@ -161,19 +196,45 @@ watch(
             </v-list>
 
             <v-divider class="my-4" />
-
-            <div v-if="showRegisterButton" class="text-center">
-              <v-btn
-                color="primary"
-                @click="onRegisterClick"
-                style="text-transform: none"
-              >
-                REGISTRARME PARA CREAR CFPs
-              </v-btn>
-            </div>
           </v-card>
 
-          <template v-if="showEnsNotice">
+          <template v-if="showRegisterButton && dataLoaded">
+            <v-alert
+              elevation="4"
+              color="green-darken-3"
+              variant="flat"
+              class="mt-6 pa-5 rounded-xl"
+              closable
+              @click:close="registerDismissed = true"
+            >
+              <div
+                class="d-flex flex-column flex-sm-row align-center justify-space-between"
+              >
+                <div
+                  class="text-white text-body-1 font-weight-medium d-flex align-center"
+                >
+                  <v-icon icon="mdi-account-plus" class="mr-2" color="white" />
+                  ¿Querés crear llamados a propuestas?
+                  <br class="d-sm-none" />
+                  &nbsp;Registrate haciendo clic en el botón.
+                </div>
+                <v-btn
+                  class="mt-4 mt-sm-0 ml-sm-6"
+                  color="blue"
+                  variant="elevated"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-account-plus"
+                  @click="onRegisterClick"
+                  style="text-transform: none"
+                >
+                  REGISTRARME PARA CREAR CFPs
+                </v-btn>
+              </div>
+            </v-alert>
+          </template>
+
+          <template v-if="showEnsNotice && dataLoaded">
             <v-alert
               elevation="4"
               color="indigo-darken-3"
@@ -216,132 +277,3 @@ watch(
     </v-row>
   </v-container>
 </template>
-
-<!-- <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12" md="8">
-        <v-card class="pa-6" elevation="3">
-          <v-card-title class="text-h5 mb-4"> Estados </v-card-title>
-
-          <v-list density="compact">
-            <v-list-item>
-              <v-list-item-title>
-                Metamask:
-                <v-chip :color="isConnected ? 'green' : 'red'" class="ml-2">
-                  {{ isConnected ? "Conectado" : "No conectado" }}
-                </v-chip>
-              </v-list-item-title>
-            </v-list-item>
-
-            <div v-if="isConnected">
-              <v-list-item>
-                <v-list-item-title>
-                  Red correcta:
-                  <v-chip :color="networkOk ? 'green' : 'red'" class="ml-2">
-                    {{ networkOk ? "Sí" : "No" }}
-                  </v-chip>
-                </v-list-item-title>
-              </v-list-item>
-            </div>
-
-            <v-list-item>
-              <v-list-item-title>
-                Conexión con la API:
-                <v-chip :color="isHealthy ? 'green' : 'red'" class="ml-2">
-                  {{ isHealthy ? "OK" : "Error" }}
-                </v-chip>
-              </v-list-item-title>
-            </v-list-item>
-
-            <div v-if="isConnected && networkOk">
-              <v-list-item>
-                <v-list-item-title>
-                  Estado del usuario:
-                  <v-chip
-                    v-if="loadingIsAuthorized || loadingIsRegistered"
-                    class="ml-2"
-                    color="grey"
-                    text-color="white"
-                  >
-                    <v-progress-circular
-                      indeterminate
-                      color="white"
-                      size="16"
-                      width="2"
-                    />
-                    <span class="ml-2">Verificando...</span>
-                  </v-chip>
-                  <v-chip v-else :color="userStatus.color" class="ml-2">
-                    {{ userStatus.text }}
-                  </v-chip>
-                </v-list-item-title>
-              </v-list-item>
-            </div>
-            <div v-if="isConnected && networkOk">
-              <v-list-item>
-                <v-list-item-title>
-                  ¿Es administrador?:
-                  <v-chip :color="isOwner ? 'blue' : 'grey'" class="ml-2">
-                    {{ isOwner ? "Sí" : "No" }}
-                  </v-chip>
-                </v-list-item-title>
-              </v-list-item>
-            </div>
-          </v-list>
-
-          <v-divider class="my-4" />
-
-          <div v-if="showRegisterButton" class="text-center">
-            <v-btn
-              color="primary"
-              @click="onRegisterClick"
-              style="text-transform: none"
-            >
-              REGISTRARME PARA CREAR CFPs
-            </v-btn>
-          </div>
-        </v-card>
-
-        <template v-if="showEnsNotice">
-          <v-alert
-            elevation="4"
-            color="indigo-darken-3"
-            variant="flat"
-            class="mt-6 pa-5 rounded-xl"
-            closable
-            @click:close="ensDismissed = true"
-          >
-            <div
-              class="d-flex flex-column flex-sm-row align-center justify-space-between"
-            >
-              <div
-                class="text-white text-body-1 font-weight-medium d-flex align-center"
-              >
-                <v-icon
-                  icon="mdi-alert-circle-outline"
-                  class="mr-2"
-                  color="white"
-                />
-                No tenés un nombre ENS asociado a tu cuenta.
-                <br class="d-sm-none" />
-                &nbsp;Podés registrarlo haciendo clic en el botón.
-              </div>
-              <v-btn
-                class="mt-4 mt-sm-0 ml-sm-6"
-                color="blue"
-                variant="elevated"
-                size="large"
-                rounded="xl"
-                prepend-icon="mdi-domain-plus"
-                @click="goToEnsRegister"
-              >
-                Registrar ENS
-              </v-btn>
-            </div>
-          </v-alert>
-        </template>
-      </v-col>
-    </v-row>
-  </v-container>
-</template> -->

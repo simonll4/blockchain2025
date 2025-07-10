@@ -73,7 +73,6 @@ const handleRegisterOnChain = async () => {
 
   await fetchProposalData(onChainFile.value);
   const sender = proposalData.value[0];
-  console.log("Sender:", sender);
   if (sender && sender !== "0x0000000000000000000000000000000000000000") {
     message.value = "";
     error.value = "La propuesta ya ha sido registrada.";

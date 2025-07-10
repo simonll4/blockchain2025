@@ -1,3 +1,10 @@
+/**
+ * Servicio para cargar y conectar contratos inteligentes utilizados en la aplicación.
+ * @remarks
+ * Esta utilidad abstrae la obtención de direcciones y la lógica de conexión de contratos,
+ * facilitando la interacción con los contratos desplegados.
+ * @param configService - Servicio para obtener las direcciones de los contratos desde la configuración.
+ */
 import { Injectable } from '@nestjs/common';
 import { Signer, Provider } from 'ethers';
 import {

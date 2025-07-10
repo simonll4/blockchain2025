@@ -22,6 +22,13 @@ export class CallsService {
     private readonly ensService: ENSService,
   ) {}
 
+  /**
+   * Obtiene los detalles de un llamado (call) por su ID.
+   * @param callId ID del llamado a buscar.
+   * @returns Detalles del llamado.
+   * @throws BadRequestException si el ID no es válido.
+   * @throws NotFoundException si el llamado no existe.
+   */
   async getCall(callId: string): Promise<Call> {
     if (!ethers.isHexString(callId, 32)) {
       throw new BadRequestException(MESSAGES.INVALID_CALLID);
@@ -60,6 +67,11 @@ export class CallsService {
     };
   }
 
+  /**
+   * Obtiene todos los llamados (calls) registrados en el contrato.
+   * @returns Lista de llamados.
+   * @throws InternalServerErrorException si ocurre un error al obtener los llamados.
+   */
   async getAllCalls(): Promise<Call[]> {
     try {
       const factory = this.contractsService.getFactory();
@@ -69,7 +81,7 @@ export class CallsService {
         callIds.map(async (callId) => {
           const call = await factory.calls(callId);
 
-          // Validar si existe (como en getCall)
+          // Validar si existe
           if (call.creator === ethers.ZeroAddress) {
             return null;
           }
@@ -77,7 +89,7 @@ export class CallsService {
           const creator = await this.ensService.resolveAddress(call.creator);
           const cfpAddress = call.cfp;
 
-          // Obtener nombre ENS y descripción del CFP (igual que getCall)
+          // Obtener nombre ENS y descripción del CFP
           const { name: cfp, description } =
             await this.ensService.getNameAndDescription(cfpAddress);
 
@@ -108,6 +120,14 @@ export class CallsService {
     }
   }
 
+  /**
+   * Obtiene el tiempo de cierre de un llamado (call) por su ID.
+   * @param callId ID del llamado a buscar.
+   * @returns Tiempo de cierre en formato ISO 8601.
+   * @throws BadRequestException si el ID no es válido.
+   * @throws NotFoundException si el llamado no existe.
+   * @throws InternalServerErrorException si ocurre un error al obtener el tiempo de cierre.
+   */
   async getClosingTime(callId: string): Promise<{ closingTime: string }> {
     if (!ethers.isHexString(callId, 32)) {
       throw new BadRequestException(MESSAGES.INVALID_CALLID);
@@ -132,6 +152,17 @@ export class CallsService {
     }
   }
 
+  /**
+   * Crea un nuevo llamado (call) en el contrato CFPFactory.
+   * @param dto Datos del llamado a crear (callId, closingTime, signature).
+   * @returns Objeto con mensaje de éxito y hash de la transacción ejecutada.
+   * @throws BadRequestException si el callId no es válido (debe ser hex de 32 bytes),
+   *         si el formato de tiempo no es ISO 8601 válido, si la fecha de cierre es pasada,
+   *         o si la firma digital es inválida.
+   * @throws ForbiddenException si el firmante no está autorizado en el contrato
+   *         o si ya existe un llamado con el mismo ID.
+   * @throws InternalServerErrorException si hay errores de conexión RPC o del contrato.
+   */
   async createCall(
     dto: CreateCallDto,
   ): Promise<{ message: string; transactionHash: string }> {
@@ -190,6 +221,15 @@ export class CallsService {
     };
   }
 
+  /**
+   * Recupera el firmante de una firma digital.
+   * @param factoryAddress Dirección del contrato factory.
+   * @param callId ID del llamado (call).
+   * @param signature Firma digital.
+   * @returns Dirección del firmante.
+   * @throws BadRequestException si la firma es inválida o no se puede recuperar el firmante.
+   */
+  // Esta función es privada porque solo se usa internamente en el servicio
   private recoverSigner(
     factoryAddress: string,
     callId: string,

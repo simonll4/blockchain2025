@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { ethers } from "ethers";
 
@@ -75,12 +75,6 @@ export function useMetamask() {
     signer.value = null;
     store.reset();
   };
-
-  // Detectar si ya está conectado al cargar
-  onMounted(async () => {
-    if (!window.ethereum) return;
-    connect();
-  });
 
   const checkInitialConnection = async () => {
     if (!window.ethereum) return false;

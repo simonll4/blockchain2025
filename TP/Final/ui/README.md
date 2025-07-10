@@ -11,9 +11,16 @@ Esta aplicación es una interfaz web desarrollada en Vue 3 y Vuetify que permite
 - **Gestión de usuarios:** Panel para autorizar nuevos usuarios (solo visible para administradores/owners).
 - **Integración con contratos inteligentes:** Toda la lógica de llamados, usuarios y propuestas está respaldada por smart contracts desplegados en la red configurada.
 
+## Requisitos
+
+- Node.js >= 18
+- Tener Metamask instalado en el navegador.
+- Acceso a los contratos desplegados (ver configuración de contratos en `contractsConfig.json`).
+
 ## Instalación
 
 1. **Instalar las dependencias:**
+
    ```bash
    npm install
    ```
@@ -29,6 +36,7 @@ Esta aplicación es una interfaz web desarrollada en Vue 3 y Vuetify que permite
    > Cambia la URL según dónde esté corriendo tu backend.
 
 3. **Ejecuta la aplicación en modo desarrollo:**
+
    ```bash
    npm run dev
    ```
@@ -42,22 +50,16 @@ Esta aplicación es una interfaz web desarrollada en Vue 3 y Vuetify que permite
 - `npm run preview`: Previsualiza la app ya compilada.
 - `npm run type-check`: Verifica los tipos TypeScript.
 
-## Requisitos
-
-- Node.js >= 18
-- Tener Metamask instalado en el navegador.
-- Acceso a los contratos desplegados (ver configuración de contratos en `contractsConfig.json`).
-
 ## Estructura general
 
-- **src/views/**: Vistas principales (Home, Llamados, Detalle, Registro ENS, Gestión de Usuarios).
-- **src/components/**: Componentes reutilizables (sidebar, topbar).
+- **src/views/**: Vistas principales (Home, Llamados, Detalle de llamado, Registro ENS para usuario, Gestión de Usuarios).
+- **src/components/**: Componentes reutilizables.
 - **src/services/**: Lógica de conexión con contratos y API.
 - **src/composables/**: Hooks reutilizables para lógica de negocio y contratos.
 - **contractsConfig.json**: Configuración de contratos y dominios ENS utilizados.
 
 ## Notas
 
-- La app requiere que el usuario esté conectado a la red Ethereum configurada (ver `contractsConfig.json`).
-- Solo los usuarios autorizados pueden crear llamados o acceder a la gestión de usuarios.
+- Solo los usuarios autorizados pueden crear llamados.
+- Solo el administrador puede acceder a la gestión de usuarios.
 - El registro ENS es opcional pero recomendado para una mejor experiencia.

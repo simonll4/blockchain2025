@@ -20,12 +20,14 @@ async function bootstrap() {
 
   // Configuración de CORS (permite todas las solicitudes)
   app.enableCors({
-    origin: true, // Permite cualquier origen (o usa '*' para todos)
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true, // Si necesitas cookies/tokens de autenticación
+    credentials: true,
   });
 
   await app.listen(process.env.PORT ?? 5000);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Failed to start application:', error);
+  process.exit(1);
+});

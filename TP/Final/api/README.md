@@ -3,7 +3,7 @@
 ---
 ## Configuración de la API
 
-Antes de ejecutar la API, es necesario configurar manualmente el archivo de configuración `src/config/config.json` y asegurarse que el archivo `src/config/contractsConfig.json` tenga la informacion correcta del despligue de los contratos:
+Antes de ejecutar la API, es necesario configurar manualmente el archivo de configuración `src/config/config.json` y asegurarse que el archivo `src/config/contractsConfig.json` se haya creado al desplegar los contratos en la red:
 
 ### 1. `config.json`
 

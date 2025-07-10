@@ -29,6 +29,10 @@ export class CFPFactoryService {
     this.txQueue = new PQueue({ concurrency: 1 });
   }
 
+  /**
+   * Crea un firmante a partir del mnemónico y la ruta HD configurados.
+   * @returns Un signer conectado al proveedor de Ethereum.
+   */
   private createSigner(): ethers.Signer {
     const mnemonic = this.configService.getMnemonic();
     const index = this.configService.getAccountIndex();
@@ -40,26 +44,30 @@ export class CFPFactoryService {
     return wallet.connect(this.provider);
   }
 
+  /**
+   * Obtiene el contrato CFPFactory.
+   * @returns El contrato CFPFactory.
+   */
   getFactory(): CFPFactory {
     return this.factoryContract;
   }
 
+  /**
+   * Obtiene el contrato CFP (Call for Proposals) por su dirección.
+   * @param address Dirección del contrato CFP.
+   * @returns El contrato CFP correspondiente a la dirección.
+   */
   getCfp(address: string): CFP {
     return this.loader.loadCfpContract(address, this.signer);
   }
 
   /**
-   * Fuerza la actualización del nonce local desde la blockchain.
+   * Envía una transacción al contrato CFPFactory.
+   * Utiliza una cola para asegurar que las transacciones se envían de forma secuencial.
+   * @param txRequest Solicitud de transacción.
+   * @returns Recibo de la transacción una vez minada.
+   * @throws InternalServerErrorException si la transacción no se mina o si ocurre un error al enviar la transacción.
    */
-  async refreshNonce(): Promise<number> {
-    const address = await this.signer.getAddress();
-    this.currentNonce = await this.provider.getTransactionCount(
-      address,
-      'pending',
-    );
-    return this.currentNonce;
-  }
-
   async sendTransaction(
     txRequest: ethers.TransactionRequest,
   ): Promise<ethers.TransactionReceipt> {
@@ -106,5 +114,18 @@ export class CFPFactoryService {
       );
     }
     return receipt;
+  }
+
+  /**
+   * Refresca el nonce actual del firmante.
+   * @returns El nuevo nonce.
+   */
+  async refreshNonce(): Promise<number> {
+    const address = await this.signer.getAddress();
+    this.currentNonce = await this.provider.getTransactionCount(
+      address,
+      'pending',
+    );
+    return this.currentNonce;
   }
 }

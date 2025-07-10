@@ -98,6 +98,7 @@ const createCall = async () => {
   } catch {
     createError.value = "Ocurrió un error al crear el llamado.";
   }
+  fetchCreators();
 };
 
 const formatDate = (iso?: string) => {

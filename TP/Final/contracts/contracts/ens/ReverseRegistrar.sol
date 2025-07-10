@@ -96,8 +96,7 @@ contract ReverseRegistrar {
         return _node;
     }
 
-
-    /**
+    /*
      * @dev Sets the `name()` record for the reverse ENS record associated with
      * the given address. First updates the resolver to the default reverse
      * resolver if necessary.

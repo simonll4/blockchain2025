@@ -13,7 +13,7 @@ const snackbarColor = ref("error");
 const checkingConnection = ref(true);
 
 onMounted(async () => {
-  await checkInitialConnection();
+  checkInitialConnection();
   checkingConnection.value = false;
 });
 
@@ -21,11 +21,29 @@ const handleConnect = async () => {
   try {
     await connect();
   } catch (err: any) {
-    snackbarMessage.value = err.message || "Error al conectar con Metamask";
+    const errorCode = err?.error?.code || err?.cause?.code;
+
+    if (errorCode === -32002) {
+      snackbarMessage.value = "Ya hay una ventana de Metamask esperando tu acción. Revisá Metamask.";
+    } else {
+      snackbarMessage.value = err.message || "Error al conectar con Metamask";
+    }
+
     snackbarColor.value = "error";
     snackbar.value = true;
   }
 };
+
+
+// const handleConnect = async () => {
+//   try {
+//     await connect();
+//   } catch (err: any) {
+//     snackbarMessage.value = err.message || "Error al conectar con Metamask";
+//     snackbarColor.value = "error";
+//     snackbar.value = true;
+//   }
+// };
 
 const displayName = computed(() => ensName.value || account.value);
 </script>

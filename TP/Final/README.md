@@ -1,35 +1,35 @@
 # Sistema de Llamados a Presentación de Propuestas (CFP) con Blockchain
 
-Un sistema completo de gestión de llamados y propuestas basado en blockchain, que integra smart contracts, API REST y una interfaz web moderna con soporte para ENS (Ethereum Name Service).
+Un sistema de gestión de llamados y propuestas basado en blockchain, que integra smart contracts, API REST y una interfaz web con soporte para ENS (Ethereum Name Service).
 
 ## 📋 Descripción General
 
 Este proyecto implementa un sistema descentralizado para la gestión de **Llamados a Presentación de Propuestas (CFP)** que permite:
 
-- ✅ **Crear y gestionar llamados** con fechas de cierre específicas
-- ✅ **Registrar propuestas** de forma anónima o asociadas a usuarios
-- ✅ **Sistema de autorización** con estados de cuenta (No registrado, Pendiente, Autorizado)
-- ✅ **Integración ENS** para identificación de usuarios y llamados mediante nombres legibles
-- ✅ **Factoría de contratos** para creación dinámica de llamados
-- ✅ **Interfaz web moderna** con autenticación Web3 mediante MetaMask
+- **Crear y gestionar llamados** con fechas de cierre específicas
+- **Registrar propuestas** de forma anónima o asociadas a usuarios
+- **Sistema de autorización** con estados de cuenta (No registrado, Pendiente, Autorizado)
+- **Integración ENS** para identificación de usuarios y llamados mediante nombres legibles
+- **Factoría de contratos** para creación dinámica de llamados
+- **Interfaz web moderna** con autenticación Web3 mediante MetaMask
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 El proyecto está estructurado en **3 componentes principales** que trabajan en conjunto:
 
-### 📦 [**`/contracts`**](./contracts/) - Smart Contracts (Solidity + Truffle)
+### [**`/contracts`**](./contracts/) - Smart Contracts (Solidity + Truffle)
 **Tecnologías:** Solidity, Truffle, Web3.js, ENS
 
 Sistema de contratos inteligentes que implementa la lógica de negocio:
 
 - **`CFPFactory.sol`** - Factoría principal que gestiona la creación de llamados y autorización de usuarios
-- **`CFP.sol`** - Contratos individuales para cada convocatoria que manejan las propuestas
+- **`CFP.sol`** - Contratos individuales para cada llamado que manejan las propuestas
 - **Sistema ENS completo** - Registry, Registrars, Resolvers para identificación mediante nombres
 - **Dominios personalizados:** `usuarios.cfp`, `llamados.cfp`, `addr.reverse`
 
 📖 [Ver documentación detallada](./contracts/README.md)
 
-### 🔌 [**`/api`**](./api/) - API REST (NestJS + TypeScript)
+### [**`/api`**](./api/) - API REST (NestJS + TypeScript)
 **Tecnologías:** NestJS, TypeScript, Ethers.js, Jest
 
 API REST que actúa como intermediario entre la interfaz web y la blockchain:
@@ -41,7 +41,7 @@ API REST que actúa como intermediario entre la interfaz web y la blockchain:
 
 📖 [Ver documentación detallada](./api/README.md)
 
-### 🎨 [**`/ui`**](./ui/) - Interfaz Web (Vue 3 + Vuetify)
+### [**`/ui`**](./ui/) - Interfaz Web (Vue 3 + Vuetify)
 **Tecnologías:** Vue 3, Vuetify, TypeScript, Pinia, Ethers.js
 
 Interfaz web moderna y responsiva que proporciona acceso completo al sistema:
@@ -55,7 +55,7 @@ Interfaz web moderna y responsiva que proporciona acceso completo al sistema:
 
 📖 [Ver documentación detallada](./ui/README.md)
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 ### Blockchain & Smart Contracts
 - **Solidity** ^0.8.19 - Lenguaje de contratos inteligentes
@@ -82,7 +82,7 @@ Interfaz web moderna y responsiva que proporciona acceso completo al sistema:
 - **Prettier** - Formateo de código
 - **TypeChain** - Generación de tipos TypeScript para contratos
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 ### Prerrequisitos
 - **Node.js** >= 18
@@ -138,23 +138,23 @@ La UI se conecta a:
 - **Contratos inteligentes** para operaciones on-chain
 - **MetaMask** para autenticación y transacciones
 
-## 📚 Funcionalidades Principales
+## Funcionalidades Principales
 
 ### Para Usuarios Registrados
-- 🔐 **Registro ENS** - Asociar nombre a dirección Ethereum
-- 📝 **Crear llamados** - Publicar llamados con descripción
-- 📤 **Enviar propuestas** - Participar en llamados activas
-- ✅ **Verificar propuestas** - Confirmar registro de propuestas
+- **Registro ENS** - Asociar nombre a dirección Ethereum
+- **Crear llamados** - Publicar llamados con descripción
+- **Enviar propuestas** - Participar en llamados activas
+- **Verificar propuestas** - Confirmar registro de propuestas
 
 ### Para Administradores
-- 👥 **Gestión de usuarios** - Autorizar nuevos creadores
-- 📊 **Panel de control** - Vista general del sistema
-- 🔧 **Configuración ENS** - Administrar dominios y resolvers
+- **Gestión de usuarios** - Autorizar nuevos creadores
+- **Panel de control** - Vista general del sistema
+- **Configuración ENS** - Administrar dominios y resolvers
 
 ### Para Participantes
-- 🔍 **Explorar llamados** - Ver llamados activas
-- 📋 **Detalles completos** - Información de cada llamado
-- 🎯 **Propuestas anónimas** - Participación sin identificación
+- **Explorar llamados** - Ver llamados activas
+- **Detalles completos** - Información de cada llamado
+- **Propuestas anónimas** - Participación sin identificación
 
 ## 🧪 Testing
 

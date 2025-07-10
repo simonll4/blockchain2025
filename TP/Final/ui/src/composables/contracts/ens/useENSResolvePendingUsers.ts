@@ -20,7 +20,6 @@ export function useENSResolvePendingUsers() {
     const unresolved = pendingUsers.value.filter((u) => !u.address);
 
     if (!unresolved || unresolved.length === 0) {
-      console.log("No hay usuarios pendientes para resolver");
       return;
     }
 

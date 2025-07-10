@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
 import { computed } from "vue";
 
+import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
+import { useMetamask } from "@/services/metamask/useMetamask";
+
 const { isOwner } = useCFPFactoryIsOwner();
+const { isConnected } = useMetamask();
 
 const links = computed(() => {
   const baseLinks = [
     { title: "Inicio", icon: "mdi-home", to: "/" },
-    { title: "Registrar ENS", icon: "mdi-account-key", to: "/ens-register" },
     { title: "Llamados", icon: "mdi-file-document-multiple", to: "/calls" },
   ];
+  if (isConnected.value) {
+    baseLinks.push({
+      title: "Registrar ENS",
+      icon: "mdi-account-key",
+      to: "/ens-register",
+    });
+  }
   if (isOwner.value) {
     baseLinks.push({
       title: "Gestión de Usuarios",

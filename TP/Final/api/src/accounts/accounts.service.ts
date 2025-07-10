@@ -2,11 +2,11 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { isAddress, getAddress, verifyMessage, getBytes } from 'ethers';
 import { CFPFactoryService } from '../contracts/services/business.service';
-import { CFPFactory } from '../contracts/types/CFPFactory'; // ✅ nuevo
+import { CFPFactory } from '../contracts/types/CFPFactory';
 import { MESSAGES } from 'src/common/messages';
 import { ENSService } from 'src/contracts/services/ens.service';
 
@@ -17,11 +17,16 @@ export class AccountsService {
     private readonly ensService: ENSService,
   ) {}
 
+  /**
+   * Verifica si una dirección está autorizada en el contrato CFPFactory.
+   * @param address Dirección a verificar.
+   * @returns true si la dirección está autorizada, false en caso contrario.
+   * @throws BadRequestException si la dirección es inválida.
+   */
   async isAuthorized(address: string): Promise<boolean> {
     if (!isAddress(address)) {
       throw new BadRequestException({ message: MESSAGES.INVALID_ADDRESS });
     }
-
     const factory: CFPFactory = this.contractsService.getFactory();
     try {
       return await factory.isAuthorized(address);
@@ -31,6 +36,14 @@ export class AccountsService {
     }
   }
 
+  /**
+   * Registra una dirección en el contrato CFPFactory.
+   * @param address Dirección a registrar.
+   * @param signature Firma de la dirección.
+   * @throws BadRequestException si la dirección o la firma son inválidas.
+   * @throws ForbiddenException si la dirección ya está autorizada.
+   * @throws UnauthorizedException si hay un error de autorización o RPC.
+   */
   async register(address: string, signature: string): Promise<void> {
     if (!isAddress(address)) {
       throw new BadRequestException({ message: MESSAGES.INVALID_ADDRESS });
@@ -76,22 +89,39 @@ export class AccountsService {
     }
   }
 
+  /**
+   * Obtiene todas las direcciones de creadores autorizados.
+   * @returns Una lista de direcciones de creadores.
+   * @throws InternalServerErrorException si hay un error de conexión o RPC.
+   */
   async getAllCreators(): Promise<string[]> {
     const factory = this.contractsService.getFactory();
-    const count = await factory.creatorsCount();
 
-    const creators: Promise<string>[] = [];
+    try {
+      const count = await factory.creatorsCount();
+      const creators: Promise<string>[] = [];
 
-    for (let i = 0; i < count; i++) {
-      const promise = factory
-        .creators(i)
-        .then((addr) => this.ensService.resolveAddress(addr));
-      creators.push(promise);
+      for (let i = 0; i < count; i++) {
+        const promise = factory
+          .creators(i)
+          .then((addr) => this.ensService.resolveAddress(addr));
+        creators.push(promise);
+      }
+
+      return Promise.all(creators);
+    } catch (error) {
+      console.error('Error in getAllCreators:', error);
+      throw new InternalServerErrorException(
+        'RPC connection error or contract interaction failed',
+      );
     }
-
-    return Promise.all(creators);
   }
 
+  /**
+   * Obtiene todas las direcciones pendientes de autorización.
+   * @returns Una lista de direcciones pendientes.
+   * @throws InternalServerErrorException si hay un error de conexión o RPC.
+   */
   async getPendings(): Promise<string[]> {
     const factory: CFPFactory = this.contractsService.getFactory();
 
@@ -109,7 +139,9 @@ export class AccountsService {
       return Promise.all(pending);
     } catch (error) {
       console.error('Error in getPendings:', error);
-      throw new UnauthorizedException('Unauthorized access or RPC error');
+      throw new InternalServerErrorException(
+        'RPC connection error or contract interaction failed',
+      );
     }
   }
 }

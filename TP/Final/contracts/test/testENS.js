@@ -128,6 +128,10 @@ contract("ENS System", (accounts) => {
 
 contract("ENS Solidity (Core Registry)", function (accounts) {
   let ens;
+  const owner = accounts[0];
+  const user = accounts[1];
+  const otherUser = accounts[2];
+
 
   beforeEach(async () => {
     ens = await ENSRegistry.new();
@@ -135,7 +139,7 @@ contract("ENS Solidity (Core Registry)", function (accounts) {
 
   it("permite transferir propiedad de un nodo", async () => {
     const addr = "0x0000000000000000000000000000000000001234";
-    const result = await ens.setOwner("0x0", addr, { from: accounts[0] });
+    const result = await ens.setOwner("0x0", addr, { from: owner });
 
     assert.equal(await ens.owner("0x0"), addr);
 
@@ -146,7 +150,7 @@ contract("ENS Solidity (Core Registry)", function (accounts) {
 
   it("prohíbe transferencias de propiedad por no-duenios", async () => {
     try {
-      await ens.setOwner("0x1", accounts[2], { from: accounts[0] });
+      await ens.setOwner("0x1", otherUser, { from: owner });
     } catch (err) {
       return exceptions.ensureException(err);
     }
@@ -155,7 +159,7 @@ contract("ENS Solidity (Core Registry)", function (accounts) {
 
   it("permite asignar un resolver", async () => {
     const addr = "0x0000000000000000000000000000000000001234";
-    const result = await ens.setResolver("0x0", addr, { from: accounts[0] });
+    const result = await ens.setResolver("0x0", addr, { from: owner });
 
     assert.equal(await ens.resolver("0x0"), addr);
 
@@ -165,7 +169,7 @@ contract("ENS Solidity (Core Registry)", function (accounts) {
 
   it("prohíbe asignar resolver por no-duenios", async () => {
     try {
-      await ens.setResolver("0x1", accounts[2], { from: accounts[0] });
+      await ens.setResolver("0x1", otherUser, { from: owner });
     } catch (err) {
       return exceptions.ensureException(err);
     }
@@ -173,7 +177,7 @@ contract("ENS Solidity (Core Registry)", function (accounts) {
   });
 
   it("permite asignar TTL", async () => {
-    const result = await ens.setTTL("0x0", 3600, { from: accounts[0] });
+    const result = await ens.setTTL("0x0", 3600, { from: owner });
 
     assert.equal((await ens.ttl("0x0")).toNumber(), 3600);
 
@@ -183,7 +187,7 @@ contract("ENS Solidity (Core Registry)", function (accounts) {
 
   it("prohíbe asignar TTL por no-duenios", async () => {
     try {
-      await ens.setTTL("0x1", 3600, { from: accounts[0] });
+      await ens.setTTL("0x1", 3600, { from: owner });
     } catch (err) {
       return exceptions.ensureException(err);
     }
@@ -191,18 +195,18 @@ contract("ENS Solidity (Core Registry)", function (accounts) {
   });
 
   it("permite crear subnodos", async () => {
-    const result = await ens.setSubnodeOwner("0x0", sha3("eth"), accounts[1], { from: accounts[0] });
+    const result = await ens.setSubnodeOwner("0x0", sha3("eth"), user, { from: owner });
 
-    assert.equal(await ens.owner(namehash.hash("eth")), accounts[1]);
+    assert.equal(await ens.owner(namehash.hash("eth")), user);
 
     const args = result.logs[0].args;
     assert.equal(args.label, sha3("eth"));
-    assert.equal(args.owner, accounts[1]);
+    assert.equal(args.owner, user);
   });
 
   it("prohíbe crear subnodos por no-duenios", async () => {
     try {
-      await ens.setSubnodeOwner("0x0", sha3("eth"), accounts[1], { from: accounts[1] });
+      await ens.setSubnodeOwner("0x0", sha3("eth"), user, { from: user });
     } catch (err) {
       return exceptions.ensureException(err);
     }
