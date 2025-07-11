@@ -151,7 +151,7 @@ La UI se conecta a:
 - **Panel de control** - Vista general del sistema
 - **Configuración ENS** - Administrar dominios y resolvers
 
-### Para Participantes
+### Para Participantes Anonimos
 - **Explorar llamados** - Ver llamados activas
 - **Detalles completos** - Información de cada llamado
 - **Propuestas anónimas** - Participación sin identificación
@@ -170,7 +170,7 @@ cd api/test
 python3.10 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-pytest test_apiserver.py
+pytest test_apiserver.py -v
 ```
 
 ## 📁 Estructura del Proyecto

@@ -29,6 +29,7 @@ export interface ReverseRegistrarInterface extends Interface {
       | "claim"
       | "claimWithResolver"
       | "setName"
+      | "setNameFor"
       | "node"
   ): FunctionFragment;
 
@@ -47,6 +48,10 @@ export interface ReverseRegistrarInterface extends Interface {
     values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "setName", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "setNameFor",
+    values: [AddressLike, AddressLike, string]
+  ): string;
   encodeFunctionData(functionFragment: "node", values: [AddressLike]): string;
 
   decodeFunctionResult(
@@ -64,6 +69,7 @@ export interface ReverseRegistrarInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setName", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setNameFor", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "node", data: BytesLike): Result;
 }
 
@@ -139,6 +145,12 @@ export interface ReverseRegistrar extends BaseContract {
    */
   setName: TypedContractMethod<[name: string], [string], "nonpayable">;
 
+  setNameFor: TypedContractMethod<
+    [addr: AddressLike, owner: AddressLike, name: string],
+    [string],
+    "nonpayable"
+  >;
+
   /**
    * Returns the node hash for a given account's reverse records.
    * @param addr The address to hash
@@ -171,6 +183,13 @@ export interface ReverseRegistrar extends BaseContract {
   getFunction(
     nameOrSignature: "setName"
   ): TypedContractMethod<[name: string], [string], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setNameFor"
+  ): TypedContractMethod<
+    [addr: AddressLike, owner: AddressLike, name: string],
+    [string],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "node"
   ): TypedContractMethod<[addr: AddressLike], [string], "view">;

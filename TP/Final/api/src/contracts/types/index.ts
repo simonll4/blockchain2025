@@ -10,6 +10,7 @@ export type { DefaultReverseResolver } from "./DefaultReverseResolver";
 export type { ENS } from "./ENS";
 export type { ENSRegistry } from "./ENSRegistry";
 export type { FIFSRegistrar } from "./FIFSRegistrar";
+export type { INameResolver } from "./INameResolver";
 export type { InterfaceResolver } from "./InterfaceResolver";
 export type { LlamadosRegistrar } from "./LlamadosRegistrar";
 export type { Migrations } from "./Migrations";
@@ -31,6 +32,7 @@ export { DefaultReverseResolver__factory } from "./factories/DefaultReverseResol
 export { ENS__factory } from "./factories/ENS__factory";
 export { ENSRegistry__factory } from "./factories/ENSRegistry__factory";
 export { FIFSRegistrar__factory } from "./factories/FIFSRegistrar__factory";
+export { INameResolver__factory } from "./factories/INameResolver__factory";
 export { InterfaceResolver__factory } from "./factories/InterfaceResolver__factory";
 export { LlamadosRegistrar__factory } from "./factories/LlamadosRegistrar__factory";
 export { Migrations__factory } from "./factories/Migrations__factory";
