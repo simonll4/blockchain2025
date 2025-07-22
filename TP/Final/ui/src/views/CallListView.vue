@@ -72,24 +72,22 @@ const openCreateDialog = () => {
   showCreateDialog.value = true;
 };
 
+// Validar si el formulario es válido
+const isFormValid = computed(() => {
+  const nameValid =
+    newCallName.value.trim() && /^[a-zA-Z0-9-]+$/.test(newCallName.value);
+  const descriptionValid = newCallDescription.value.trim();
+  const dateValid =
+    newClosingDate.value && new Date(newClosingDate.value) > new Date();
+
+  return nameValid && descriptionValid && dateValid;
+});
+
 const createCall = async () => {
   resetCreateStatus();
-  if (!newCallName.value) {
-    createError.value = "Debe ingresar un nombre para el llamado.";
-    return;
-  }
-  if (!newCallDescription.value) {
-    createError.value = "Debe ingresar una descripción para el llamado.";
-    return;
-  }
-  if (!newClosingDate.value) {
-    createError.value = "Debe seleccionar una fecha de cierre.";
-    return;
-  }
 
-  const closingTimestamp = Math.floor(
-    new Date(newClosingDate.value).getTime() / 1000
-  );
+  const closingDate = new Date(newClosingDate.value);
+  const closingTimestamp = Math.floor(closingDate.getTime() / 1000);
 
   try {
     await createCallWithENS(
@@ -139,7 +137,21 @@ onMounted(async () => {
     <!-- Diálogo crear llamado -->
     <v-dialog v-model="showCreateDialog" max-width="600px" persistent>
       <v-card>
-        <v-card-title class="text-h6">Crear nuevo llamado</v-card-title>
+        <v-card-title class="text-h6 d-flex align-center">
+          <v-btn
+            icon
+            variant="text"
+            @click="
+              resetCreateForm();
+              resetCreateStatus();
+            "
+            :disabled="isCreating"
+            class="me-2"
+          >
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
+          Crear nuevo llamado
+        </v-card-title>
         <v-card-text>
           <v-form @submit.prevent="createCall">
             <v-text-field
@@ -172,7 +184,18 @@ onMounted(async () => {
               v-model="newClosingDate"
               label="Fecha y hora de cierre"
               type="datetime-local"
-              :rules="[(v) => !!v || 'La fecha de cierre es requerida']"
+              :rules="[
+                (v) => !!v || 'La fecha de cierre es requerida',
+                (v) => {
+                  if (!v) return true;
+                  const date = new Date(v);
+                  const now = new Date();
+                  return (
+                    date > now ||
+                    'La fecha de cierre debe ser posterior a la fecha y hora actual'
+                  );
+                },
+              ]"
               :disabled="isCreating"
               required
             />
@@ -191,24 +214,10 @@ onMounted(async () => {
         <v-card-actions>
           <v-spacer />
           <v-btn
-            @click="
-              resetCreateForm();
-              resetCreateStatus();
-            "
-            :disabled="isCreating"
-          >
-            Cancelar
-          </v-btn>
-          <v-btn
             @click="createCall"
             color="primary"
             :loading="isCreating"
-            :disabled="
-              !newCallName.trim() ||
-              !newCallDescription.trim() ||
-              !newClosingDate ||
-              isCreating
-            "
+            :disabled="!isFormValid || isCreating"
           >
             Crear
           </v-btn>

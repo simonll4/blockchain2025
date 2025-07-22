@@ -22,7 +22,7 @@ contract CFP {
     // Timestamp del cierre del llamado
     uint256 private immutable _closingTime;
 
-    // _owner: dirección lógica del dueño del contrato, utilizada para funciones como ENS reverse registrar
+    // _owner: dirección lógica del dueño del contrato, utilizada para patron owneable
     // _creator: dirección que despliega el contrato (factory)
     address private immutable _owner;
     address private immutable _creator;

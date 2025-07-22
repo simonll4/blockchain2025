@@ -11,8 +11,11 @@ import { useCFPProposalData } from "@/composables/contracts/CFP/useCFPProposalDa
 import { useMetamask } from "@/services/metamask/useMetamask";
 import { useENSRegisterCall } from "@/composables/contracts/ens/useENSRegisterCall";
 import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
+import { useUserStore } from "@/store/userStore";
 
 const { isConnected } = useMetamask();
+const { checkIsOwner, isOwner } = useCFPFactoryIsOwner();
+const userStore = useUserStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -27,9 +30,8 @@ const {
 // Cargar detalle del llamado al montar el componente resolver el creador
 onMounted(async () => {
   fetchCallDetail();
+  checkIsOwner();
 });
-
-const {checkIsOwner, isOwner} = useCFPFactoryIsOwner();
 
 const {
   registerProposal,
@@ -104,8 +106,30 @@ const isAddress = (value?: string) => {
   return /^0x[a-fA-F0-9]{40}$/.test(value);
 };
 
+// Verificar si el usuario actual es el creador del llamado
+const isUserTheCreator = (creator?: string) => {
+  if (!creator) return false;
+
+  const userAddress = userStore.address.toLowerCase();
+  const userENSName = userStore.ensName.toLowerCase();
+  const callCreator = creator.toLowerCase();
+
+  // Si el creador es una dirección, comparar con la dirección del usuario
+  if (isAddress(creator)) {
+    return userAddress === callCreator;
+  }
+
+  // Si el creador es un nombre ENS, comparar con el ENS del usuario
+  // También comparar con la dirección por si el usuario tiene ENS pero el creator no
+  return userENSName === callCreator || userAddress === callCreator;
+};
+
 const canRegisterENS = computed(() => {
-  return isConnected.value && isAddress(call.value?.cfp);
+  return (
+    isConnected.value &&
+    isAddress(call.value?.cfp) &&
+    isUserTheCreator(call.value?.creator)
+  );
 });
 
 // ENS Registration
@@ -146,6 +170,13 @@ const handleENSRegister = async () => {
     ensDescription.value = "";
     // Refrescar los datos del llamado para obtener el nuevo nombre
     await fetchCallDetail();
+  } else if (ensError.value) {
+    // Si hay error (incluyendo cancelación de transacción), cerrar el diálogo
+    setTimeout(() => {
+      showENSDialog.value = false;
+      ensCallName.value = "";
+      ensDescription.value = "";
+    }, 3000); // Mostrar el error por 3 segundos antes de cerrar
   }
 };
 
@@ -172,7 +203,6 @@ const openENSDialog = () => {
       </v-card-title>
 
       <!-- Detalle del llamado -->
-      <!-- Detalle del llamado -->
       <v-card-title class="text-h6 mt-4 mb-2">Detalle del Llamado</v-card-title>
 
       <!-- Skeleton Loader mientras carga -->
@@ -186,7 +216,6 @@ const openENSDialog = () => {
         <v-skeleton-loader type="list-item-two-line@4" class="mb-2" />
       </v-sheet>
 
-      <!-- Contenido real una vez cargado -->
       <!-- Contenido real una vez cargado -->
       <v-sheet
         v-else
@@ -362,7 +391,18 @@ const openENSDialog = () => {
     <!-- Diálogo para registro ENS -->
     <v-dialog v-model="showENSDialog" max-width="500px" persistent>
       <v-card>
-        <v-card-title class="text-h6">Registrar nombre ENS</v-card-title>
+        <v-card-title class="text-h6 d-flex align-center">
+          <v-btn
+            icon
+            variant="text"
+            @click="showENSDialog = false"
+            :disabled="ensLoading"
+            class="me-2"
+          >
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
+          Registrar nombre ENS
+        </v-card-title>
         <v-card-text>
           <v-form @submit.prevent="handleENSRegister">
             <v-text-field
@@ -403,9 +443,6 @@ const openENSDialog = () => {
 
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="showENSDialog = false" :disabled="ensLoading">
-            Cancelar
-          </v-btn>
           <v-btn
             @click="handleENSRegister"
             color="primary"

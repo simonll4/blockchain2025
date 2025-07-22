@@ -84,13 +84,10 @@ export function useCreateCallWithENS() {
         cfpAddress,
         description
       );
-      console.log("ENS registration result:", registered);
       if (!registered) {
         txHandler.error.value = "No se pudo registrar el llamado en ENS.";
         return false;
       }
-
-   
 
       txHandler.success.value = true;
       txHandler.message.value = `Llamado \"${fullDomain}\" creado y registrado correctamente.`;

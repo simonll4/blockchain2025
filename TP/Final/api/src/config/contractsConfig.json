@@ -3,13 +3,13 @@
     "chainId": 1337
   },
   "contracts": {
-    "ensRegistry": "0x252D2854e43522732c8d241F0E436Fca69A9c594",
-    "fifsRegistrar": "0xce13bd894b9253320b5DBf6A633EEb67a0537927",
-    "usuariosRegistrar": "0x4704c52Cd5Cf681B0B3ABA70bEBEaC2682Ba7B78",
-    "llamadosRegistrar": "0xdae2AB9cbE1320af3017eA423c210389338C1B1c",
-    "reverseRegistrar": "0xcF3a77f8485b9B0D7A104Ad675312fa39343e27c",
-    "publicResolver": "0x011dEC017C5DdB6e66034D686f256fe562EE2F88",
-    "cfpFactory": "0xB2CdAC12fD919a6D6271047E0D106B8e398560AA"
+    "ensRegistry": "0x277095e09718D35951782944C4405f78A1e5A6ca",
+    "fifsRegistrar": "0x8311D5Ea2d42BeA03be8D00B078D73d97F60a957",
+    "usuariosRegistrar": "0x8D1f1A2EC1f2D8D510391e6E8914Ed8936B641bE",
+    "llamadosRegistrar": "0xfC22810b7113FE50477F34aea276484AeE76a90b",
+    "reverseRegistrar": "0xaa37e5D446B9F738c94Ee4A16046e42De18FD5d3",
+    "publicResolver": "0x912ed0703923D073Bd90643B094Ae109B83EdCa0",
+    "cfpFactory": "0xEA0224a1f1c4495C1aFEF87CBA71eD3Df6Fd87C9"
   },
   "domains": {
     "tld": "cfp",
@@ -17,5 +17,5 @@
     "llamados": "llamados.cfp",
     "reverse": "addr.reverse"
   },
-  "timestamp": "2025-07-22T17:24:28.849Z"
+  "timestamp": "2025-07-22T18:24:57.315Z"
 }
