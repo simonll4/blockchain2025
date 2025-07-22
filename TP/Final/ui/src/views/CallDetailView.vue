@@ -10,10 +10,7 @@ import { useCFPFactoryRegisterProposal } from "@/composables/contracts/CFPFactor
 import { useCFPProposalData } from "@/composables/contracts/CFP/useCFPProposalData";
 import { useMetamask } from "@/services/metamask/useMetamask";
 import { useENSRegisterCall } from "@/composables/contracts/ens/useENSRegisterCall";
-import { useCFP } from "@/services/contracts/business/useCFP";
-
-
-const { getOwner } = useCFP();
+import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
 
 const { isConnected } = useMetamask();
 
@@ -30,8 +27,9 @@ const {
 // Cargar detalle del llamado al montar el componente resolver el creador
 onMounted(async () => {
   fetchCallDetail();
-  console.log("Creador del llamado:", await getOwner());
 });
+
+const {checkIsOwner, isOwner} = useCFPFactoryIsOwner();
 
 const {
   registerProposal,
@@ -79,7 +77,7 @@ const handleRegisterOnChain = async () => {
 
   await fetchProposalData(onChainFile.value);
   const sender = proposalData.value[0];
-  
+
   // Si ya tiene un sender registrado, no permitir re-registro
   if (sender && sender !== "0x0000000000000000000000000000000000000000") {
     message.value = "";
@@ -247,42 +245,44 @@ const openENSDialog = () => {
 
       <v-divider class="my-4" />
 
-      <!-- Registrar Propuesta -->
-      <v-card-title class="text-h6">
-        Registrar propuesta de forma anonima
-      </v-card-title>
-      <v-row dense>
-        <v-col cols="12" md="8">
-          <v-file-input
-            v-model="registerFile"
-            label="Seleccionar archivo de propuesta"
-            prepend-icon="mdi-upload"
-            hide-details
-          />
-        </v-col>
-        <v-col cols="12" md="4" class="d-flex align-end">
-          <v-btn
-            @click="handleAnonymousRegister"
-            color="primary"
-            :loading="isLoadingRegisterProposal"
-            block
-            :disabled="!registerFile"
-          >
-            Registrar
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-alert
-        v-if="messageRegisterProposal"
-        :type="errorRegisterProposal ? 'error' : 'success'"
-        class="my-2"
-        border="start"
-        variant="tonal"
-      >
-        {{ messageRegisterProposal }}
-      </v-alert>
+      <!-- Registrar Propuesta (Solo si no es owner) -->
+      <div v-if="!isOwner">
+        <v-card-title class="text-h6">
+          Registrar propuesta de forma anonima
+        </v-card-title>
+        <v-row dense>
+          <v-col cols="12" md="8">
+            <v-file-input
+              v-model="registerFile"
+              label="Seleccionar archivo de propuesta"
+              prepend-icon="mdi-upload"
+              hide-details
+            />
+          </v-col>
+          <v-col cols="12" md="4" class="d-flex align-end">
+            <v-btn
+              @click="handleAnonymousRegister"
+              color="primary"
+              :loading="isLoadingRegisterProposal"
+              block
+              :disabled="!registerFile"
+            >
+              Registrar
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-alert
+          v-if="messageRegisterProposal"
+          :type="errorRegisterProposal ? 'error' : 'success'"
+          class="my-2"
+          border="start"
+          variant="tonal"
+        >
+          {{ messageRegisterProposal }}
+        </v-alert>
+      </div>
 
-      <v-divider class="my-4" />
+      <v-divider v-if="!isOwner" class="my-4" />
 
       <!-- Registrar Propuesta (On-Chain) -->
       <div v-if="isConnected">

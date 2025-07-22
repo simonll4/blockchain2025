@@ -19,7 +19,7 @@ contract('Call for Proposals', (accounts) => {
         before(async function () {
             callId = gen.next();
             closingTime = (await web3.eth.getBlock('latest')).timestamp + 100;
-            cfp = await CFP.new(callId, closingTime);
+            cfp = await CFP.new(callId, closingTime, accounts[0]);
         });
         it('no debe haber propuestas', async () => {
             const proposalCount = await cfp.proposalCount();
@@ -32,14 +32,28 @@ contract('Call for Proposals', (accounts) => {
         it('tiene que tener el tiempo de cierre correcto', async () => {
             const contractClosingTime = await cfp.closingTime();
             assert.equal(closingTime, contractClosingTime);
+        });
+        it('tiene que tener el owner correcto', async () => {
+            const contractOwner = await cfp.owner();
+            assert.equal(accounts[0], contractOwner);
+        });
+        it('tiene que tener el creator correcto', async () => {
+            const contractCreator = await cfp.creator();
+            assert.equal(accounts[0], contractCreator);
         })
     });
     describe('Inicialización incorrecta del contrato', function () {
         it('debe rechazar tiempos de cierre que están en el pasado', async () => {
             const currentBlock = await web3.eth.getBlock('latest');
             await verifyThrows(async () => {
-                await CFP.new(gen.next(), currentBlock.timestamp)
+                await CFP.new(gen.next(), currentBlock.timestamp, accounts[0])
             }, /El cierre de la convocatoria no puede estar en el pasado/)
+        });
+        it('debe rechazar owner con dirección cero', async () => {
+            const closingTime = (await web3.eth.getBlock('latest')).timestamp + 100;
+            await verifyThrows(async () => {
+                await CFP.new(gen.next(), closingTime, emptyAddress)
+            }, /owner invalido/)
         })
 
     })
@@ -55,7 +69,7 @@ contract('Call for Proposals', (accounts) => {
             initialBlock = await web3.eth.getBlock('latest');
             currentTime = initialBlock.timestamp;
             closingTime = currentTime + 100;
-            cfp = await CFP.new(gen.get(0), closingTime);
+            cfp = await CFP.new(gen.get(0), closingTime, accounts[0]);
             proposalCount = 5 + Math.trunc(Math.random() * 10);
             for (let i = 0; i < proposalCount; i++) {
                 let proposal = gen.next();
@@ -174,7 +188,7 @@ contract('Call for Proposals', (accounts) => {
     describe('Cierre de convocatoria', function () {
         it('debe rechazar propuestas enviadas después del cierre', async () => {
             let closingTime = now() + 2;
-            let cfp = await CFP.new(gen.next(), closingTime);
+            let cfp = await CFP.new(gen.next(), closingTime, accounts[0]);
             while (now() < closingTime + 2) {
                 await new Promise(r => setTimeout(r, 1500))
             }

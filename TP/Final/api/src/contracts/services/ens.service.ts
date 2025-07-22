@@ -63,8 +63,9 @@ export class ENSService implements OnModuleInit {
 
       // El nombre no corresponde realmente a esta dirección
       return address;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('[ENSService] Error resolving address:', error);
+      //console.error('[ENSService] Error resolving address:', error);
       return address;
     }
   }
@@ -122,8 +123,9 @@ export class ENSService implements OnModuleInit {
       }
 
       return { name, description };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('[ENSService] Error getting name and description:', error);
+      //console.error('[ENSService] Error getting name and description:', error);
       return { name: address };
     }
   }

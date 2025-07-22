@@ -101,7 +101,6 @@ export class ProposalsService {
     }
 
     const factory = this.contractsService.getFactory();
-    await this.contractsService.refreshNonce();
 
     let callData: CallData;
     try {

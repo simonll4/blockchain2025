@@ -73,7 +73,7 @@ export class CallsController {
         throw error;
       }
 
-      console.error('Error in getClosingTime:', error);
+      //console.error('Error in getClosingTime:', error);
       throw new HttpException(
         { message: MESSAGES.INTERNAL_ERROR },
         HttpStatus.INTERNAL_SERVER_ERROR,
