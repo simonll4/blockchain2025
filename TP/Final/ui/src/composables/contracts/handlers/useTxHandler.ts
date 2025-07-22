@@ -28,7 +28,6 @@ export function useTxHandler<T = any>() {
       return receipt;
     } catch (err: any) {
       console.error("Error al ejecutar la transacción:", err);
-      // const msg = err.message || "Error desconocido";
       const msg = "Error al ejecutar la transacción";
       error.value = msg;
       message.value = msg;

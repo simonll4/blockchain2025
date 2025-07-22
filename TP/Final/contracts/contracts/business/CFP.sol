@@ -22,8 +22,10 @@ contract CFP {
     // Timestamp del cierre del llamado
     uint256 private immutable _closingTime;
 
-    // Dirección del creador del llamado
+    // _owner: dirección lógica del dueño del contrato, utilizada para funciones como ENS reverse registrar
+    // _creator: dirección que despliega el contrato (factory)
     address private immutable _owner;
+    address private immutable _creator;
 
     // Mapeo de identificadores de propuestas a sus datos
     mapping(bytes32 => ProposalData) private _proposalData;
@@ -31,20 +33,21 @@ contract CFP {
     // Lista de todas las propuestas registradas
     bytes32[] private _proposals;
 
-    // Construye un llamado con un identificador y un tiempo de cierre
-    constructor(bytes32 callId_, uint256 closingTime_) {
+    constructor(bytes32 callId_, uint256 closingTime_, address owner_) {
+        require(owner_ != address(0), "owner invalido");
         require(
             closingTime_ > block.timestamp,
             "El cierre de la convocatoria no puede estar en el pasado"
         );
+        _owner = owner_;
+        _creator = msg.sender;
         _callId = callId_;
         _closingTime = closingTime_;
-        _owner = msg.sender;
     }
 
-    modifier onlyOwner() {
+    modifier onlyCreator() {
         require(
-            msg.sender == _owner,
+            msg.sender == _creator,
             "Solo el creador puede hacer esta llamada"
         );
         _;
@@ -90,6 +93,10 @@ contract CFP {
 
     // Devuelve el creador del llamado
     function creator() public view returns (address) {
+        return _creator;
+    }
+
+    function owner() public view returns (address) {
         return _owner;
     }
 
@@ -104,7 +111,9 @@ contract CFP {
     }
 
     // Registra una nueva propuesta enviada por el autor del mensaje
-    function registerProposal(bytes32 proposal) public isValidProposal(proposal) {
+    function registerProposal(
+        bytes32 proposal
+    ) public isValidProposal(proposal) {
         _registerProposal(proposal, msg.sender);
     }
 
@@ -112,7 +121,7 @@ contract CFP {
     function registerProposalFor(
         bytes32 proposal,
         address sender
-    ) public onlyOwner isValidProposal(proposal) {
+    ) public onlyCreator isValidProposal(proposal) {
         _registerProposal(proposal, sender);
     }
 

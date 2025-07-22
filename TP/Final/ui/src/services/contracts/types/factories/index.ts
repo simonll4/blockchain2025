@@ -11,6 +11,7 @@ export { ENS__factory } from "./ENS__factory";
 export { ENSRegistry__factory } from "./ENSRegistry__factory";
 export { FIFSRegistrar__factory } from "./FIFSRegistrar__factory";
 export { INameResolver__factory } from "./INameResolver__factory";
+export { IOwnable__factory } from "./IOwnable__factory";
 export { InterfaceResolver__factory } from "./InterfaceResolver__factory";
 export { LlamadosRegistrar__factory } from "./LlamadosRegistrar__factory";
 export { Migrations__factory } from "./Migrations__factory";

@@ -45,6 +45,7 @@ export interface CFPInterface extends Interface {
       | "closingTime"
       | "callId"
       | "creator"
+      | "owner"
       | "proposalCount"
       | "proposalTimestamp"
       | "registerProposal"
@@ -67,6 +68,7 @@ export interface CFPInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "callId", values?: undefined): string;
   encodeFunctionData(functionFragment: "creator", values?: undefined): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "proposalCount",
     values?: undefined
@@ -95,6 +97,7 @@ export interface CFPInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "callId", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proposalCount",
     data: BytesLike
@@ -192,6 +195,8 @@ export interface CFP extends BaseContract {
 
   creator: TypedContractMethod<[], [string], "view">;
 
+  owner: TypedContractMethod<[], [string], "view">;
+
   proposalCount: TypedContractMethod<[], [bigint], "view">;
 
   proposalTimestamp: TypedContractMethod<
@@ -234,6 +239,9 @@ export interface CFP extends BaseContract {
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "creator"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "proposalCount"

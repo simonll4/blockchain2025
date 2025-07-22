@@ -3,6 +3,10 @@ pragma solidity >=0.8.0;
 
 import "./ENS.sol";
 
+interface IOwnable {
+    function owner() external view returns (address);
+}
+
 abstract contract Resolver {
     function setName(bytes32 node, string memory name) public virtual;
 }
@@ -110,6 +114,11 @@ contract ReverseRegistrar {
         address owner,
         string calldata name
     ) external returns (bytes32 reverseNode) {
+        require(addr.code.length > 0, "Addr debe ser contrato");
+        require(
+            IOwnable(addr).owner() == msg.sender,
+            "No sos el owner del contrato"
+        );
         bytes32 label = sha3HexAddress(addr);
         reverseNode = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
         _ensureOwnership(label);

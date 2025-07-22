@@ -25,6 +25,7 @@ export function useMetamask() {
 
     window.ethereum.on("accountsChanged", async (accounts: string[]) => {
       if (accounts.length > 0) {
+        store.setENSName(''); // Reset ENS name on account change
         store.setAddress(accounts[0]);
         store.setConnected(true);
         // actualizar provider y signer por si cambió

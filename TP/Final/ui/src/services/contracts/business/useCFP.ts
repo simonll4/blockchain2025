@@ -17,8 +17,7 @@ export function useCFP() {
   const callDetailStore = useCallDetailStore();
   const { call } = storeToRefs(callDetailStore);
   const cfpStore = useCFPStore();
- // const { contract, cfpAddress } = storeToRefs(cfpStore);
- const { contract } = storeToRefs(cfpStore);
+  const { contract } = storeToRefs(cfpStore);
 
   const { getAddr } = usePublicResolver();
 
@@ -83,8 +82,13 @@ export function useCFP() {
     return getContract().proposalData(proposalId);
   };
 
+  const getOwner = async () => {
+    return getContract().owner();
+  };
+
   return {
     contract,
+    getOwner,
     getProposalData,
     init,
   };

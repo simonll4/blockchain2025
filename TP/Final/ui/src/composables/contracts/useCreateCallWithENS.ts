@@ -12,7 +12,6 @@ export function useCreateCallWithENS() {
   const { account } = useMetamask();
   const { createCall, getCall } = useCFPFactory();
   const { registerCall, getOwner, generateCallId } = useENSRegisterCall();
-  const { fetchCalls } = useApiCalls();
   const txHandler = useTxHandler();
   const callHandler = useCallHandler();
 
@@ -85,13 +84,14 @@ export function useCreateCallWithENS() {
         cfpAddress,
         description
       );
+      console.log("ENS registration result:", registered);
       if (!registered) {
         txHandler.error.value = "No se pudo registrar el llamado en ENS.";
         return false;
       }
 
-      // 6. Actualizar lista de llamados
-      await fetchCalls();
+   
+
       txHandler.success.value = true;
       txHandler.message.value = `Llamado \"${fullDomain}\" creado y registrado correctamente.`;
       return true;

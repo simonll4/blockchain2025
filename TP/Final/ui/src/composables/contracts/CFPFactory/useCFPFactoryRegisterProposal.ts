@@ -21,7 +21,16 @@ export function useCFPFactoryRegisterProposal(callId: string) {
 
     return await runTx(
       () => registerProposal(callId, hash),
-      "Propuesta registrada en la blockchain"
+      "Propuesta registrada en la blockchain",
+      undefined, // onSuccess
+      (err: any) => {
+        // Manejar error específico de propuesta duplicada
+        if (err?.message?.includes("missing revert data") || 
+            err?.message?.includes("CALL_EXCEPTION")) {
+          error.value = "La propuesta ya ha sido registrada anteriormente.";
+          message.value = "La propuesta ya ha sido registrada anteriormente.";
+        }
+      }
     );
   };
 

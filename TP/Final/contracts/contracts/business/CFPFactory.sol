@@ -211,7 +211,7 @@ contract CFPFactory {
         uint256 closingTime_,
         address creator_
     ) private isNewCallId(callId_) returns (CFP) {
-        CFP cfp = new CFP(callId_, closingTime_);
+        CFP cfp = new CFP(callId_, closingTime_, creator_);
         _calls[callId_] = CallForProposals(creator_, cfp);
         _callIds.push(callId_);
 

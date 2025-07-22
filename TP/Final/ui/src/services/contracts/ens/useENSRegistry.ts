@@ -43,7 +43,7 @@ export function useENSRegistry() {
   return {
     init,
     contract,
-    contractAddress: contract.value?.target,
+    contractAddress: ADDRESS,
     getOwner,
     setResolver,
   };

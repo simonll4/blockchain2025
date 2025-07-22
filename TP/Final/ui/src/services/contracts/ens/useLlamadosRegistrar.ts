@@ -45,6 +45,7 @@ export function useLlamadosRegistrar() {
     init,
     register,
     contract,
-    contractAddress: contract.value?.target,
+    //contractAddress: contract.value?.target,
+    contractAddress: ADDRESS,
   };
 }

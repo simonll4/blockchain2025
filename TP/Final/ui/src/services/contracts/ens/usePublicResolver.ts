@@ -56,7 +56,7 @@ export function usePublicResolver() {
   return {
     init,
     contract,
-    contractAddress: contract.value?.target,
+    contractAddress: ADDRESS,
     getAddr,
     setAddr,
     getName,

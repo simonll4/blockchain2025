@@ -35,6 +35,7 @@ export function useENSRegisterCall() {
     // Paso 1: Verificar si el nodo ya está registrado y no pertenece al usuario
     try {
       const owner = await getOwner(node);
+
       if (
         owner !== "0x0000000000000000000000000000000000000000" &&
         owner.toLowerCase() !== account.value?.toLowerCase()
@@ -43,7 +44,6 @@ export function useENSRegisterCall() {
         return false;
       }
     } catch (e) {
-      console.error("Error al obtener dueño del nodo:", e);
       error.value = "No se pudo verificar la propiedad del nodo ENS.";
       return false;
     }
@@ -53,7 +53,9 @@ export function useENSRegisterCall() {
       () => registerCallLabel(labelHash),
       "Nombre del llamado registrado en ENS"
     );
-    if (!step1) return false;
+    if (!step1) {
+      return false;
+    }
 
     // Paso 3: Validar que el resolver esté disponible
     if (!resolverAddress) {
@@ -66,28 +68,36 @@ export function useENSRegisterCall() {
       () => setResolver(node, String(resolverAddress)),
       "Resolver asignado correctamente"
     );
-    if (!step2) return false;
+    if (!step2) {
+      return false;
+    }
 
     // Paso 5: Asociar la dirección del contrato CFP
     const step3 = await runTx(
       () => setAddr(node, cfpContractAddress),
       "Dirección del contrato CFP vinculada"
     );
-    if (!step3) return false;
+    if (!step3) {
+      return false;
+    }
 
     // Paso 6: Registrar la descripción como texto
     const step4 = await runTx(
       () => setText(node, "description", description),
       "Descripción del llamado registrada"
     );
-    if (!step4) return false;
+    if (!step4) {
+      return false;
+    }
 
     // Paso 7: Configurar resolución inversa para el contrato CFP
     const step5 = await runTx(
       () => setReverseNameFor(cfpContractAddress, fullDomain),
       "Resolución inversa configurada"
     );
-    if (!step5) return false;
+    if (!step5) {
+      return false;
+    }
 
     success.value = true;
     message.value = `Llamado registrado correctamente como ${fullDomain}`;

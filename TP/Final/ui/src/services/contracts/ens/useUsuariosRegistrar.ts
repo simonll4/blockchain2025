@@ -43,6 +43,7 @@ export function useUsuariosRegistrar() {
     init,
     register,
     contract,
-    contractAddress: contract.value?.target,
+    //contractAddress: contract.value?.target,
+    contractAddress: ADDRESS,
   };
 }

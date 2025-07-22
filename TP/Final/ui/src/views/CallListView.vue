@@ -67,6 +67,11 @@ const resetCreateForm = () => {
   showCreateDialog.value = false;
 };
 
+const openCreateDialog = () => {
+  resetCreateStatus();
+  showCreateDialog.value = true;
+};
+
 const createCall = async () => {
   resetCreateStatus();
   if (!newCallName.value) {
@@ -93,11 +98,19 @@ const createCall = async () => {
       closingTimestamp
     );
     if (createSuccess.value) {
-      resetCreateForm();
+      // Cerrar el modal primero para ocultar la información
+      showCreateDialog.value = false;
+      // Luego resetear el formulario después de que se cierre
+      setTimeout(() => {
+        newCallName.value = "";
+        newCallDescription.value = "";
+        newClosingDate.value = "";
+      }, 1000);
     }
   } catch {
     createError.value = "Ocurrió un error al crear el llamado.";
   }
+  fetchCalls();
   fetchCreators();
 };
 
@@ -117,58 +130,85 @@ onMounted(async () => {
     <!-- BOTÓN crear llamado -->
     <v-row class="mb-4" v-if="isAuthorized">
       <v-col cols="12" class="text-right">
-        <v-btn
-          color="success"
-          @click="showCreateDialog = true"
-          :loading="isCreating"
-        >
+        <v-btn color="success" @click="openCreateDialog" :loading="isCreating">
           Crear llamado
         </v-btn>
       </v-col>
     </v-row>
 
     <!-- Diálogo crear llamado -->
-    <v-dialog v-model="showCreateDialog" max-width="600px">
+    <v-dialog v-model="showCreateDialog" max-width="600px" persistent>
       <v-card>
-        <v-card-title>Crear nuevo llamado</v-card-title>
+        <v-card-title class="text-h6">Crear nuevo llamado</v-card-title>
         <v-card-text>
-          <v-text-field
-            v-model="newCallName"
-            label="Nombre del llamado (ENS)"
-            :disabled="isCreating"
-            required
-          />
-          <v-textarea
-            v-model="newCallDescription"
-            label="Descripción"
-            auto-grow
-            :disabled="isCreating"
-            required
-          />
-          <v-text-field
-            v-model="newClosingDate"
-            label="Fecha y hora de cierre"
-            type="datetime-local"
-            :disabled="isCreating"
-            required
-          />
+          <v-form @submit.prevent="createCall">
+            <v-text-field
+              v-model="newCallName"
+              label="Nombre del llamado"
+              suffix=".llamados.cfp"
+              hint="Solo letras, números y guiones. Sin espacios ni caracteres especiales."
+              persistent-hint
+              :rules="[
+                (v) => !!v || 'El nombre es requerido',
+                (v) =>
+                  /^[a-zA-Z0-9-]+$/.test(v) ||
+                  'Solo se permiten letras, números y guiones',
+              ]"
+              :disabled="isCreating"
+              required
+            />
+            <v-textarea
+              v-model="newCallDescription"
+              label="Descripción del llamado"
+              hint="Descripción que aparecerá asociada al nombre ENS"
+              persistent-hint
+              :rules="[(v) => !!v || 'La descripción es requerida']"
+              auto-grow
+              :disabled="isCreating"
+              required
+              rows="3"
+            />
+            <v-text-field
+              v-model="newClosingDate"
+              label="Fecha y hora de cierre"
+              type="datetime-local"
+              :rules="[(v) => !!v || 'La fecha de cierre es requerida']"
+              :disabled="isCreating"
+              required
+            />
+          </v-form>
 
-          <v-alert v-if="createError" type="error" dense class="mt-2">
-            {{ createError }}
-          </v-alert>
-          <v-alert v-if="createSuccess" type="success" dense class="mt-2">
-            {{ createMessage }}
+          <v-alert
+            v-if="createError || createSuccess"
+            :type="createError ? 'error' : 'success'"
+            class="mt-3"
+            border="start"
+            variant="tonal"
+          >
+            {{ createError || createMessage }}
           </v-alert>
         </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-btn text @click="showCreateDialog = false" :disabled="isCreating">
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            @click="
+              resetCreateForm();
+              resetCreateStatus();
+            "
+            :disabled="isCreating"
+          >
             Cancelar
           </v-btn>
           <v-btn
-            color="primary"
             @click="createCall"
+            color="primary"
             :loading="isCreating"
-            :disabled="isCreating"
+            :disabled="
+              !newCallName.trim() ||
+              !newCallDescription.trim() ||
+              !newClosingDate ||
+              isCreating
+            "
           >
             Crear
           </v-btn>

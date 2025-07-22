@@ -50,7 +50,7 @@ export function useReverseRegistrar() {
   return {
     init,
     contract,
-    contractAddress: contract.value?.target,
+    contractAddress: ADDRESS,
     setName,
     setNameFor,
     node,

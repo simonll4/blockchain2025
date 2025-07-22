@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from "@/utils/endpoints";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000,
+  timeout: 100000,
 });
 
 apiClient.interceptors.response.use(
