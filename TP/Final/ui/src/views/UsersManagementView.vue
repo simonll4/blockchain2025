@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { storeToRefs } from "pinia";
 
 import { useApiPendingUsers } from "@/composables/api/useApiPendingUsers";
 import { useCFPFactoryAuthorize } from "@/composables/contracts/CFPFactory/useCFPFactoryAuthorize";
@@ -9,7 +8,7 @@ import { useENSResolvePendingUsers } from "@/composables/contracts/ens/useENSRes
 const { pendingUsers, isLoading, error, fetchPendingUsers } =
   useApiPendingUsers();
 const {
-  isLoading: authLoadingGlobal, // global, pero ya no lo usaremos para el botón individual
+  isLoading: authLoadingGlobal,
   error: authError,
   success: authSuccess,
   message: authMessage,

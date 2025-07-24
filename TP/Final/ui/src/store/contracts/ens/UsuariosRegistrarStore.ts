@@ -8,23 +8,13 @@ export const useUsuariosRegistrarStore = defineStore(
   () => {
     const contract = ref<UsuariosRegistrar>();
 
-    const initContract = (instance: UsuariosRegistrar, address: string) => {
+    const initContract = (instance: UsuariosRegistrar) => {
       contract.value = instance;
-    };
-
-    const getContract = (): UsuariosRegistrar => {
-      if (!contract.value) {
-        throw new Error(
-          "Contrato UsuariosRegistrar no inicializado. Llama primero a `initContract`."
-        );
-      }
-      return contract.value;
     };
 
     return {
       contract,
       initContract,
-      getContract,
     };
   }
 );

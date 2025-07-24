@@ -22,7 +22,7 @@ export function usePublicResolver() {
     if (!rawSigner) throw new Error("Signer no disponible");
 
     const instance = PublicResolver__factory.connect(ADDRESS, rawSigner);
-    store.initContract(instance, ADDRESS);
+    store.initContract(instance);
   };
 
   const getContract = (): PublicResolver => {

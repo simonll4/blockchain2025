@@ -20,6 +20,7 @@ export function useENSResolveUserAddress() {
   const { loading, error, message, result, runCall } = useCallHandler<
     string | null
   >();
+  
   const resolveAddress = async (address: string): Promise<string | null> => {
     if (!address) throw new Error("Dirección no especificada");
 
@@ -47,19 +48,6 @@ export function useENSResolveUserAddress() {
       return reverseName;
     }, "Nombre ENS validado correctamente");
   };
-
-  // const resolveAddress = async (address: string): Promise<string | null> => {
-  //   if (!address) throw new Error("Dirección no especificada");
-
-  //   return runCall(async () => {
-  //     const nodeHash = await node(address);
-  //     const resolvedName = await getName(nodeHash);
-  //     const name = resolvedName;
-
-  //     setENSName(name);
-  //     return name;
-  //   }, "Nombre ENS resuelto correctamente");
-  // };
 
   return {
     resolveAddress,

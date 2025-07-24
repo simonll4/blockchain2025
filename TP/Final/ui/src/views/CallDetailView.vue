@@ -7,7 +7,6 @@ import { useApiCallDetail } from "@/composables/api/useApiCallDetail";
 import { useApiRegisterProposal } from "@/composables/api/useApiRegisterProposal";
 import { useApiVerifyProposal } from "@/composables/api/useApiVerifyProposal";
 import { useCFPFactoryRegisterProposal } from "@/composables/contracts/CFPFactory/useCFPFactoryRegisterProposal";
-import { useCFPProposalData } from "@/composables/contracts/CFP/useCFPProposalData";
 import { useMetamask } from "@/services/metamask/useMetamask";
 import { useENSRegisterCall } from "@/composables/contracts/ens/useENSRegisterCall";
 import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
@@ -63,12 +62,6 @@ const handleVerify = async () => {
   }
 };
 
-// Registrar directamente on-chain con Metamask
-const {
-  proposalData,
-  fetchProposalData,
-  message: messageProposalData,
-} = useCFPProposalData();
 const { isLoading, error, message, register } =
   useCFPFactoryRegisterProposal(callId);
 
@@ -76,16 +69,6 @@ const { isLoading, error, message, register } =
 const onChainFile = ref<File | null>(null);
 const handleRegisterOnChain = async () => {
   if (!onChainFile.value) return;
-
-  await fetchProposalData(onChainFile.value);
-  const sender = proposalData.value[0];
-
-  // Si ya tiene un sender registrado, no permitir re-registro
-  if (sender && sender !== "0x0000000000000000000000000000000000000000") {
-    message.value = "";
-    error.value = "La propuesta ya ha sido registrada.";
-    return;
-  }
 
   // Intentar registrar - si ya existe anónimamente, el contrato fallará
   await register(onChainFile.value);

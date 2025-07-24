@@ -100,33 +100,51 @@ contract ReverseRegistrar {
         return _node;
     }
 
-    /*
-     * @dev Sets the `name()` record for the reverse ENS record associated with
-     * the given address. First updates the resolver to the default reverse
-     * resolver if necessary.
-     * @param addr The address to set the name for.
-     * @param owner The owner of the reverse record in ENS.
-     * @param name The name to set for this address.
-     * @return The ENS node hash of the reverse record.
+    /**
+     * @notice Asocia un nombre ENS reverso a un contrato, siempre que el caller sea su owner.
+     * @dev Toma control del subnodo ENS para poder setear el resolver y el nombre.
+     *      Verifica que el contrato implementa la interfaz IOwnable y que el msg.sender es el owner.
+     *      El ReverseRegistrar mantiene la propiedad del subnodo ENS para facilitar gestión centralizada.
+     * @param addr La dirección del contrato que tendrá el nombre ENS reverso.
+     * @param name El nombre a asociar (por ejemplo, "miapp.llamados.cfp").
+     * @return reverseNode El hash del nodo ENS reverso (`keccak256(abi.encodePacked(addr.reverse, sha3HexAddress(addr)))`).
+     * @custom:reverts Si la dirección no es un contrato, si no implementa IOwnable, si el caller no es el owner,
+     *                 o si no se puede tomar el control del nodo ENS.
      */
     function setNameFor(
         address addr,
-        address owner,
         string calldata name
     ) external returns (bytes32 reverseNode) {
         require(addr.code.length > 0, "Addr debe ser contrato");
-        require(
-            IOwnable(addr).owner() == msg.sender,
-            "No sos el owner del contrato"
-        );
+
+        // Verificamos que quien llama sea el owner del contrato
+        try IOwnable(addr).owner() returns (address contractOwner) {
+            require(
+                contractOwner == msg.sender,
+                "No sos el owner del contrato"
+            );
+        } catch {
+            revert("El contrato no implementa IOwnable correctamente");
+        }
+
+        // Calculamos el nodo ENS reverso
         bytes32 label = sha3HexAddress(addr);
         reverseNode = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
-        _ensureOwnership(label);
-        ens.setResolver(reverseNode, address(defaultResolver));
-        defaultResolver.setName(reverseNode, name);
-        if (owner != ens.owner(reverseNode)) {
-            ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, owner);
+
+        // Si este contrato no es el owner del nodo, tomamos el control
+        if (ens.owner(reverseNode) != address(this)) {
+            ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, address(this));
+            // Confirmamos que efectivamente somos ahora los dueños
+            require(
+                ens.owner(reverseNode) == address(this),
+                "No se pudo tomar control del nodo ENS"
+            );
         }
+        // Seteamos el resolver por defecto
+        ens.setResolver(reverseNode, address(defaultResolver));
+        // Registramos el nombre
+        defaultResolver.setName(reverseNode, name);
+        return reverseNode;
     }
 
     /**
@@ -170,16 +188,6 @@ contract ReverseRegistrar {
             }
 
             ret := keccak256(0, 40)
-        }
-    }
-
-    /// @dev Garantiza que este contrato sea dueño del subnodo <label>.addr.reverse
-    function _ensureOwnership(bytes32 label) private {
-        if (
-            ens.owner(keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label))) !=
-            address(this)
-        ) {
-            ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, address(this));
         }
     }
 }

@@ -21,8 +21,7 @@ export function useUsuariosRegistrar() {
     const rawSigner = toRaw(signer.value);
     if (!rawSigner) throw new Error("Signer no disponible");
     const instance = UsuariosRegistrar__factory.connect(ADDRESS, rawSigner);
-    const address = await instance.getAddress();
-    store.initContract(instance, address);
+    store.initContract(instance);
   };
 
   const getContract = (): UsuariosRegistrar => {
@@ -43,7 +42,6 @@ export function useUsuariosRegistrar() {
     init,
     register,
     contract,
-    //contractAddress: contract.value?.target,
     contractAddress: ADDRESS,
   };
 }

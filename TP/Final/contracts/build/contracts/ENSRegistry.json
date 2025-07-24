@@ -5238,12 +5238,12 @@
         }
       },
       "links": {},
-      "address": "0x277095e09718D35951782944C4405f78A1e5A6ca",
-      "transactionHash": "0x1d122fe3e42cabf857309ac4e4177e8ca5cfe09acdfa6dbe220e4dc09814f830"
+      "address": "0xADb696651Bd9221A80D70441248b4eB4E64C6122",
+      "transactionHash": "0x5192c155a9be4517b5c7c6449339d478fb623248527c1ea1cb0fe0f969f6ecae"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-07-22T18:24:48.431Z",
+  "updatedAt": "2025-07-24T03:10:25.738Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

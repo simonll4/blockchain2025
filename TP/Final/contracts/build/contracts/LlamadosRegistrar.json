@@ -3129,12 +3129,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xfC22810b7113FE50477F34aea276484AeE76a90b",
-      "transactionHash": "0x880a78375a43016f7f5a14a18fdd05a48f7e146039a8b698f2251369a0bdbb77"
+      "address": "0xDddC4742306a808130B1e85E383aa32D4709cBb7",
+      "transactionHash": "0x3118222e29195d2f85dfaedb2d9fccd284a5cc7e2e47c5c80cd7e1a452327a9e"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-07-22T18:24:48.439Z",
+  "updatedAt": "2025-07-24T03:10:25.750Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Registrador específico para el dominio llamados.cfp",

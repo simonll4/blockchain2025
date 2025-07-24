@@ -4,11 +4,11 @@ pragma solidity >=0.8.0;
 import "../ResolverBase.sol";
 
 abstract contract AddrResolver is ResolverBase {
-    bytes4 constant private ADDR_INTERFACE_ID = 0x3b3b57de;
+    bytes4 private constant ADDR_INTERFACE_ID = 0x3b3b57de;
 
     event AddrChanged(bytes32 indexed node, address a);
 
-    mapping(bytes32=>address) addresses;
+    mapping(bytes32 => address) addresses;
 
     /**
      * Sets the address associated with an ENS node.
@@ -30,7 +30,11 @@ abstract contract AddrResolver is ResolverBase {
         return addresses[node];
     }
 
-    function supportsInterface(bytes4 interfaceID) public pure virtual override returns(bool) {
-        return interfaceID == ADDR_INTERFACE_ID || super.supportsInterface(interfaceID);
+    function supportsInterface(
+        bytes4 interfaceID
+    ) public pure virtual override returns (bool) {
+        return
+            interfaceID == ADDR_INTERFACE_ID ||
+            super.supportsInterface(interfaceID);
     }
 }

@@ -3926,12 +3926,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x8311D5Ea2d42BeA03be8D00B078D73d97F60a957",
-      "transactionHash": "0x3bc4c0835bff1b4be86e9e9e204736acf2c196d3a551d29c06d5948c49ff7770"
+      "address": "0x6E1e6586bC059E9f424E92c3EC87653a6351DB9b",
+      "transactionHash": "0x127aa10744092ba2dd774913913b15de7153d13a259a1f9cb779991989b164e4"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-07-22T18:24:48.434Z",
+  "updatedAt": "2025-07-24T03:10:25.742Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

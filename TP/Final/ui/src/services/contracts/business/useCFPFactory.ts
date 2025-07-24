@@ -22,7 +22,7 @@ export function useCFPFactory() {
     const rawSigner = toRaw(signer.value);
     if (!rawSigner) throw new Error("Signer no disponible");
     const instance = CFPFactory__factory.connect(ADDRESS, rawSigner);
-    contractStore.initContract(instance, ADDRESS);
+    contractStore.initContract(instance);
   };
 
   const getContract = (): CFPFactory => {

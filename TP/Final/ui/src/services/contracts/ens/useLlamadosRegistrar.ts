@@ -22,9 +22,8 @@ export function useLlamadosRegistrar() {
     if (!rawSigner) throw new Error("Signer no disponible");
 
     const instance = LlamadosRegistrar__factory.connect(ADDRESS, rawSigner);
-    const address = await instance.getAddress();
 
-    store.initContract(instance, address);
+    store.initContract(instance);
   };
 
   const getContract = (): LlamadosRegistrar => {

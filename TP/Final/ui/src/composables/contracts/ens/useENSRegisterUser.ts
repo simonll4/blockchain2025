@@ -34,8 +34,8 @@ export function useENSRegisterUser() {
     }
 
     const { label, fullDomain } = parsed;
-    const node = namehash(fullDomain); // Nodo ENS (hash del nombre completo)
-    const labelHash = labelhash(label); // Hash del label
+    const node = namehash(fullDomain); 
+    const labelHash = labelhash(label);
 
     // Paso 2: Verificar si el nodo ya está registrado y si el usuario es el propietario
     try {

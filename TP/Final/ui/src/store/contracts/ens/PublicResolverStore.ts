@@ -5,22 +5,12 @@ import type { PublicResolver } from "@/services/contracts/types";
 export const usePublicResolverStore = defineStore("publicResolver", () => {
   const contract = ref<PublicResolver>();
 
-  const initContract = (instance: PublicResolver, address: string) => {
+  const initContract = (instance: PublicResolver) => {
     contract.value = instance;
-  };
-
-  const getContract = (): PublicResolver => {
-    if (!contract.value) {
-      throw new Error(
-        "PublicResolver no inicializado. Llama primero a `initContract`."
-      );
-    }
-    return contract.value;
   };
 
   return {
     contract,
     initContract,
-    getContract,
   };
 });

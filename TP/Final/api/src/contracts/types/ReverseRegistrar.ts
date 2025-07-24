@@ -50,7 +50,7 @@ export interface ReverseRegistrarInterface extends Interface {
   encodeFunctionData(functionFragment: "setName", values: [string]): string;
   encodeFunctionData(
     functionFragment: "setNameFor",
-    values: [AddressLike, AddressLike, string]
+    values: [AddressLike, string]
   ): string;
   encodeFunctionData(functionFragment: "node", values: [AddressLike]): string;
 
@@ -146,7 +146,7 @@ export interface ReverseRegistrar extends BaseContract {
   setName: TypedContractMethod<[name: string], [string], "nonpayable">;
 
   setNameFor: TypedContractMethod<
-    [addr: AddressLike, owner: AddressLike, name: string],
+    [addr: AddressLike, name: string],
     [string],
     "nonpayable"
   >;
@@ -186,7 +186,7 @@ export interface ReverseRegistrar extends BaseContract {
   getFunction(
     nameOrSignature: "setNameFor"
   ): TypedContractMethod<
-    [addr: AddressLike, owner: AddressLike, name: string],
+    [addr: AddressLike, name: string],
     [string],
     "nonpayable"
   >;

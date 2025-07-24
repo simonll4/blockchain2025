@@ -21,7 +21,7 @@ export function useENSRegistry() {
     const rawSigner = toRaw(signer.value);
     if (!rawSigner) throw new Error("Signer no disponible");
     const instance = ENSRegistry__factory.connect(ADDRESS, rawSigner);
-    store.initContract(instance, ADDRESS);
+    store.initContract(instance);
   };
 
   const getContract = (): ENSRegistry => {

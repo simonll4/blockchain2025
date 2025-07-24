@@ -22,7 +22,7 @@ export function useReverseRegistrar() {
     if (!rawSigner) throw new Error("Signer no disponible");
 
     const instance = ReverseRegistrar__factory.connect(ADDRESS, rawSigner);
-    store.initContract(instance, ADDRESS);
+    store.initContract(instance);
   };
 
   const getContract = (): ReverseRegistrar => {
@@ -40,7 +40,7 @@ export function useReverseRegistrar() {
   const setNameFor = async (targetAddress: string, name: string) => {
     const rawAccount = toRaw(account.value);
     if (!rawAccount) throw new Error("Cuenta no disponible");
-    return getContract().setNameFor(targetAddress, rawAccount, name);
+    return getContract().setNameFor(targetAddress, name);
   };
 
   const node = async (address: string) => {

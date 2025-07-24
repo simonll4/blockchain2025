@@ -102,10 +102,8 @@ export class CFPFactoryService {
       if (!receipt) {
         throw new InternalServerErrorException('Transaction not mined');
       }
-
       return receipt;
     };
-
     const receipt = await this.txQueue.add(() => task());
 
     if (!receipt) {

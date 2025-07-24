@@ -93,7 +93,6 @@ export class ENSService implements OnModuleInit {
    *   - `name`: el nombre ENS validado o la dirección original si no hay uno válido.
    *   - `description`: el texto descriptivo del ENS si existe, o `undefined` si no está definido.
    */
-
   async getNameAndDescription(
     address: string,
   ): Promise<{ name: string; description?: string }> {
@@ -129,36 +128,4 @@ export class ENSService implements OnModuleInit {
       return { name: address };
     }
   }
-
-  /**
-  //  * Obtiene el nombre y la descripción de un nombre ENS.
-  //  * @param address Dirección Ethereum a consultar.
-  //  * @returns Un objeto que contiene el nombre ENS y su descripción (si existe).
-  //  */
-  // async getNameAndDescription(
-  //   address: string,
-  // ): Promise<{ name: string; description?: string }> {
-  //   try {
-  //     // Obtener el node del reverse
-  //     const reverseNode = await this.reverse.node(address);
-
-  //     // Resolver el nombre ENS asociado a ese node
-  //     const name = await this.resolver.name(reverseNode);
-
-  //     // Resolver la descripción del nombre ENS si existe
-  //     const forwardNode = ethers.namehash(name);
-  //     let description: string | undefined;
-
-  //     try {
-  //       description = await this.resolver.text(forwardNode, 'description');
-  //     } catch {
-  //       description = undefined;
-  //     }
-
-  //     return { name, description };
-  //   } catch (error) {
-  //     console.error('[ENSService] Error getting name and description:', error);
-  //     return { name: address };
-  //   }
-  // }
 }
