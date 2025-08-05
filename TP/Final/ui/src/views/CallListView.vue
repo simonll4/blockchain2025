@@ -7,7 +7,7 @@ import { useUserStore } from "@/store/userStore";
 
 import { useApiCalls } from "@/composables/api/useApiCalls";
 import { useApiCreators } from "@/composables/api/useApiCreators";
-import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
+import { useCFPFactoryIsAuthorized } from "@/composables/contracts/business/CFPFactory/useCFPFactoryIsAuthorized";
 import { useCreateCallWithENS } from "@/composables/contracts/useCreateCallWithENS";
 
 const userStore = useUserStore();

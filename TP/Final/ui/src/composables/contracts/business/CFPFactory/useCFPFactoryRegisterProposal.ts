@@ -1,6 +1,6 @@
 import { calculateFileHash } from "@/utils/ethersUtils";
-import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
-import { useTxHandler } from "../handlers/useTxHandler";
+import { useCFPFactory } from "../../../../services/contracts/business/useCFPFactory";
+import { useTxHandler } from "../../handlers/useTxHandler";
 
 /**
  * Composable para registrar on-chain una propuesta en CFPFactory usando cuenta Metamask

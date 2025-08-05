@@ -1,5 +1,5 @@
-import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
-import { useTxHandler } from "../handlers/useTxHandler";
+import { useCFPFactory } from "../../../../services/contracts/business/useCFPFactory";
+import { useTxHandler } from "../../handlers/useTxHandler";
 
 /**
  * Composable para crear un llamado en CFPFactory usando cuenta Metamask

@@ -1,5 +1,5 @@
-import { useCFPFactory } from "../../../services/contracts/business/useCFPFactory";
-import { useTxHandler } from "../handlers/useTxHandler";
+import { useCFPFactory } from "../../../../services/contracts/business/useCFPFactory";
+import { useTxHandler } from "../../handlers/useTxHandler";
 
 /**
  * Composable para registrar on-chain un usuario en CFPFactory  usando cuenta Metamask

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
+import { useCFPFactoryIsOwner } from "@/composables/contracts/business/CFPFactory/useCFPFactoryIsOwner";
 import { useMetamask } from "@/services/metamask/useMetamask";
 
 const { isOwner } = useCFPFactoryIsOwner();

@@ -67,6 +67,7 @@ module.exports = async function (deployer, network, accounts) {
     resolver.address
   );
   const reverse = await ReverseRegistrar.deployed();
+
   await ens.setSubnodeOwner("0x0", keccak256("reverse"), ensOwner);
   await ens.setSubnodeOwner(
     namehash.hash("reverse"),

@@ -3,10 +3,10 @@ import { computed, watch, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { useMetamask } from "@/services/metamask/useMetamask";
-import { useCFPFactoryIsAuthorized } from "@/composables/contracts/CFPFactory/useCFPFactoryIsAuthorized";
-import { useCFPFactoryRegister } from "@/composables/contracts/CFPFactory/useCFPFactoryRegister";
-import { useCFPFactoryIsRegistered } from "@/composables/contracts/CFPFactory/useCFPFactoryIsRegistered";
-import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
+import { useCFPFactoryIsAuthorized } from "@/composables/contracts/business/CFPFactory/useCFPFactoryIsAuthorized";
+import { useCFPFactoryRegister } from "@/composables/contracts/business/CFPFactory/useCFPFactoryRegister";
+import { useCFPFactoryIsRegistered } from "@/composables/contracts/business/CFPFactory/useCFPFactoryIsRegistered";
+import { useCFPFactoryIsOwner } from "@/composables/contracts/business/CFPFactory/useCFPFactoryIsOwner";
 import { useApiHealthCheck } from "@/composables/api/useApiHealthCheck";
 import { useENSResolveUserAddress } from "@/composables/contracts/ens/useENSResolveUserAddress";
 

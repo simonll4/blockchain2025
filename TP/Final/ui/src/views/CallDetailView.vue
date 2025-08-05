@@ -6,10 +6,10 @@ import { format, parseISO } from "date-fns";
 import { useApiCallDetail } from "@/composables/api/useApiCallDetail";
 import { useApiRegisterProposal } from "@/composables/api/useApiRegisterProposal";
 import { useApiVerifyProposal } from "@/composables/api/useApiVerifyProposal";
-import { useCFPFactoryRegisterProposal } from "@/composables/contracts/CFPFactory/useCFPFactoryRegisterProposal";
+import { useCFPFactoryRegisterProposal } from "@/composables/contracts/business/CFPFactory/useCFPFactoryRegisterProposal";
 import { useMetamask } from "@/services/metamask/useMetamask";
 import { useENSRegisterCall } from "@/composables/contracts/ens/useENSRegisterCall";
-import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
+import { useCFPFactoryIsOwner } from "@/composables/contracts/business/CFPFactory/useCFPFactoryIsOwner";
 import { useUserStore } from "@/store/userStore";
 
 const { isConnected } = useMetamask();

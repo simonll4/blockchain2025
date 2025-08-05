@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 
 import { useApiPendingUsers } from "@/composables/api/useApiPendingUsers";
-import { useCFPFactoryAuthorize } from "@/composables/contracts/CFPFactory/useCFPFactoryAuthorize";
+import { useCFPFactoryAuthorize } from "@/composables/contracts/business/CFPFactory/useCFPFactoryAuthorize";
 import { useENSResolvePendingUsers } from "@/composables/contracts/ens/useENSResolvePendingUsers.ts";
 
 const { pendingUsers, isLoading, error, fetchPendingUsers } =

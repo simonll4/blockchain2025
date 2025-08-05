@@ -12,7 +12,7 @@ import UserPanelView from "@/views/UsersManagementView.vue";
 import EnsUserRegisterView from "@/views/ENSUserRegisterView.vue";
 
 import { useMetamask } from "@/services/metamask/useMetamask";
-import { useCFPFactoryIsOwner } from "@/composables/contracts/CFPFactory/useCFPFactoryIsOwner";
+import { useCFPFactoryIsOwner } from "@/composables/contracts/business/CFPFactory/useCFPFactoryIsOwner";
 
 const routes = [
   { path: "/", component: HomeView },
